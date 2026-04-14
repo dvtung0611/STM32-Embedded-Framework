@@ -12,6 +12,9 @@
 #include <stdint.h>
 
 
+#define __IO volatile
+
+
 /* ======================================== FLASH + SRAM + SYSTEM MEMORY ======================================== */
 
 /**
@@ -198,17 +201,65 @@
  */
 typedef struct
 {
-	volatile uint32_t MODER;	/*| GPIO port mode register	 				| Offset: 0x00 */
-	volatile uint32_t OTYPER;	/*| GPIO port output type register			| Offset: 0x04 */
-	volatile uint32_t OSPEEDR;	/*| GPIO port output speed register			| Offset: 0x08 */
-	volatile uint32_t PUPDR;	/*| GPIO port pull-up/pull-down register	| Offset: 0x0C */
-	volatile uint32_t IDR;		/*| GPIO port input data register			| Offset: 0x10 */
-	volatile uint32_t ODR;		/*| GPIO port output data register			| Offset: 0x14 */
-	volatile uint32_t BSRR;		/*| GPIO port bit set/reset register		| Offset: 0x18 */
-	volatile uint32_t LCKR;		/*| GPIO port configuration lock register	| Offset: 0x1C */
-	volatile uint32_t AFRL;		/*| GPIO alternate function low register	| Offset: 0x20 */
-	volatile uint32_t AFRH;		/*| GPIO alternate function high register	| Offset: 0x24 */
+	__IO uint32_t MODER;	/*| GPIO port mode register	 				| Offset: 0x00 */
+	__IO uint32_t OTYPER;	/*| GPIO port output type register			| Offset: 0x04 */
+	__IO uint32_t OSPEEDR;	/*| GPIO port output speed register			| Offset: 0x08 */
+	__IO uint32_t PUPDR;	/*| GPIO port pull-up/pull-down register	| Offset: 0x0C */
+	__IO uint32_t IDR;		/*| GPIO port input data register			| Offset: 0x10 */
+	__IO uint32_t ODR;		/*| GPIO port output data register			| Offset: 0x14 */
+	__IO uint32_t BSRR;		/*| GPIO port bit set/reset register		| Offset: 0x18 */
+	__IO uint32_t LCKR;		/*| GPIO port configuration lock register	| Offset: 0x1C */
+	__IO uint32_t AFRL;		/*| GPIO alternate function low register	| Offset: 0x20 */
+	__IO uint32_t AFRH;		/*| GPIO alternate function high register	| Offset: 0x24 */
 } GPIO_RegDef_t;
+
+/**
+ * @brief RCC register definition structure (memory-mapped)
+ *
+ * @note Must match RM0090 register layout and offsets
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 7.3 RCC registers
+ */
+typedef struct
+{
+	__IO uint32_t CR;			/*| RCC clock control register	 									| Offset: 0x00 */
+	__IO uint32_t PLLCFGR;		/*| RCC PLL configuration register									| Offset: 0x04 */
+	__IO uint32_t CFGR;			/*| RCC clock configuration register								| Offset: 0x08 */
+	__IO uint32_t CIR;			/*| RCC clock interrupt register									| Offset: 0x0C */
+	__IO uint32_t AHB1RSTR;		/*| RCC AHB1 peripheral reset register								| Offset: 0x10 */
+	__IO uint32_t AHB2RSTR;		/*| RCC AHB2 peripheral reset register								| Offset: 0x14 */
+	__IO uint32_t AHB3RSTR;		/*| RCC AHB3 peripheral reset register								| Offset: 0x18 */
+	__IO uint32_t RESERVED0;	/* 																	| Offset: 0x1C */
+
+	__IO uint32_t APB1RSTR;		/*| RCC APB1 peripheral reset register								| Offset: 0x20 */
+	__IO uint32_t APB2RSTR;		/*| RCC APB2 peripheral reset register								| Offset: 0x24 */
+	__IO uint32_t RESERVED1[2];	/* 																	| Offset: 0x28, 0x2C */
+
+	__IO uint32_t AHB1ENR;		/*| RCC AHB1 peripheral clock enable register						| Offset: 0x30 */
+	__IO uint32_t AHB2ENR;		/*| RCC AHB2 peripheral clock enable register						| Offset: 0x34 */
+	__IO uint32_t AHB3ENR;		/*| RCC AHB3 peripheral clock enable register						| Offset: 0x38 */
+	__IO uint32_t RESERVED2;	/* 																	| Offset: 0x3C */
+
+	__IO uint32_t APB1ENR;		/*| RCC APB1 peripheral clock enable register						| Offset: 0x40 */
+	__IO uint32_t APB2ENR;		/*| RCC APB2 peripheral clock enable register						| Offset: 0x44 */
+	__IO uint32_t RESERVED3[2];	/* 																	| Offset: 0x48, 0x4C */
+
+	__IO uint32_t AHB1LPENR;	/*| RCC AHB1 peripheral clock enable in low power mode register		| Offset: 0x50 */
+	__IO uint32_t AHB2LPENR;	/*| RCC AHB2 peripheral clock enable in low power mode register		| Offset: 0x54 */
+	__IO uint32_t AHB3LPENR;	/*| RCC AHB3 peripheral clock enable in low power mode register		| Offset: 0x58 */
+	__IO uint32_t RESERVED4;	/* 																	| Offset: 0x5C */
+
+	__IO uint32_t APB1LPENR;	/*| RCC APB1 peripheral clock enable in low power mode register		| Offset: 0x60 */
+	__IO uint32_t APB2LPENR;	/*| RCC APB2 peripheral clock enabled in low power mode register	| Offset: 0x64 */
+	__IO uint32_t RESERVED5[2];	/* 																	| Offset: 0x68, 0x6C */
+
+	__IO uint32_t BDCR;			/*| RCC Backup domain control register								| Offset: 0x70 */
+	__IO uint32_t CSR;			/*| RCC clock control & status register								| Offset: 0x74 */
+	__IO uint32_t RESERVED6[2];	/* 																	| Offset: 0x78, 0x7C */
+
+	__IO uint32_t SSCGR;		/*| RCC spread spectrum clock generation register					| Offset: 0x80 */
+	__IO uint32_t PLLI2SCFGR;	/*| RCC PLLI2S configuration register								| Offset: 0x84 */
+} RCC_RegDef_t;
 
 
 /* ======================================== Peripheral Definitions ======================================== */
@@ -217,7 +268,7 @@ typedef struct
  * @brief GPIO peripheral definitions (memory-mapped base addresses)
  * Provides typed access to GPIO registers using GPIO_RegDef_t
  */
-#define GPIOA 		    ((GPIO_RegDef_t* const)(GPIOA_BASEADDR))
+#define GPIOA 			((GPIO_RegDef_t* const)(GPIOA_BASEADDR))
 #define GPIOB 			((GPIO_RegDef_t* const)(GPIOB_BASEADDR))
 #define GPIOC 			((GPIO_RegDef_t* const)(GPIOC_BASEADDR))
 #define GPIOD 			((GPIO_RegDef_t* const)(GPIOD_BASEADDR))
