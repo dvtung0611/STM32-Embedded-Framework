@@ -3,7 +3,6 @@
  *
  * Created on: 14/4/2026
  * Author: Van Tung Dinh
- *
  */
 
 #ifndef INC_STM32F407XX_H_
@@ -16,6 +15,8 @@
 /* ======================================== FLASH + SRAM + SYSTEM MEMORY ======================================== */
 
 /**
+ * @brief Base address of FLASH, SRAM and SYSTEM memory
+ *
  * @note
  * Refer to:
  * - STM32F407VG, 				Figure 18. STM32F40xxx memory map
@@ -40,13 +41,14 @@
 #define SYSTEM_MEMORY_SIZE							(30UL * 1024UL)					// 30 KB
 
 
-/* ======================================== APBx and AHBx Peripheral ======================================== */
+/* ======================================== APBx and AHBx Bus Interfaces ======================================== */
 
 /**
+ * @brief Base address of the bus interfaces
+ *
  * @note
  * Refer to:
  * - RM0090 Reference Manual,	Table 1. STM32F4xx register boundary addresses
- *
  */
 #define PERIPHERAL_BASEADDR							(0x40000000UL)
 #define APB1_PERIPHERAL_BASEADDR					(PERIPHERAL_BASEADDR)
@@ -59,10 +61,11 @@
 /* ======================================== AHB1 Peripherals ======================================== */
 
 /**
+ * @brief Base address of the peripherals connected to the AHB1 bus
+ *
  * @note
  * Refer to:
  * - RM0090 Reference Manual,	Table 1. STM32F4xx register boundary addresses
- *
  */
 #define GPIOA_BASEADDR								(AHB1_PERIPHERAL_BASEADDR)
 #define GPIOB_BASEADDR								(0x40020400UL)
@@ -97,10 +100,11 @@
 /* ======================================== APB1 Peripherals ======================================== */
 
 /**
+ * @brief Base address of the peripherals connected to the APB1 bus
+ *
  * @note
  * Refer to:
  * - RM0090 Reference Manual,	Table 1. STM32F4xx register boundary addresses
- *
  */
 #define TIM2_BASEADDR                               (APB1_PERIPHERAL_BASEADDR)
 #define TIM3_BASEADDR                               (0x40000400UL)
@@ -148,10 +152,11 @@
 /* ======================================== APB2 Peripherals ======================================== */
 
 /**
+ * @brief Base address of the peripherals connected to the APB2 bus
+ *
  * @note
  * Refer to:
  * - RM0090 Reference Manual,	Table 1. STM32F4xx register boundary addresses
- *
  */
 #define TIM1_BASEADDR                               (APB2_PERIPHERAL_BASEADDR)
 #define TIM8_BASEADDR                               (0x40010400UL)
