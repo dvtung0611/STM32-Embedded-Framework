@@ -211,4 +211,23 @@ typedef struct
 } GPIO_RegDef_t;
 
 
+/* ======================================== Peripheral Definitions ======================================== */
+
+/**
+ * @brief GPIO peripheral definitions (memory-mapped base addresses)
+ * Provides typed access to GPIO registers using GPIO_RegDef_t
+ */
+#define GPIOA 		    ((GPIO_RegDef_t* const)(GPIOA_BASEADDR))
+#define GPIOB 			((GPIO_RegDef_t* const)(GPIOB_BASEADDR))
+#define GPIOC 			((GPIO_RegDef_t* const)(GPIOC_BASEADDR))
+#define GPIOD 			((GPIO_RegDef_t* const)(GPIOD_BASEADDR))
+#define GPIOE 			((GPIO_RegDef_t* const)(GPIOE_BASEADDR))
+#define GPIOF 			((GPIO_RegDef_t* const)(GPIOF_BASEADDR))
+#define GPIOG 			((GPIO_RegDef_t* const)(GPIOG_BASEADDR))
+#define GPIOH 			((GPIO_RegDef_t* const)(GPIOH_BASEADDR))
+#define GPIOI 			((GPIO_RegDef_t* const)(GPIOI_BASEADDR))
+#define GPIOJ 			((GPIO_RegDef_t* const)(GPIOJ_BASEADDR))
+#define GPIOK 			((GPIO_RegDef_t* const)(GPIOK_BASEADDR))
+
+
 #endif /* INC_STM32F407XX_H_ */
