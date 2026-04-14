@@ -9,6 +9,10 @@
 #ifndef INC_STM32F407XX_H_
 #define INC_STM32F407XX_H_
 
+
+#include <stdint.h>
+
+
 /* ======================================== FLASH + SRAM + SYSTEM MEMORY ======================================== */
 
 /**
@@ -176,6 +180,30 @@
 #define SAI1_BASEADDR                               (0x40015800UL)
 
 #define LTDC_BASEADDR                               (0x40016800UL) // LCD-TFT
+
+
+/* =================================== Peripheral Register Definition Structures  =================================== */
+
+/**
+ * @brief GPIO register definition structure (memory-mapped)
+ *
+ * @note Must match RM0090 register layout and offsets
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 8.4 GPIO registers
+ */
+typedef struct
+{
+	volatile uint32_t MODER;	/*| GPIO port mode register	 				| Offset: 0x00 */
+	volatile uint32_t OTYPER;	/*| GPIO port output type register			| Offset: 0x04 */
+	volatile uint32_t OSPEEDR;	/*| GPIO port output speed register			| Offset: 0x08 */
+	volatile uint32_t PUPDR;	/*| GPIO port pull-up/pull-down register	| Offset: 0x0C */
+	volatile uint32_t IDR;		/*| GPIO port input data register			| Offset: 0x10 */
+	volatile uint32_t ODR;		/*| GPIO port output data register			| Offset: 0x14 */
+	volatile uint32_t BSRR;		/*| GPIO port bit set/reset register		| Offset: 0x18 */
+	volatile uint32_t LCKR;		/*| GPIO port configuration lock register	| Offset: 0x1C */
+	volatile uint32_t AFRL;		/*| GPIO alternate function low register	| Offset: 0x20 */
+	volatile uint32_t AFRH;		/*| GPIO alternate function high register	| Offset: 0x24 */
+} GPIO_RegDef_t;
 
 
 #endif /* INC_STM32F407XX_H_ */
