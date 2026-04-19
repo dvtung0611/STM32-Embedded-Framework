@@ -9,9 +9,11 @@
 #define INC_STM32F407XX_H_
 
 
+/* ================================================== LIBRARY ================================================== */
 #include <stdint.h>
 
 
+/* ================================================== #DEFINE ================================================== */
 #define __IO volatile
 
 
@@ -31,7 +33,7 @@
  * 								Table 5 Flash module organization (STM32F40x and STM32F41x)
  */
 #define FLASH_BASEADDR                          	(0x08000000UL)
-#define FLASH_SIZE									(1014UL * 1024UL)				// 1 MB
+#define FLASH_SIZE									(1024UL * 1024UL)				// 1 MB
 
 #define SRAM_BASEADDR								(0x20000000UL)
 #define SRAM1_BASEADDR								SRAM_BASEADDR
@@ -79,14 +81,12 @@
 #define GPIOG_BASEADDR								(0x40021800UL)
 #define GPIOH_BASEADDR								(0x40021C00UL)
 #define GPIOI_BASEADDR								(0x40022000UL)
-#define GPIOJ_BASEADDR								(0x40022400UL)
-#define GPIOK_BASEADDR								(0x40022800UL)
 
 #define CRC_BASEADDR								(0x40023000UL)
 
 #define RCC_BASEADDR								(0x40023800UL)
 
-#define FLASH_INTERFACE_REG_BASEADDR				(0x40023C00UL)
+#define FLASH_REG_BASEADDR				            (0x40023C00UL)
 
 #define BKPSRAM_BASEADDR							(0x40024000UL)
 
@@ -94,8 +94,6 @@
 #define DMA2_BASEADDR								(0x40026400UL)
 
 #define ETHERNET_MAC_BASEADDR						(0x40028000UL)
-
-#define DMA2D_BASEADDR								(0x4002B000UL)
 
 #define USB_OTG_HS_BASEADDR							(0x40040000UL)
 
@@ -125,12 +123,12 @@
 
 #define IWDG_BASEADDR                               (0x40003000UL)
 
-#define I2S2ext_BASEADDR                            (0x40003400UL)
+#define I2S2EXT_BASEADDR                            (0x40003400UL)
 
 #define SPI2_I2S2_BASEADDR                          (0x40003800UL)
 #define SPI3_I2S3_BASEADDR                          (0x40003C00UL)
 
-#define I2S3ext_BASEADDR                            (0x40004000UL)
+#define I2S3EXT_BASEADDR                            (0x40004000UL)
 
 #define USART2_BASEADDR                             (0x40004400UL)
 #define USART3_BASEADDR                             (0x40004800UL)
@@ -147,9 +145,6 @@
 #define PWR_BASEADDR                                (0x40007000UL)
 
 #define DAC_BASEADDR                                (0x40007400UL)
-
-#define UART7_BASEADDR                              (0x40007800UL)
-#define UART8_BASEADDR                              (0x40007C00UL)
 
 
 /* ======================================== APB2 Peripherals ======================================== */
@@ -172,7 +167,6 @@
 #define SDIO_BASEADDR                               (0x40012C00UL)
 
 #define SPI1_BASEADDR                               (0x40013000UL)
-#define SPI4_BASEADDR                               (0x40013400UL)
 
 #define SYSCFG_BASEADDR                             (0x40013800UL)
 
@@ -181,13 +175,6 @@
 #define TIM9_BASEADDR                               (0x40014000UL)
 #define TIM10_BASEADDR                              (0x40014400UL)
 #define TIM11_BASEADDR                              (0x40014800UL)
-
-#define SPI5_BASEADDR                               (0x40015000UL)
-#define SPI6_BASEADDR                               (0x40015400UL)
-
-#define SAI1_BASEADDR                               (0x40015800UL)
-
-#define LTDC_BASEADDR                               (0x40016800UL) // LCD-TFT
 
 
 /* =================================== Peripheral Register Definition Structures  =================================== */
@@ -277,8 +264,12 @@ typedef struct
 #define GPIOG 			((GPIO_RegDef_t* const)(GPIOG_BASEADDR))
 #define GPIOH 			((GPIO_RegDef_t* const)(GPIOH_BASEADDR))
 #define GPIOI 			((GPIO_RegDef_t* const)(GPIOI_BASEADDR))
-#define GPIOJ 			((GPIO_RegDef_t* const)(GPIOJ_BASEADDR))
-#define GPIOK 			((GPIO_RegDef_t* const)(GPIOK_BASEADDR))
+
+/**
+ * @brief RCC peripheral definitions (memory-mapped base addresses)
+ * Provides typed access to RCC registers using RCC_RegDef_t
+ */
+#define RCC ((RCC_RegDef_t* const)(RCC_BASEADDR))
 
 
 #endif /* INC_STM32F407XX_H_ */
