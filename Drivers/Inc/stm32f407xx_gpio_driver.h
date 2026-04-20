@@ -26,7 +26,7 @@ typedef struct
 {
 	uint8_t GPIO_PinNumber;					/*| Specifies the GPIO pin number */
 	uint8_t GPIO_PinMode;					/*| Specifies the mode of the GPIO pin (Input, Output, Alternate, Analog) */
-	uint8_t GPIO_PinOuputSpeed;				/*| Specifies the speed of the GPIO pin */
+	uint8_t GPIO_PinOutputSpeed;			/*| Specifies the speed of the GPIO pin */
 	uint8_t GPIO_PinPuPdControl;			/*| Specifies Pull-up / Pull-down configuration */
 	uint8_t GPIO_PinOutputType;				/*| Specifies output type (Push-pull / Open-drain) */
 	uint8_t GPIO_PinAltFunMode;				/*| Specifies alternate function mode */
@@ -43,5 +43,25 @@ typedef struct
 	GPIO_Config_t GPIO_PinConfig;			/*| GPIO pin configuration settings */
 } GPIO_Handle_t;
 
+
+/* ================================================== APIs ================================================== */
+
+void GPIO_Init(void);
+void GPIO_DeInit(void);
+
+void GPIO_PeriClock_Control(void);
+
+void GPIO_ReadFrom_InputPin(void);
+void GPIO_ReadFrom_InputPort(void);
+void GPIO_WriteTo_OutputPin(void);
+void GPIO_WriteTo_OutputPort(void);
+void GPIO_Toggle_OutputPin(void);
+
+void GPIO_IRQ_Config(void);
+void GPIO_IRQ_Handling(void);
+void GPIO_IRQ_PriorityConfig(void);
+void GPIO_ClearIRQFlag(void);
+
+void GPIO_LockPinConfig(void);
 
 #endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */
