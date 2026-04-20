@@ -30,7 +30,6 @@ typedef struct
 	uint8_t GPIO_PinPuPdControl;			/*| Specifies Pull-up / Pull-down configuration */
 	uint8_t GPIO_PinOutputType;				/*| Specifies output type (Push-pull / Open-drain) */
 	uint8_t GPIO_PinAltFunMode;				/*| Specifies alternate function mode */
-
 } GPIO_Config_t;
 
 /**
@@ -46,10 +45,21 @@ typedef struct
 
 /* ================================================== APIs ================================================== */
 
+/**
+ * @brief Enable or disable clock for GPIO peripheral
+ *
+ * @param pGPIOx    GPIO port base address (e.g. GPIOA, GPIOB)
+ * @param En_or_DI  ENABLE or DISABLE macro
+ *
+ * @note Controls corresponding bit in RCC_AHB1ENR register
+ * 		 Must enable clock before using GPIO registers
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
+ */
+void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI);
+
 void GPIO_Init(void);
 void GPIO_DeInit(void);
-
-void GPIO_PeriClock_Control(void);
 
 void GPIO_ReadFrom_InputPin(void);
 void GPIO_ReadFrom_InputPort(void);
