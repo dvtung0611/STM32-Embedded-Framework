@@ -113,3 +113,25 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
         }
     }
 }
+
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
+{
+    if (pGPIOx == GPIOA)
+        GPIOA_REG_RESET();
+    if (pGPIOx == GPIOB)
+        GPIOB_REG_RESET();
+    if (pGPIOx == GPIOC)
+        GPIOC_REG_RESET();
+    if (pGPIOx == GPIOD)
+        GPIOD_REG_RESET();
+    if (pGPIOx == GPIOE)
+        GPIOE_REG_RESET();
+    if (pGPIOx == GPIOF)
+        GPIOF_REG_RESET();
+    if (pGPIOx == GPIOG)
+        GPIOG_REG_RESET();
+    if (pGPIOx == GPIOH)
+        GPIOH_REG_RESET();
+    if (pGPIOx == GPIOI)
+        GPIOI_REG_RESET();
+}
