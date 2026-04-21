@@ -242,7 +242,7 @@ void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Va
  * 
  * @note
  * Refer to:
- * - RM0090 Reference Manual, Section 8.4.5 8.4.6 GPIO port output data register (GPIOx_ODR)
+ * - RM0090 Reference Manual, Section 8.4.6 GPIO port output data register (GPIOx_ODR)
  */
 void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
 
@@ -257,6 +257,21 @@ void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
  */
 void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 
+/**
+ * @brief  Lock the configuration of a specific GPIO pin
+ *
+ * @param  pGPIOx     Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * @param  PinNumber  GPIO pin number (0–15)
+ *
+ * @details Locks the configuration of the selected pin by performing
+ *          the required lock sequence on the LCKR register (LCKK bit).
+ *          After locking, GPIO configuration registers cannot be modified
+ *          until the next system reset.
+ *
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 8.4.8 GPIO port configuration lock register (GPIOx_LCKR)
+ */
 void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 
 void GPIO_IRQ_Config(uint8_t IRQ_Number, uint8_t EN_or_DI);

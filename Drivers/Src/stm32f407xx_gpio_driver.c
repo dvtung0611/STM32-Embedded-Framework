@@ -169,3 +169,15 @@ void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 {
     pGPIOx->ODR ^= (1U << PinNumber);
 }
+
+void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
+{
+    pGPIOx->LCKR |= (1U << PinNumber);
+
+    pGPIOx->LCKR |= (1U << 16U);
+    pGPIOx->LCKR &= ~(1U << 16U);
+    pGPIOx->LCKR |= (1U << 16U);
+
+    (void)pGPIOx->LCKR;
+    (void)pGPIOx->LCKR;
+}
