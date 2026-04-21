@@ -56,3 +56,60 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
 			GPIOI_PCLK_DI();
 	}
 }
+
+void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
+{
+    GPIO_RegDef_t *pGPIOx = pGPIO_Handle->pGPIOx;
+    GPIO_Config_t GPIO_PinConfig = pGPIO_Handle->GPIO_PinConfig;
+
+    uint8_t PinNumber = GPIO_PinConfig.GPIO_PinNumber;
+    uint8_t PinMode = GPIO_PinConfig.GPIO_PinMode;
+
+    // 1. Configure the mode of GPIO Pin
+    if (PinMode <= GPIO_PIN_MODE_ANALOG)
+    {
+        pGPIOx->MODER &= ~(3U << (PinNumber * 2U));
+        pGPIOx->MODER |= (PinMode << (PinNumber * 2U));
+    }
+    else
+    {
+        // Interrupt mode
+    }
+
+    // 2. Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
+    if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
+    {
+        uint8_t PinOutputSpeed = GPIO_PinConfig.GPIO_PinOutputSpeed;
+        pGPIOx->OSPEEDR &= ~(3U << (PinNumber * 2U));
+        pGPIOx->OSPEEDR |= (PinOutputSpeed << (PinNumber * 2U));
+    }
+
+    // 3. Configure the Pull-up/Pull-down
+    uint8_t PinPuPd = GPIO_PinConfig.GPIO_PinPuPdControl;
+    pGPIOx->PUPDR &= ~(3U << (PinNumber * 2U));
+    pGPIOx->PUPDR |= (PinPuPd << (PinNumber * 2U));
+
+    // 4. Configure the output type (Push-pull/Open-drain) (if the mode of GPIO pin is output mode or altfn mode)
+    if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
+    {
+        uint8_t PinOutputType = GPIO_PinConfig.GPIO_PinOutputType;
+        pGPIOx->OTYPER &= ~(1U << PinNumber);
+        pGPIOx->OTYPER |= (PinOutputType << PinNumber);
+    }
+
+    // 5. Configure the alternate functionality
+    if (PinMode == GPIO_PIN_MODE_ALTFN)
+    {
+        uint8_t PinAltFuncMode = GPIO_PinConfig.GPIO_PinAltFunMode;
+        if (PinNumber < 8)
+        {
+            pGPIOx->AFRL &= ~(15U << (PinNumber * 4));
+            pGPIOx->AFRL |= (PinAltFuncMode << (PinNumber * 4));
+        }
+        else
+        {
+            pGPIOx->AFRH &= ~(15U << ((PinNumber % 8) * 4));
+            pGPIOx->AFRH |= (PinAltFuncMode << ((PinNumber % 8) * 4));
+        }
+    }
+}
