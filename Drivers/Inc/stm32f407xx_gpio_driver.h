@@ -167,10 +167,42 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI);
  */
 void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
 
-
+/**
+ * @brief Reset the specified GPIO peripheral
+ *
+ * @param pGPIOx Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ *
+ * @details This function resets the selected GPIO port by toggling
+ *          the corresponding reset bit in RCC AHB1 peripheral reset register.
+ *          All GPIO registers will be restored to their default reset values.
+ *
+ * @note   Refer to RM0090 Reference Manual, Section 7.3.5 RCC AHB1 peripheral reset register (RCC_AHB1RSTR)
+ */
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
 
+/**
+ * @brief  Read the logic level from a specific GPIO input pin
+ *
+ * @param  pGPIOx     Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * @param  PinNumber  GPIO pin number (0–15)
+ *
+ * @return uint8_t    Logic level of the pin (0 or 1)
+ *
+ * @details Reads the corresponding bit from the IDR (Input Data Register)
+ *          and returns its value.
+ */
 uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
+
+/**
+ * @brief  Read the logic levels of all GPIO input pins in a port
+ *
+ * @param  pGPIOx  Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ *
+ * @return uint16_t  16-bit value representing all pin states
+ *
+ * @details Returns the full content of the IDR (Input Data Register),
+ *          where each bit corresponds to a GPIO pin.
+ */
 uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
 
 void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);

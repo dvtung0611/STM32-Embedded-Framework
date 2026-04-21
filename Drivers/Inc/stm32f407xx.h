@@ -314,7 +314,6 @@ typedef struct
 #define GPIOH_REG_RESET()           do {(RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7));} while(0);
 #define GPIOI_REG_RESET()           do {(RCC->AHB1RSTR |= (1 << 8)); (RCC->AHB1RSTR &= ~(1 << 8));} while(0);
 
-
 /*
  * @brief Clock enable and disable macros for I2Cx peripherals
  */

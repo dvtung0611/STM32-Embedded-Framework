@@ -135,3 +135,15 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
     if (pGPIOx == GPIOI)
         GPIOI_REG_RESET();
 }
+
+uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber)
+{
+    uint8_t res = (uint8_t)((pGPIOx->IDR >> PinNumber) & 1U);
+    return res;
+}
+
+uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx)
+{
+    uint16_t res = (uint16_t)(pGPIOx->IDR);
+    return res;
+}
