@@ -246,6 +246,15 @@ void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Va
  */
 void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
 
+/**
+ * @brief  Toggle the state of a specific GPIO output pin
+ *
+ * @param  pGPIOx     Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * @param  PinNumber  GPIO pin number (0–15)
+ *
+ * @details Inverts the current logic level of the selected pin by
+ *          XORing the corresponding bit in the ODR (Output Data Register).
+ */
 void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 
 void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);

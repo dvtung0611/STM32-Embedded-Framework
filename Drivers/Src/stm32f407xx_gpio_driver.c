@@ -164,3 +164,8 @@ void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
 {
     pGPIOx->ODR = Value;
 }
+
+void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
+{
+    pGPIOx->ODR ^= (1U << PinNumber);
+}
