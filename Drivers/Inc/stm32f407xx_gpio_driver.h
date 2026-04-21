@@ -58,7 +58,7 @@
 #define GPIO_PIN_MODE_INPUT_RFT             6
 
 /**
- * @GPIO_PIN_OTPS
+ * @GPIO_PIN_OTYPES
  * GPIO pin possible output types
  */
 #define GPIO_PIN_OTYPE_PUSHPULL             0
