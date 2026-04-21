@@ -176,7 +176,9 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
  *          the corresponding reset bit in RCC AHB1 peripheral reset register.
  *          All GPIO registers will be restored to their default reset values.
  *
- * @note   Refer to RM0090 Reference Manual, Section 7.3.5 RCC AHB1 peripheral reset register (RCC_AHB1RSTR)
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 7.3.5 RCC AHB1 peripheral reset register (RCC_AHB1RSTR)
  */
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
 
@@ -190,6 +192,10 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
  *
  * @details Reads the corresponding bit from the IDR (Input Data Register)
  *          and returns its value.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 8.4.5 GPIO port input data register (GPIOx_IDR)
  */
 uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
 
@@ -202,10 +208,42 @@ uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
  *
  * @details Returns the full content of the IDR (Input Data Register),
  *          where each bit corresponds to a GPIO pin.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 8.4.5 GPIO port input data register (GPIOx_IDR)
  */
 uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
 
+/**
+ * @brief  Write a value to a specific GPIO output pin
+ *
+ * @param  pGPIOx     Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * @param  PinNumber  GPIO pin number (0–15)
+ * @param  Value      GPIO_PIN_SET or GPIO_PIN_RESET
+ *
+ * @details Sets or clears the corresponding bit in the ODR (Output Data Register)
+ *          to drive the pin HIGH or LOW.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 8.4.6 GPIO port output data register (GPIOx_ODR)
+ */
 void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);
+
+/**
+ * @brief  Write a value to the entire GPIO output port
+ *
+ * @param  pGPIOx  Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * @param  Value   16-bit value to be written to the port
+ *
+ * @details Writes directly to the ODR (Output Data Register),
+ *          updating all GPIO pins simultaneously.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual, Section 8.4.5 8.4.6 GPIO port output data register (GPIOx_ODR)
+ */
 void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
 
 void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);

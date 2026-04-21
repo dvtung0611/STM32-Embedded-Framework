@@ -147,3 +147,20 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx)
     uint16_t res = (uint16_t)(pGPIOx->IDR);
     return res;
 }
+
+void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value)
+{
+    if (Value == GPIO_PIN_SET)
+    {
+        pGPIOx->ODR |= (1U << PinNumber);
+    }
+    else
+    {
+        pGPIOx->ODR &= ~(1U << PinNumber);
+    }
+}
+
+void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
+{
+    pGPIOx->ODR = Value;
+}
