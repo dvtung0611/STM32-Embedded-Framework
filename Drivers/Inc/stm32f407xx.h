@@ -1,7 +1,7 @@
 /**
  * File name: stm32f407xx.h
  *
- * Created on: 14/4/2026
+ * Created on: 14/04/2026
  * Author: Van Tung Dinh
  */
 
@@ -358,6 +358,10 @@ typedef struct
  */
 #define SYSCFG_PCLK_EN()			(RCC->APB2ENR |= (1U << 14))
 #define SYSCFG_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 14))
+
+
+/* ============================================= Includes Other file ============================================= */
+#include "stm32f407xx_gpio_driver.h"
 
 
 #endif /* INC_STM32F407XX_H_ */
