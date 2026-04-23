@@ -1,5 +1,5 @@
 /*
- * 002_led_button_external.c
+ * 003_led_button_external.c
  *
  * Created on: 22/04/2026
  * Author: Van Tung Dinh
@@ -30,15 +30,15 @@ int main(void)
     gpio_button.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12;
     gpio_button.GPIO_PinConfig.GPIO_PinMode = GPIO_PIN_MODE_INPUT;
 
-	// 2. Enable clock peripheral GPIOA & GPIOB
+	// 3. Enable clock peripheral GPIOA & GPIOB
     GPIO_PeriClock_Control(GPIOA, ENABLE);
 	GPIO_PeriClock_Control(GPIOB, ENABLE);
 
-	// 3. Init gpio_button & gpio_led
+	// 4. Init gpio_button & gpio_led
     GPIO_Init(&gpio_button);
 	GPIO_Init(&gpio_led);
 
-	// 4. LED toggle
+	// 5. LED toggle
 	while (1)
 	{
         if (GPIO_ReadFrom_InputPin(GPIOB, GPIO_PIN_NO_12) == GPIO_PIN_SET)
