@@ -252,6 +252,24 @@ typedef struct
 	__IO uint32_t PLLI2SCFGR;	/*| RCC PLLI2S configuration register								| Offset: 0x84 */
 } RCC_RegDef_t;
 
+/**
+ * @brief EXTI register definition structure (memory-mapped)
+ *
+ * @note Must match RM0090 register layout and offsets
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 12.3 EXTI registers
+ */
+typedef struct
+{
+    __IO uint32_t IMR;      /*!< Interrupt mask register                | Offset: 0x00*/
+    __IO uint32_t EMR;      /*!< Event mask register                    | Offset: 0x04*/
+    __IO uint32_t RTSR;     /*!< Rising trigger selection register      | Offset: 0x08*/
+    __IO uint32_t FTSR;     /*!< Falling trigger selection register     | Offset: 0x0C*/
+    __IO uint32_t SWIER;    /*!< Software interrupt event register      | Offset: 0x10*/
+    __IO uint32_t PR;       /*!< Pending register                       | Offset: 0x14*/
+
+} EXTI_RegDef_t;
+
 
 /* ============================================= Peripheral Definitions ============================================= */
 
@@ -274,6 +292,12 @@ typedef struct
  * Provides typed access to RCC registers using RCC_RegDef_t
  */
 #define RCC ((RCC_RegDef_t* const)(RCC_BASEADDR))
+
+/**
+ * @brief EXTI peripheral definitions (memory-mapped base addresses)
+ * Provides typed access to EXTI registers using EXTI_RegDef_t
+ */
+#define EXTI            ((EXTI_RegDef_t* const)(EXTI_BASEADDR))
 
 
 /* ============================================= Macros Peripherals ============================================= */
