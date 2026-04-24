@@ -6,6 +6,7 @@
  */
 
 /* ================================================== INCLUDES ================================================== */
+
 #include "stm32f407xx_gpio_driver.h"
 
 
@@ -66,14 +67,11 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     uint8_t PinMode = GPIO_PinConfig.GPIO_PinMode;
 
     // 1. Configure the mode of GPIO Pin
-    if (PinMode <= GPIO_PIN_MODE_ANALOG)
+    if (PinMode == GPIO_PIN_MODE_INPUT || PinMode == GPIO_PIN_MODE_OUTPUT ||
+        PinMode == GPIO_PIN_MODE_ANALOG || PinMode == GPIO_PIN_MODE_ALTFN)
     {
         pGPIOx->MODER &= ~(3U << (PinNumber * 2U));
         pGPIOx->MODER |= (PinMode << (PinNumber * 2U));
-    }
-    else
-    {
-        // Interrupt mode
     }
 
     // 2. Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
