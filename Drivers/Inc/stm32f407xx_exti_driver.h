@@ -86,5 +86,13 @@ typedef struct
 
 /* ================================================== APIs ================================================== */
 
+/**
+ * @brief
+ *
+ * @note 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 12.3.1 Interrupt mask register (EXTI_IMR)
+ */
+void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
 
 #endif /* INC_STM32F407XX_EXTI_DRIVER_H_ */
