@@ -278,14 +278,11 @@ typedef struct
  */
 typedef struct
 {
-    __IO uint32_t MEMRMP;           /*!< SYSCFG memory remap register                           | Offset: 0x00 */
-    __IO uint32_t PMC;              /*!< SYSCFG peripheral mode configuration register          | Offset: 0x04 */
-    __IO uint32_t EXTICR1;          /*!< SYSCFG external interrupt configuration register 1     | Offset: 0x08 */
-    __IO uint32_t EXTICR2;          /*!< SYSCFG external interrupt configuration register 2     | Offset: 0x0C */
-    __IO uint32_t EXTICR3;          /*!< SYSCFG external interrupt configuration register 3     | Offset: 0x10 */
-    __IO uint32_t EXTICR4;          /*!< SYSCFG external interrupt configuration register 4     | Offset: 0x14 */
-    __IO uint32_t RESERVED0[2];     /*!<                                                        | Offset: 0x18, 0x1C*/
-    __IO uint32_t CMPCR;            /*!< Compensation cell control register                     | Offset: 0x20 */
+    __IO uint32_t MEMRMP;           /*!< SYSCFG memory remap register                                   | Offset: 0x00 */
+    __IO uint32_t PMC;              /*!< SYSCFG peripheral mode configuration register                  | Offset: 0x04 */
+    __IO uint32_t EXTICR[4];        /*!< SYSCFG external interrupt configuration register 1, 2, 3, 4    | Offset: 0x08 */
+    __IO uint32_t RESERVED0[2];     /*!<                                                                | Offset: 0x18, 0x1C*/
+    __IO uint32_t CMPCR;            /*!< Compensation cell control register                             | Offset: 0x20 */
 } SYSCFG_RegDef_t;
 
 
@@ -407,6 +404,18 @@ typedef struct
 #define SYSCFG_PCLK_EN()			(RCC->APB2ENR |= (1U << 14))
 #define SYSCFG_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 14))
 
+/**
+ * @brief Return port code for given GPIOx base address
+ */
+#define GPIO_BASEADDR_TO_CODE(x)    (   (x == GPIOA) ? 0 :\
+                                        (x == GPIOB) ? 1 :\
+                                        (x == GPIOC) ? 2 :\
+                                        (x == GPIOD) ? 3 :\
+                                        (x == GPIOE) ? 4 :\
+                                        (x == GPIOF) ? 5 :\
+                                        (x == GPIOG) ? 6 :\
+                                        (x == GPIOH) ? 7 :\
+                                        (x == GPIOI) ? 8 :0)
 
 /* ============================================= Includes Other File ============================================= */
 #include "stm32f407xx_gpio_driver.h"
