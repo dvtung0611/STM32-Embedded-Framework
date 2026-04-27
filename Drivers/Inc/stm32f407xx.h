@@ -473,7 +473,7 @@ typedef struct
                                         (x == GPIOF) ? 5 :\
                                         (x == GPIOG) ? 6 :\
                                         (x == GPIOH) ? 7 :\
-                                        (x == GPIOI) ? 8 :0)
+                                        (x == GPIOI) ? 8 : 0xFF)
 
 /**
  * @brief IRQ (Interrupt request) number of STM32F407XX MCU
@@ -564,12 +564,7 @@ typedef struct
 #define IRQ_NO_CRYP                     79   /* CRYP crypto global interrupt */
 #define IRQ_NO_HASH_RNG                 80   /* Hash and RNG global interrupt */
 #define IRQ_NO_FPU                      81   /* FPU global interrupt */
-
-
-/* ============================================= Includes Other File ============================================= */
-
-#include "stm32f407xx_gpio_driver.h"
-#include "stm32f407xx_exti_driver.h"
+#define IRQ_MAX_NUMBER                  81
 
 
 #endif /* INC_STM32F407XX_H_ */
