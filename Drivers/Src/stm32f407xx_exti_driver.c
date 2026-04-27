@@ -77,7 +77,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
 
 void EXTI_ClearPending(uint8_t LineNumber)
 {
-    if (LineNumber > 22)
+    if (LineNumber > EXTI_MAX_LINE)
         return;
 
     EXTI->PR = (1U << LineNumber);
