@@ -16,6 +16,10 @@
 
 /**
  * @EXTI_LINE_NUMBERS
+ * 
+ * @note
+ * 0–15: GPIO
+ * 16–22: Internal lines
  */
 #define EXTI_LINE_0                 (0U)
 #define EXTI_LINE_1                 (1U)
@@ -40,6 +44,7 @@
 #define EXTI_LINE_20                (20U)
 #define EXTI_LINE_21                (21U)
 #define EXTI_LINE_22                (22U)
+#define EXTI_MAX_LINE               (22U)
 
 /**
  * @EXTI_MODES
@@ -87,12 +92,37 @@ typedef struct
 /* ================================================== APIs ================================================== */
 
 /**
- * @brief
- *
- * @note 
+ * @brief Initialize EXTI line configuration
+ * Configures trigger condition (rising/falling edge), selects GPIO port source
+ * for EXTI lines 0–15 via SYSCFG, and enables interrupt delivery through IMR.
+ * 
+ * @param pEXTI_Handle Pointer to EXTI handle structure containing configuration
+ * 
+ * @note Valid EXTI lines: 0–22
+ * EXTI lines 0–15 require GPIO port mapping (SYSCFG->EXTICR)
+ * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 12.3.1 Interrupt mask register (EXTI_IMR)
  */
 void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
+
+/**
+ * @brief Clear pending interrupt flag for a given EXTI line
+ *
+ * @details
+ * Clears the pending bit in EXTI Pending Register (PR)
+ * by writing 1 to the corresponding bit position.
+ *
+ * @param LineNumber   EXTI line number (0–22)
+ *
+ * @note
+ * - Writing '1' clears the pending flag
+ * - Writing '0' has no effect
+ * - Do not use read-modify-write (|=) on this register
+ *
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 12.3.6 Pending register (EXTI_PR)
+ */
+void EXTI_ClearPending(uint8_t LineNumber);
 
 #endif /* INC_STM32F407XX_EXTI_DRIVER_H_ */

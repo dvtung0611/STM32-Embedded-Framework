@@ -13,9 +13,16 @@
 
 void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
 {
+    if (pEXTI_Handle == NULL)
+        return;
+    
     uint8_t LineNumber = pEXTI_Handle->EXTI_Config.EXTI_LineNumber;
     uint8_t Mode = pEXTI_Handle->EXTI_Config.EXTI_Mode;
     uint8_t Trigger = pEXTI_Handle->EXTI_Config.EXTI_Trigger;
+    uint8_t PortCode = pEXTI_Handle->EXTI_Config.EXTI_PortCode;
+
+    if (LineNumber > EXTI_MAX_LINE || Trigger > EXTI_TRIGGER_BOTH || Mode > EXTI_MODE_EVENT)
+        return;
 
     // 1. Configure trigger (clear both first to avoid residual config)
     EXTI->RTSR &= ~(1U << LineNumber);
@@ -37,12 +44,12 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
     // 2. Configure EXTI mode
     if (Mode == EXTI_MODE_INTERRUPT)
     {
-        if (LineNumber > 22)
-            return;
-        else if (LineNumber < 16)
+        if (LineNumber < 16)
         {
+            if (PortCode > GPIO_MAX_PORTCODE)
+                return;
+            
             // 2.1 Map GPIO port to EXTI line (only for lines 0–15)
-            uint8_t PortCode = pEXTI_Handle->EXTI_Config.EXTI_PortCode;
             uint8_t EXTICR_ID = LineNumber / 4, BIT_ID = LineNumber % 4;
 
             SYSCFG_PCLK_EN(); // Enable SYSCFG clock
@@ -57,10 +64,20 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
         }
 
         // 2.2 Enable interrupt delivery
+        EXTI->PR = (1U << LineNumber);
+        EXTI->IMR &= ~(1U << LineNumber);
         EXTI->IMR |= (1U << LineNumber);
     }
     else if (Mode == EXTI_MODE_EVENT)
     {
         // Event mode not implemented yet
     }
+}
+
+void EXTI_ClearPending(uint8_t LineNumber)
+{
+    if (LineNumber > 22)
+        return;
+
+    EXTI->PR = (1U << LineNumber);
 }

@@ -474,6 +474,7 @@ typedef struct
                                         (x == GPIOG) ? 6 :\
                                         (x == GPIOH) ? 7 :\
                                         (x == GPIOI) ? 8 : 0xFF)
+#define GPIO_MAX_PORTCODE           (8U)
 
 /**
  * @brief IRQ (Interrupt request) number of STM32F407XX MCU
