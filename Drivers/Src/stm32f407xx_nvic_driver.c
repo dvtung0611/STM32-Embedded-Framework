@@ -14,7 +14,7 @@
 
 void NVIC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t En_or_DI)
 {
-    if (IRQNumber > NVIC_MAX_IRQ_NUMBER)
+    if (IRQNumber > IRQ_MAX_NUMBER)
         return;
 
     if (En_or_DI == ENABLE)
@@ -33,7 +33,7 @@ void NVIC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t En_or_DI)
 
 void NVIC_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority)
 {
-    if (IRQNumber > NVIC_MAX_IRQ_NUMBER || IRQPriority > NVIC_MAX_PRIORITY)
+    if (IRQNumber > IRQ_MAX_NUMBER || IRQPriority > NVIC_IRQ_MAX_PRIORITY)
         return;
 
     NVIC->IPR[IRQNumber] &= ~(15U << 4U);
