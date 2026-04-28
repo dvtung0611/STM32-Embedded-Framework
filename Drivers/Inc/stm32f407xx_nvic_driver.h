@@ -15,8 +15,26 @@
 
 /* ================================================== MACROS ================================================== */
 
-#define NVIC_MAX_IRQ_NUMBER             (81U)
-#define NVIC_MAX_PRIORITY               (15U)
+/**
+ * @NVIC_PRIORITY_LEVEL
+ */
+#define NVIC_IRQ_PRIORITY_0                 (0U)
+#define NVIC_IRQ_PRIORITY_1                 (1U)
+#define NVIC_IRQ_PRIORITY_2                 (2U)
+#define NVIC_IRQ_PRIORITY_3                 (3U)
+#define NVIC_IRQ_PRIORITY_4                 (4U)
+#define NVIC_IRQ_PRIORITY_5                 (5U)
+#define NVIC_IRQ_PRIORITY_6                 (6U)
+#define NVIC_IRQ_PRIORITY_7                 (7U)
+#define NVIC_IRQ_PRIORITY_8                 (8U)
+#define NVIC_IRQ_PRIORITY_9                 (9U)
+#define NVIC_IRQ_PRIORITY_10                (10U)
+#define NVIC_IRQ_PRIORITY_11                (11U)
+#define NVIC_IRQ_PRIORITY_12                (12U)
+#define NVIC_IRQ_PRIORITY_13                (13U)
+#define NVIC_IRQ_PRIORITY_14                (14U)
+#define NVIC_IRQ_PRIORITY_15                (15U)
+#define NVIC_IRQ_MAX_PRIORITY               (15U)
 
 
 /* ================================================== APIs ================================================== */
