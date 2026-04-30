@@ -572,9 +572,9 @@ typedef struct
 
 /* ============================================= Includes Other File ============================================= */
 
-#include "stm32f407xx_gpio_driver.h"
-#include "stm32f407xx_exti_driver.h"
-#include "stm32f407xx_nvic_driver.h"
+#include "gpio_driver.h"
+#include "exti_driver.h"
+#include "nvic_driver.h"
 
 
 #endif /* INC_STM32F407XX_H_ */

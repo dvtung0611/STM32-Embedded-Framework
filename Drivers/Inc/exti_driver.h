@@ -1,12 +1,12 @@
 /**
- * File name: stm32f407xx_exti_driver.h
+ * File name: exti_driver.h
  *
  * Created on: 24/04/2026
  * Author: Van Tung Dinh
  */
 
-#ifndef INC_STM32F407XX_EXTI_DRIVER_H_
-#define INC_STM32F407XX_EXTI_DRIVER_H_
+#ifndef INC_EXTI_DRIVER_H_
+#define INC_EXTI_DRIVER_H_
 
 /* ================================================== INCLUDES ================================================== */
 
@@ -126,4 +126,4 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
  */
 void EXTI_ClearPending(uint8_t LineNumber);
 
-#endif /* INC_STM32F407XX_EXTI_DRIVER_H_ */
+#endif /* INC_EXTI_DRIVER_H_ */

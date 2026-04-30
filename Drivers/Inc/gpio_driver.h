@@ -1,12 +1,12 @@
 /**
- * File name: stm32f407xx_gpio_driver.h
+ * File name: gpio_driver.h
  *
  * Created on: 20/04/2026
  * Author: Van Tung Dinh
  */
 
-#ifndef INC_STM32F407XX_GPIO_DRIVER_H_
-#define INC_STM32F407XX_GPIO_DRIVER_H_
+#ifndef INC_GPIO_DRIVER_H_
+#define INC_GPIO_DRIVER_H_
 
 /* ================================================== INCLUDES ================================================== */
 
@@ -16,7 +16,7 @@
 /* ================================================== MACROS ================================================== */
 
 /**
- * GPIO pin set or reset macros
+ * @GPIO_PIN_STATE
  */
 #define GPIO_PIN_SET                        (1U)
 #define GPIO_PIN_RESET                      (0u)
@@ -263,4 +263,4 @@ void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
 
 
-#endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */
+#endif /* INC_GPIO_DRIVER_H_ */

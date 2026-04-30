@@ -1,5 +1,5 @@
-/*
- * 001_led_toggle.c
+/**
+ * File name: 001_led_toggle.c
  *
  * Created on: 22/04/2026
  * Author: Van Tung Dinh

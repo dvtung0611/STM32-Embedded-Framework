@@ -1,5 +1,5 @@
 /**
- * File name: stm32f407xx_exti_driver.c
+ * File name: exti_driver.c
  *
  * Created on: 24/04/2026
  * Author: Van Tung Dinh
@@ -7,7 +7,7 @@
 
 /* ================================================== INCLUDES ================================================== */
 
-#include "stm32f407xx_exti_driver.h"
+#include "exti_driver.h"
 
 
 /* ================================================== APIs ================================================== */

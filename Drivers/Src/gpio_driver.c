@@ -1,5 +1,5 @@
 /**
- * File name: stm32f407xx_gpio_driver.c
+ * File name: gpio_driver.c
  *
  * Created on: 20/04/2026
  * Author: Van Tung Dinh
@@ -7,7 +7,7 @@
 
 /* ================================================== INCLUDES ================================================== */
 
-#include "stm32f407xx_gpio_driver.h"
+#include "gpio_driver.h"
 
 
 /* ================================================== APIs ================================================== */

@@ -1,5 +1,5 @@
-/*
- * 002_led_button.c
+/**
+ * File name: 002_led_button.c
  *
  * Created on: 22/04/2026
  * Author: Van Tung Dinh
