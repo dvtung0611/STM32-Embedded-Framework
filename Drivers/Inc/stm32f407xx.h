@@ -400,6 +400,14 @@ typedef struct
  */
 #define SYSCFG          ((SYSCFG_RegDef_t* const)(SYSCFG_BASEADDR))
 
+/**
+ * @brief SPI peripheral definition (memory-mapped base addresses)
+ * Provides typed access to SPI registers using SPI_RegDef_t
+ */
+#define SPI1            ((SPI_RegDef_t* const)(SPI1_BASEADDR))
+#define SPI2            ((SPI_RegDef_t* const)(SPI2_I2S2_BASEADDR))
+#define SPI3            ((SPI_RegDef_t* const)(SPI3_I2S3_BASEADDR))
+
 
 /* ============================================= Macros Peripherals ============================================= */
 
