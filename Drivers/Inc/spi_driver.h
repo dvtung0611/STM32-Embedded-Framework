@@ -16,6 +16,7 @@
 /* ================================================== MACROS ================================================== */
 
 
+
 /* ================================================== DATA TYPES ================================================== */
 
 /**
@@ -35,6 +36,7 @@ typedef struct
     uint8_t SPI_SSM;            /*!< Software slave management */
 } SPI_Config_t;
 
+
 /**
  * @brief SPI handle structure
  * @note This structure is used to configure and operate SPI peripheral.
@@ -48,6 +50,19 @@ typedef struct
 
 
 /* ================================================== APIs ================================================== */
+
+/**
+ * @brief Enable or disable clock for SPI peripheral
+ *
+ * @param pSPIx SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param En_or_DI ENABLE or DISABLE macro
+ *
+ * @note Must enable clock before using SPI registers
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
+ *                              Section 7.3.14 RCC APB2 peripheral clock enable register (RCC_APB2ENR)
+ */
+void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
