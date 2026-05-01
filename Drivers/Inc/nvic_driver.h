@@ -59,6 +59,7 @@
  */
 void NVIC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t En_or_DI);
 
+
 /**
  * @brief Configure priority for a given IRQ
  *

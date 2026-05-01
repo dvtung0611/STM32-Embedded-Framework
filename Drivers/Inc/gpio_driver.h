@@ -21,6 +21,7 @@
 #define GPIO_PIN_SET                        (1U)
 #define GPIO_PIN_RESET                      (0u)
 
+
 /**
  * @GPIO_PIN_NUMBERS
  */
@@ -41,6 +42,7 @@
 #define GPIO_PIN_NO_14                      (14U)
 #define GPIO_PIN_NO_15                      (15U)
 
+
 /**
  * @GPIO_PIN_MODES
  */
@@ -49,11 +51,13 @@
 #define GPIO_PIN_MODE_ALTFN                 (2U)
 #define GPIO_PIN_MODE_ANALOG                (3U)
 
+
 /**
  * @GPIO_PIN_OTYPES
  */
 #define GPIO_PIN_OTYPE_PUSHPULL             (0U)
 #define GPIO_PIN_OTYPE_OPENDRAIN            (1U)
+
 
 /**
  * @GPIO_PIN_SPEEDS
@@ -63,12 +67,14 @@
 #define GPIO_PIN_SPEED_HIGH                 (2U)
 #define GPIO_PIN_SPEED_VERYHIGH             (3U)
 
+
 /**
  * @GPIO_PIN_PUPD
  */
 #define GPIO_PIN_NO_PUPD                    (0U)
 #define GPIO_PIN_PU                         (1U)
 #define GPIO_PIN_PD                         (2U)
+
 
 /**
  * @GPIO_PIN_ALTFN
@@ -107,6 +113,7 @@ typedef struct
 	uint8_t GPIO_PinAltFunMode;		/*!< Specifies alternate function mode           | Possible value: @GPIO_PIN_ALTFN */
 } GPIO_Config_t;
 
+
 /**
  * @brief GPIO handle structure
  * @note  Used to manage GPIO pin configuration and base address
@@ -121,7 +128,6 @@ typedef struct
 /* ================================================== APIs ================================================== */
 
 /**
- * @fn GPIO_PeriClock_Control
  * @brief Enable or disable clock for GPIO peripheral
  *
  * @param pGPIOx GPIO port base address (e.g. GPIOA, GPIOB)
@@ -133,6 +139,7 @@ typedef struct
  * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
  */
 void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI);
+
 
 /**
  * @brief  Initialize and configure a GPIO pin
@@ -155,6 +162,7 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI);
  */
 void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
 
+
 /**
  * @brief Reset the specified GPIO peripheral
  *
@@ -169,6 +177,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
  * - RM0090 Reference Manual, Section 7.3.5 RCC AHB1 peripheral reset register (RCC_AHB1RSTR)
  */
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
+
 
 /**
  * @brief  Read the logic level from a specific GPIO input pin
@@ -187,6 +196,7 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
  */
 uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
 
+
 /**
  * @brief  Read the logic levels of all GPIO input pins in a port
  *
@@ -202,6 +212,7 @@ uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
  * - RM0090 Reference Manual, Section 8.4.5 GPIO port input data register (GPIOx_IDR)
  */
 uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
+
 
 /**
  * @brief  Write a value to a specific GPIO output pin
@@ -219,6 +230,7 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
  */
 void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);
 
+
 /**
  * @brief  Write a value to the entire GPIO output port
  *
@@ -234,6 +246,7 @@ void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Va
  */
 void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
 
+
 /**
  * @brief  Toggle the state of a specific GPIO output pin
  *
@@ -244,6 +257,7 @@ void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
  *          XORing the corresponding bit in the ODR (Output Data Register).
  */
 void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+
 
 /**
  * @brief  Lock the configuration of a specific GPIO pin

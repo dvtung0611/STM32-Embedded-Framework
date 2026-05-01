@@ -47,11 +47,13 @@
 #define EXTI_LINE_22                (22U)
 #define EXTI_MAX_LINE               (22U)
 
+
 /**
  * @EXTI_MODES
  */
 #define EXTI_MODE_INTERRUPT         (0U)
 #define EXTI_MODE_EVENT             (1U)
+
 
 /**
  * @EXTI_TRIGGERS
@@ -77,6 +79,7 @@ typedef struct
     uint8_t EXTI_Trigger;       /*!< Rising / Falling / Both edges          | Possible value: @EXTI_TRIGGERS */
     uint8_t EXTI_PortCode;      /*!< GPIO port code (used for EXTI 0–15)    | Possible value: GPIO_BASEADDR_TO_CODE(x) */
 } EXTI_Config_t;
+
 
 /**
  * @brief EXTI handle structure
@@ -107,6 +110,7 @@ typedef struct
  */
 void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
 
+
 /**
  * @brief Clear pending interrupt flag for a given EXTI line
  *
@@ -125,5 +129,6 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
  * - RM0090 Reference Manual,   Section 12.3.6 Pending register (EXTI_PR)
  */
 void EXTI_ClearPending(uint8_t LineNumber);
+
 
 #endif /* INC_EXTI_DRIVER_H_ */

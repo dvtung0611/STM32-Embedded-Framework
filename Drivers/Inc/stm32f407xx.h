@@ -8,7 +8,6 @@
 #ifndef INC_STM32F407XX_H_
 #define INC_STM32F407XX_H_
 
-
 /* ================================================== INCLUDES ================================================== */
 
 #include <stdint.h>
@@ -16,12 +15,14 @@
 
 
 /* ================================================== MACROS ================================================== */
+
 #define __IO 			volatile
 
 #define ENABLE			1
 #define DISABLE			0
 #define SET				1
 #define RESET			0
+
 
 /* ======================================== FLASH + SRAM + SYSTEM MEMORY ======================================== */
 
@@ -264,6 +265,7 @@ typedef struct
 	__IO uint32_t AFRH;		/*!< GPIO alternate function high register	| Offset: 0x24 */
 } GPIO_RegDef_t;
 
+
 /**
  * @brief RCC register definition structure (memory-mapped)
  *
@@ -312,6 +314,7 @@ typedef struct
 	__IO uint32_t PLLI2SCFGR;	/*!< RCC PLLI2S configuration register								| Offset: 0x84 */
 } RCC_RegDef_t;
 
+
 /**
  * @brief EXTI register definition structure (memory-mapped)
  *
@@ -329,6 +332,7 @@ typedef struct
     __IO uint32_t PR;       /*!< Pending register                       | Offset: 0x14 */
 } EXTI_RegDef_t;
 
+
 /**
  * @brief SYSCFG register definition structure (memory-mapped)
  *
@@ -344,6 +348,7 @@ typedef struct
     __IO uint32_t RESERVED0[2];     /*!<                                                                | Offset: 0x18, 0x1C*/
     __IO uint32_t CMPCR;            /*!< Compensation cell control register                             | Offset: 0x20 */
 } SYSCFG_RegDef_t;
+
 
 /**
  * @brief SPI register definition structure (memory-mapped)
@@ -382,11 +387,13 @@ typedef struct
 #define GPIOH 			((GPIO_RegDef_t* const)(GPIOH_BASEADDR))
 #define GPIOI 			((GPIO_RegDef_t* const)(GPIOI_BASEADDR))
 
+
 /**
  * @brief RCC peripheral definition (memory-mapped base addresses)
  * Provides typed access to RCC registers using RCC_RegDef_t
  */
 #define RCC ((RCC_RegDef_t* const)(RCC_BASEADDR))
+
 
 /**
  * @brief EXTI peripheral definition (memory-mapped base addresses)
@@ -394,11 +401,13 @@ typedef struct
  */
 #define EXTI            ((EXTI_RegDef_t* const)(EXTI_BASEADDR))
 
+
 /**
  * @brief SYSCFG peripheral definition (memory-mapped base addresses)
  * Provides typed access to SYSCFG registers using SYSCFG_RegDef_t
  */
 #define SYSCFG          ((SYSCFG_RegDef_t* const)(SYSCFG_BASEADDR))
+
 
 /**
  * @brief SPI peripheral definition (memory-mapped base addresses)
@@ -434,6 +443,7 @@ typedef struct
 #define GPIOH_PCLK_DI()				(RCC->AHB1ENR &= ~(1U << 7))
 #define GPIOI_PCLK_DI()				(RCC->AHB1ENR &= ~(1U << 8))
 
+
 /**
  * @brief Macros to reset GPIOx peripherals
  */
@@ -447,6 +457,7 @@ typedef struct
 #define GPIOH_REG_RESET()           do {(RCC->AHB1RSTR |= (1U << 7)); (RCC->AHB1RSTR &= ~(1U << 7));} while(0)
 #define GPIOI_REG_RESET()           do {(RCC->AHB1RSTR |= (1U << 8)); (RCC->AHB1RSTR &= ~(1U << 8));} while(0)
 
+
 /**
  * @brief Clock enable and disable macros for I2Cx peripherals
  */
@@ -458,6 +469,7 @@ typedef struct
 #define I2C2_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 22))
 #define I2C3_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 23))
 
+
 /**
  * @brief Clock enable and disable macros for SPIx peripherals
  */
@@ -468,6 +480,7 @@ typedef struct
 #define SPI1_PCLK_DI()				(RCC->APB2ENR &= ~(1U << 12))
 #define SPI2_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 14))
 #define SPI3_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 15))
+
 
 /**
  * @brief Clock enable and disable macros for USARTx and UARTx peripherals
@@ -486,11 +499,13 @@ typedef struct
 #define UART4_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 19))
 #define UART5_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 20))
 
+
 /**
  * @brief Clock enable and disable macros for SYSCFG peripheral
  */
 #define SYSCFG_PCLK_EN()			(RCC->APB2ENR |= (1U << 14))
 #define SYSCFG_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 14))
+
 
 /**
  * @brief Return port code for given GPIOx base address
@@ -505,6 +520,7 @@ typedef struct
                                         (x == GPIOH) ? 7 :\
                                         (x == GPIOI) ? 8 : 0xFF)
 #define GPIO_MAX_PORTCODE           (8U)
+
 
 /**
  * @brief IRQ (Interrupt request) number of STM32F407XX MCU
