@@ -345,6 +345,26 @@ typedef struct
     __IO uint32_t CMPCR;            /*!< Compensation cell control register                             | Offset: 0x20 */
 } SYSCFG_RegDef_t;
 
+/**
+ * @brief SPI register definition structure (memory-mapped)
+ * 
+ * @note Must match RM0090 register layout and offsets
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 28.5 SPI and I2S register
+ */
+typedef struct 
+{
+    __IO uint32_t CR1;          /*!< SPI control register 1 (not used in I2S mode)          | Offset: 0x00 */
+    __IO uint32_t CR2;          /*!< SPI control register 2                                 | Offset: 0x04 */
+    __IO uint32_t SR;           /*!< SPI status register                                    | Offset: 0x08 */
+    __IO uint32_t DR;           /*!< SPI data register                                      | Offset: 0x0C */
+    __IO uint32_t CRCPR;        /*!< SPI CRC polynomial register (not used in I2S mode)     | Offset: 0x10 */
+    __IO uint32_t RXCRCR;       /*!< SPI RX CRC register (not used in I2S mode)             | Offset: 0x14 */
+    __IO uint32_t TXCRCR;       /*!< SPI TX CRC register (not used in I2S mode)             | Offset: 0x18 */
+    __IO uint32_t I2SCFGR;      /*!< SPI_I2S configuration register                         | Offset: 0x1C */
+    __IO uint32_t I2SPR;        /*!< SPI_I2S prescaler register                             | Offset: 0x20 */
+} SPI_RegDef_t;
+
 
 /* ============================================= Peripheral Definitions (MCU) ============================================= */
 
