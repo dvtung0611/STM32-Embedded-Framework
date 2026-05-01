@@ -65,4 +65,18 @@ typedef struct
 void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
 
 
+/**
+ * @brief Reset SPI peripheral to default state
+ *
+ * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
+ *
+ * @note This function resets the selected SPI peripheral using RCC reset register.
+ *       After reset, all SPI registers return to default values.
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.8 RCC APB1 peripheral reset register (RCC_APB1RSTR)
+ *                              Section 7.3.9 RCC APB2 peripheral reset register (RCC_APB2RSTR)
+ */
+void SPI_DeInit(SPI_RegDef_t *pSPIx);
+
+
 #endif /* INC_SPI_DRIVER_H_ */

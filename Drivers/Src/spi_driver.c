@@ -33,3 +33,14 @@ void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI)
             SPI3_PCLK_DI();
     }
 }
+
+
+void SPI_DeInit(SPI_RegDef_t *pSPIx)
+{
+    if (pSPIx == SPI1)
+        SPI1_REG_RESET();
+    if (pSPIx == SPI2)
+        SPI2_REG_RESET();
+    if (pSPIx == SPI3)
+        SPI3_REG_RESET();
+}
