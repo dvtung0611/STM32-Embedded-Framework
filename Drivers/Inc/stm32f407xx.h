@@ -483,6 +483,14 @@ typedef struct
 
 
 /**
+ * @brief Macros to reset SPIx peripherals
+ */
+#define SPI1_REG_RESET()            do {(RCC->APB2RSTR |= (1U << 12)); (RCC->APB2RSTR &= ~(1U << 12));} while(0)
+#define SPI2_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 14)); (RCC->APB1RSTR &= ~(1U << 14));} while(0)
+#define SPI3_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 15)); (RCC->APB1RSTR &= ~(1U << 15));} while(0)
+
+
+/**
  * @brief Clock enable and disable macros for USARTx and UARTx peripherals
  */
 #define USART1_PCLK_EN()			(RCC->APB2ENR |= (1U << 4))
