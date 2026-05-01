@@ -23,7 +23,7 @@
 
 
 /**
- * @GPIO_PIN_NUMBERS
+ * @GPIO_PIN_NUMBER
  */
 #define GPIO_PIN_NO_0                       (0U)
 #define GPIO_PIN_NO_1                       (1U)
@@ -44,7 +44,7 @@
 
 
 /**
- * @GPIO_PIN_MODES
+ * @GPIO_PIN_MODE
  */
 #define GPIO_PIN_MODE_INPUT                 (0U)
 #define GPIO_PIN_MODE_OUTPUT                (1U)
@@ -53,14 +53,14 @@
 
 
 /**
- * @GPIO_PIN_OTYPES
+ * @GPIO_PIN_OTYPE
  */
 #define GPIO_PIN_OTYPE_PUSHPULL             (0U)
 #define GPIO_PIN_OTYPE_OPENDRAIN            (1U)
 
 
 /**
- * @GPIO_PIN_SPEEDS
+ * @GPIO_PIN_SPEED
  */
 #define GPIO_PIN_SPEED_LOW                  (0U)
 #define GPIO_PIN_SPEED_MEDIUM               (1U)
@@ -105,11 +105,11 @@
  */
 typedef struct
 {
-	uint8_t GPIO_PinNumber;			/*!< Specifies the GPIO pin number               | Possible value: @GPIO_PIN_NUMBERS */
-	uint8_t GPIO_PinMode;			/*!< Specifies the mode of the GPIO pin          | Possible value: @GPIO_PIN_MODES */
-	uint8_t GPIO_PinOutputSpeed;	/*!< Specifies the speed of the GPIO pin         | Possible value: @GPIO_PIN_SPEEDS */
+	uint8_t GPIO_PinNumber;			/*!< Specifies the GPIO pin number               | Possible value: @GPIO_PIN_NUMBER */
+	uint8_t GPIO_PinMode;			/*!< Specifies the mode of the GPIO pin          | Possible value: @GPIO_PIN_MODE */
+	uint8_t GPIO_PinOutputSpeed;	/*!< Specifies the speed of the GPIO pin         | Possible value: @GPIO_PIN_SPEED */
 	uint8_t GPIO_PinPuPdControl;	/*!< Specifies Pull-up/Pull-down configuration   | Possible value: @GPIO_PIN_PUPD */
-	uint8_t GPIO_PinOutputType;		/*!< Specifies output type                       | Possible value: @GPIO_PIN_OTPS */
+	uint8_t GPIO_PinOutputType;		/*!< Specifies output type                       | Possible value: @GPIO_PIN_OTYPE */
 	uint8_t GPIO_PinAltFunMode;		/*!< Specifies alternate function mode           | Possible value: @GPIO_PIN_ALTFN */
 } GPIO_Config_t;
 
@@ -133,8 +133,7 @@ typedef struct
  * @param pGPIOx GPIO port base address (e.g. GPIOA, GPIOB)
  * @param En_or_DI ENABLE or DISABLE macro
  *
- * @note Controls corresponding bit in RCC_AHB1ENR register
- * 		 Must enable clock before using GPIO registers
+ * @note Must enable clock before using GPIO registers
  * Refer to:
  * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
  */
@@ -168,9 +167,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
  *
  * @param pGPIOx Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
  *
- * @details This function resets the selected GPIO port by toggling
- *          the corresponding reset bit in RCC AHB1 peripheral reset register.
- *          All GPIO registers will be restored to their default reset values.
+ * @details All GPIO registers will be restored to their default reset values.
  *
  * @note
  * Refer to:
@@ -204,8 +201,7 @@ uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
  *
  * @return uint16_t  16-bit value representing all pin states
  *
- * @details Returns the full content of the IDR (Input Data Register),
- *          where each bit corresponds to a GPIO pin.
+ * @details Returns the full content of the IDR (Input Data Register)
  * 
  * @note
  * Refer to:
@@ -237,8 +233,7 @@ void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Va
  * @param  pGPIOx  Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
  * @param  Value   16-bit value to be written to the port
  *
- * @details Writes directly to the ODR (Output Data Register),
- *          updating all GPIO pins simultaneously.
+ * @details Writes directly to the ODR (Output Data Register)
  * 
  * @note
  * Refer to:
