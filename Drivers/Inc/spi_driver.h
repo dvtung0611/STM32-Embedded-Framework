@@ -72,6 +72,53 @@
 #define SPI_SSM_ENABLE                          (1U)
 
 
+/* ============================================= Bit Position Definition of SPI Peripheral ============================================= */
+
+/**
+ * @SPI_CR1
+ */
+#define SPI_CR1_CPHA            (0U)    /*!< Clock phase                            | Bit 0 */
+#define SPI_CR1_CPOL            (1U)    /*!< Clock polarity                         | Bit 1 */
+#define SPI_CR1_MSTR            (2U)    /*!< Master selection                       | Bit 2 */
+#define SPI_CR1_BR              (3U)    /*!< Baud rate control                      | Bit 5:3 */
+#define SPI_CR1_SPE             (6U)    /*!< SPI enable                             | Bit 6 */
+#define SPI_CR1_LSBFIRST        (7U)    /*!< LSB/MSB transmission order             | Bit 7 */
+#define SPI_CR1_SSI             (8U)    /*!< Internal slave select                  | Bit 8 */
+#define SPI_CR1_SSM             (9U)    /*!< Software slave management              | Bit 9 */
+#define SPI_CR1_RXONLY          (10U)   /*!< Receive only                           | Bit 10 */
+#define SPI_CR1_DFF             (11U)   /*!< Data frame format                      | Bit 11 */
+#define SPI_CR1_CRCNEXT         (12U)   /*!< CRC transfer next                      | Bit 12 */
+#define SPI_CR1_CRCEN           (13U)   /*!< Hardware CRC calculation enable        | Bit 13 */
+#define SPI_CR1_BIDIOE          (14U)   /*!< Output enable in bidirectional mode    | Bit 14 */
+#define SPI_CR1_BIDIMODE        (15U)   /*!< Bidirectional data mode enable         | Bit 15 */
+
+
+/**
+ * @SPI_CR2
+ */
+#define SPI_CR2_RXDMAEN         (0U)    /*!< Rx buffer DMA enable                   | Bit 0 */
+#define SPI_CR2_TXDMAEN         (1U)    /*!< Tx buffer DMA enable                   | Bit 1 */
+#define SPI_CR2_SSOE            (2U)    /*!< SS output enable                       | Bit 2 */
+#define SPI_CR2_FRF             (4U)    /*!< Frame format (Motorola/TI mode)        | Bit 4 */
+#define SPI_CR2_ERRIE           (5U)    /*!< Error interrupt enable                 | Bit 5 */
+#define SPI_CR2_RXNEIE          (6U)    /*!< RX buffer not empty interrupt enable   | Bit 6 */
+#define SPI_CR2_TXEIE           (7U)    /*!< Tx buffer empty interrupt enable       | Bit 7 */
+
+
+/**
+ * @SPI_SR
+ */
+#define SPI_SR_RXNE             (0U)    /*!< Receive buffer not empty   | Bit 0 */
+#define SPI_SR_TXE              (1U)    /*!< Transmit buffer empty      | Bit 1 */
+#define SPI_SR_CHSIDE           (2U)    /*!< Channel side               | Bit 2 */
+#define SPI_SR_UDR              (3U)    /*!< Underrun flag              | Bit 3 */
+#define SPI_SR_CRCERR           (4U)    /*!< CRC error flag             | Bit 4 */
+#define SPI_SR_MODF             (5U)    /*!< Mode fault                 | Bit 5 */
+#define SPI_SR_OVR              (6U)    /*!< Overrun flag               | Bit 6 */
+#define SPI_SR_BSY              (7U)    /*!< Busy flag                  | Bit 7 */
+#define SPI_SR_FRE              (8U)    /*!< Frame format error         | Bit 8 */
+
+
 /* ================================================== DATA TYPES ================================================== */
 
 /**
