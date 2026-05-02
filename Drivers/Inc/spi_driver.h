@@ -15,6 +15,61 @@
 
 /* ================================================== MACROS ================================================== */
 
+/**
+ * @SPI_DEVICE_MODE
+ */
+#define SPI_DEVICE_MODE_SLAVE                   (0U)
+#define SPI_DEVICE_MODE_MASTER                  (1U)
+
+
+/**
+ * @SPI_BUS_CONFIG
+ */
+#define SPI_BUSCONFIG_FULL_DUPLEX               (0U)
+#define SPI_BUSCONFIG_HALF_DUPLEX               (1U)
+#define SPI_BUSCONFIG_TXONLY                    (2U)
+#define SPI_BUSCONFIG_RXONLY                    (3U)
+
+
+/**
+ * @SPI_SCLK_SPEED
+ */
+#define SPI_SCLK_SPEED_DIV_2                    (0U)
+#define SPI_SCLK_SPEED_DIV_4                    (1U)
+#define SPI_SCLK_SPEED_DIV_8                    (2U)
+#define SPI_SCLK_SPEED_DIV_16                   (3U)
+#define SPI_SCLK_SPEED_DIV_32                   (4U)
+#define SPI_SCLK_SPEED_DIV_64                   (5U)
+#define SPI_SCLK_SPEED_DIV_128                  (6U)
+#define SPI_SCLK_SPEED_DIV_256                  (7U)
+
+
+/**
+ * @SPI_DATA_FRAME_FORMAT
+ */
+#define SPI_DFF_8BITS                           (0U)
+#define SPI_DFF_16BITS                          (1U)
+
+
+/**
+ * @SPI_CLOCK_POLARITY
+ */
+#define SPI_CPOL_LOW                            (0U)
+#define SPI_CPOL_HIGH                           (1U)
+
+
+/**
+ * @SPI_CLOCK_PHASE
+ */
+#define SPI_CPHA_FIRST_CLK                      (0U)
+#define SPI_CPHA_SECOND_CLK                     (1U)
+
+
+/**
+ * @SPI_SOFTWARE_SLAVE_MANAGEMENT
+ */
+#define SPI_SSM_DISABLE                         (0U)
+#define SPI_SSM_ENABLE                          (1U)
 
 
 /* ================================================== DATA TYPES ================================================== */
@@ -27,13 +82,13 @@
  */
 typedef struct
 {
-    uint8_t SPI_DeviceMode;     /*!< Device mode selection*/
-    uint8_t SPI_BusConfig;      /*!< Bus configuration */
-    uint8_t SPI_SCLKSpeed;      /*!< Serial clock speed (baud rate prescaler) */
-    uint8_t SPI_DFF;            /*!< Data frame format */
-    uint8_t SPI_CPOL;           /*!< Clock polarity */
-    uint8_t SPI_CPHA;           /*!< Clock phase */
-    uint8_t SPI_SSM;            /*!< Software slave management */
+    uint8_t SPI_DeviceMode;     /*!< Device mode selection                          | Possible value: @SPI_DEVICE_MODE */
+    uint8_t SPI_BusConfig;      /*!< Bus configuration                              | Possible value: @SPI_BUS_CONFIG */
+    uint8_t SPI_SCLKSpeed;      /*!< Serial clock speed (baud rate prescaler)       | Possible value: @SPI_SCLK_SPEED */
+    uint8_t SPI_DFF;            /*!< Data frame format                              | Possible value: @SPI_DATA_FRAME_FORMAT */
+    uint8_t SPI_CPOL;           /*!< Clock polarity                                 | Possible value: @SPI_CLOCK_POLARITY */
+    uint8_t SPI_CPHA;           /*!< Clock phase                                    | Possible value: @SPI_CLOCK_PHASE */
+    uint8_t SPI_SSM;            /*!< Software slave management                      | Possible value: @SPI_SOFTWARE_SLAVE_MANAGEMENT */
 } SPI_Config_t;
 
 
