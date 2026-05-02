@@ -124,6 +124,220 @@
 #define GPIO_AF15                           (15U)
 
 
+/* ============================================= Bit Position Definition of GPIO Peripheral ============================================= */
+
+/**
+ * @GPIO_MODER
+ */
+#define GPIO_MODER_MODER0                  (0U)
+#define GPIO_MODER_MODER1                  (2U)
+#define GPIO_MODER_MODER2                  (4U)
+#define GPIO_MODER_MODER3                  (6U)
+#define GPIO_MODER_MODER4                  (8U)
+#define GPIO_MODER_MODER5                  (10U)
+#define GPIO_MODER_MODER6                  (12U)
+#define GPIO_MODER_MODER7                  (14U)
+#define GPIO_MODER_MODER8                  (16U)
+#define GPIO_MODER_MODER9                  (18U)
+#define GPIO_MODER_MODER10                 (20U)
+#define GPIO_MODER_MODER11                 (22U)
+#define GPIO_MODER_MODER12                 (24U)
+#define GPIO_MODER_MODER13                 (26U)
+#define GPIO_MODER_MODER14                 (28U)
+#define GPIO_MODER_MODER15                 (30U)
+
+
+/**
+ * @GPIO_OTYPER
+ */
+#define GPIO_OTYPER_OT0                    (0U)
+#define GPIO_OTYPER_OT1                    (1U)
+#define GPIO_OTYPER_OT2                    (2U)
+#define GPIO_OTYPER_OT3                    (3U)
+#define GPIO_OTYPER_OT4                    (4U)
+#define GPIO_OTYPER_OT5                    (5U)
+#define GPIO_OTYPER_OT6                    (6U)
+#define GPIO_OTYPER_OT7                    (7U)
+#define GPIO_OTYPER_OT8                    (8U)
+#define GPIO_OTYPER_OT9                    (9U)
+#define GPIO_OTYPER_OT10                   (10U)
+#define GPIO_OTYPER_OT11                   (11U)
+#define GPIO_OTYPER_OT12                   (12U)
+#define GPIO_OTYPER_OT13                   (13U)
+#define GPIO_OTYPER_OT14                   (14U)
+#define GPIO_OTYPER_OT15                   (15U)
+
+
+/**
+ * @GPIO_OSPEEDR
+ */
+#define GPIO_OSPEEDR_OSPEEDR0              (0U)
+#define GPIO_OSPEEDR_OSPEEDR1              (2U)
+#define GPIO_OSPEEDR_OSPEEDR2              (4U)
+#define GPIO_OSPEEDR_OSPEEDR3              (6U)
+#define GPIO_OSPEEDR_OSPEEDR4              (8U)
+#define GPIO_OSPEEDR_OSPEEDR5              (10U)
+#define GPIO_OSPEEDR_OSPEEDR6              (12U)
+#define GPIO_OSPEEDR_OSPEEDR7              (14U)
+#define GPIO_OSPEEDR_OSPEEDR8              (16U)
+#define GPIO_OSPEEDR_OSPEEDR9              (18U)
+#define GPIO_OSPEEDR_OSPEEDR10             (20U)
+#define GPIO_OSPEEDR_OSPEEDR11             (22U)
+#define GPIO_OSPEEDR_OSPEEDR12             (24U)
+#define GPIO_OSPEEDR_OSPEEDR13             (26U)
+#define GPIO_OSPEEDR_OSPEEDR14             (28U)
+#define GPIO_OSPEEDR_OSPEEDR15             (30U)
+
+
+/**
+ * @GPIO_PUPDR
+ */
+#define GPIO_PUPDR_PUPDR0                  (0U)
+#define GPIO_PUPDR_PUPDR1                  (2U)
+#define GPIO_PUPDR_PUPDR2                  (4U)
+#define GPIO_PUPDR_PUPDR3                  (6U)
+#define GPIO_PUPDR_PUPDR4                  (8U)
+#define GPIO_PUPDR_PUPDR5                  (10U)
+#define GPIO_PUPDR_PUPDR6                  (12U)
+#define GPIO_PUPDR_PUPDR7                  (14U)
+#define GPIO_PUPDR_PUPDR8                  (16U)
+#define GPIO_PUPDR_PUPDR9                  (18U)
+#define GPIO_PUPDR_PUPDR10                 (20U)
+#define GPIO_PUPDR_PUPDR11                 (22U)
+#define GPIO_PUPDR_PUPDR12                 (24U)
+#define GPIO_PUPDR_PUPDR13                 (26U)
+#define GPIO_PUPDR_PUPDR14                 (28U)
+#define GPIO_PUPDR_PUPDR15                 (30U)
+
+
+/**
+ * @GPIO_IDR
+ */
+#define GPIO_IDR_IDR0                      (0U)
+#define GPIO_IDR_IDR1                      (1U)
+#define GPIO_IDR_IDR2                      (2U)
+#define GPIO_IDR_IDR3                      (3U)
+#define GPIO_IDR_IDR4                      (4U)
+#define GPIO_IDR_IDR5                      (5U)
+#define GPIO_IDR_IDR6                      (6U)
+#define GPIO_IDR_IDR7                      (7U)
+#define GPIO_IDR_IDR8                      (8U)
+#define GPIO_IDR_IDR9                      (9U)
+#define GPIO_IDR_IDR10                     (10U)
+#define GPIO_IDR_IDR11                     (11U)
+#define GPIO_IDR_IDR12                     (12U)
+#define GPIO_IDR_IDR13                     (13U)
+#define GPIO_IDR_IDR14                     (14U)
+#define GPIO_IDR_IDR15                     (15U)
+
+
+/**
+ * @GPIO_ODR
+ */
+#define GPIO_ODR_ODR0                      (0U)
+#define GPIO_ODR_ODR1                      (1U)
+#define GPIO_ODR_ODR2                      (2U)
+#define GPIO_ODR_ODR3                      (3U)
+#define GPIO_ODR_ODR4                      (4U)
+#define GPIO_ODR_ODR5                      (5U)
+#define GPIO_ODR_ODR6                      (6U)
+#define GPIO_ODR_ODR7                      (7U)
+#define GPIO_ODR_ODR8                      (8U)
+#define GPIO_ODR_ODR9                      (9U)
+#define GPIO_ODR_ODR10                     (10U)
+#define GPIO_ODR_ODR11                     (11U)
+#define GPIO_ODR_ODR12                     (12U)
+#define GPIO_ODR_ODR13                     (13U)
+#define GPIO_ODR_ODR14                     (14U)
+#define GPIO_ODR_ODR15                     (15U)
+
+
+/**
+ * @GPIO_BSRR
+ */
+#define GPIO_BSRR_BS0                      (0U)
+#define GPIO_BSRR_BS1                      (1U)
+#define GPIO_BSRR_BS2                      (2U)
+#define GPIO_BSRR_BS3                      (3U)
+#define GPIO_BSRR_BS4                      (4U)
+#define GPIO_BSRR_BS5                      (5U)
+#define GPIO_BSRR_BS6                      (6U)
+#define GPIO_BSRR_BS7                      (7U)
+#define GPIO_BSRR_BS8                      (8U)
+#define GPIO_BSRR_BS9                      (9U)
+#define GPIO_BSRR_BS10                     (10U)
+#define GPIO_BSRR_BS11                     (11U)
+#define GPIO_BSRR_BS12                     (12U)
+#define GPIO_BSRR_BS13                     (13U)
+#define GPIO_BSRR_BS14                     (14U)
+#define GPIO_BSRR_BS15                     (15U)
+
+#define GPIO_BSRR_BR0                      (16U)
+#define GPIO_BSRR_BR1                      (17U)
+#define GPIO_BSRR_BR2                      (18U)
+#define GPIO_BSRR_BR3                      (19U)
+#define GPIO_BSRR_BR4                      (20U)
+#define GPIO_BSRR_BR5                      (21U)
+#define GPIO_BSRR_BR6                      (22U)
+#define GPIO_BSRR_BR7                      (23U)
+#define GPIO_BSRR_BR8                      (24U)
+#define GPIO_BSRR_BR9                      (25U)
+#define GPIO_BSRR_BR10                     (26U)
+#define GPIO_BSRR_BR11                     (27U)
+#define GPIO_BSRR_BR12                     (28U)
+#define GPIO_BSRR_BR13                     (29U)
+#define GPIO_BSRR_BR14                     (30U)
+#define GPIO_BSRR_BR15                     (31U)
+
+
+/**
+ * @GPIO_LCKR
+ */
+#define GPIO_LCKR_LCK0                     (0U)
+#define GPIO_LCKR_LCK1                     (1U)
+#define GPIO_LCKR_LCK2                     (2U)
+#define GPIO_LCKR_LCK3                     (3U)
+#define GPIO_LCKR_LCK4                     (4U)
+#define GPIO_LCKR_LCK5                     (5U)
+#define GPIO_LCKR_LCK6                     (6U)
+#define GPIO_LCKR_LCK7                     (7U)
+#define GPIO_LCKR_LCK8                     (8U)
+#define GPIO_LCKR_LCK9                     (9U)
+#define GPIO_LCKR_LCK10                    (10U)
+#define GPIO_LCKR_LCK11                    (11U)
+#define GPIO_LCKR_LCK12                    (12U)
+#define GPIO_LCKR_LCK13                    (13U)
+#define GPIO_LCKR_LCK14                    (14U)
+#define GPIO_LCKR_LCK15                    (15U)
+#define GPIO_LCKR_LCKK                     (16U)
+
+
+/**
+ * @GPIO_AFRL
+ */
+#define GPIO_AFRL_AFRL0                    (0U)
+#define GPIO_AFRL_AFRL1                    (4U)
+#define GPIO_AFRL_AFRL2                    (8U)
+#define GPIO_AFRL_AFRL3                    (12U)
+#define GPIO_AFRL_AFRL4                    (16U)
+#define GPIO_AFRL_AFRL5                    (20U)
+#define GPIO_AFRL_AFRL6                    (24U)
+#define GPIO_AFRL_AFRL7                    (28U)
+
+
+/**
+ * @GPIO_AFRH
+ */
+#define GPIO_AFRH_AFRH8                    (0U)
+#define GPIO_AFRH_AFRH9                    (4U)
+#define GPIO_AFRH_AFRH10                   (8U)
+#define GPIO_AFRH_AFRH11                   (12U)
+#define GPIO_AFRH_AFRH12                   (16U)
+#define GPIO_AFRH_AFRH13                   (20U)
+#define GPIO_AFRH_AFRH14                   (24U)
+#define GPIO_AFRH_AFRH15                   (28U)
+
+
 /* ================================================== DATA TYPES ================================================== */
 
 /**
