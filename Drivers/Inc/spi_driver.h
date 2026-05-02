@@ -121,6 +121,30 @@ void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
 
 
 /**
+ * @brief Initialize and configure the SPI peripheral
+ * 
+ * @param pSPI_Handle Pointer to SPI Handle struct containing base address
+ *                    and configuration.
+ * 
+ * @details This function configures the SPI peripherals by:
+ *          - Select device mode (Master / Slave)
+ *          - Select communication mode (Full duplex / Rx-only / Tx-only / Half duplex),
+ *            note: Rx-only and Tx-only are Full duplex but ignore other line
+ *          - Configure SCLK speed: div 2 / 4 / 8 / 16 / 32 / 64 / 128 / 256
+ *          - Configure data frame format: 8-bits / 16-bits
+ *          - Configure clock polarity: Clock is LOW / HIGH state when idle
+ *          - Configure clock phase: first / second edge
+ *          - Configure software slave management: disable / enable
+ * This configuration is applied by modifying SPI registers: CR1
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5 SPI and I2S registers
+ */
+void SPI_Init(SPI_Handle_t *pSPI_Handle);
+
+
+/**
  * @brief Reset SPI peripheral to default state
  *
  * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
