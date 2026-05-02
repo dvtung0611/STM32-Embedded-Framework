@@ -47,42 +47,42 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     uint8_t SSM = pSPI_Handle->SPI_Config.SPI_SSM;
 
     // 1. Reset the SPI Control Register 1
-    SPIx->CR1 = 0x00;
+    SPIx->CR1 = SPI_CR1_RESET_VALUE;
 
     // 2. Configure the device mode
-    SPIx->CR1 |= (DeviceMode << 2);
+    SPIx->CR1 |= (DeviceMode << SPI_CR1_MSTR);
 
     // 3. Configure the communication mode
     if (BusConfig == SPI_BUSCONFIG_FULL_DUPLEX)
     {
-        SPIx->CR1 &= ~(1U << 15); // Unidirectional data mode selected
+        SPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected
     }
     else if (BusConfig == SPI_BUSCONFIG_RXONLY)
     {
-        SPIx->CR1 &= ~(1U << 15); // Unidirectional data mode selected + Ignore the MOSI line
-        SPIx->CR1 |= (1U << 10);
+        SPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected + Ignore the MOSI line
+        SPIx->CR1 |= (1U << SPI_CR1_RXONLY);
     }
     else if (BusConfig == SPI_BUSCONFIG_TXONLY)
     {
-        SPIx->CR1 &= ~(1U << 15); // Unidirectional data mode selected + Ignore the MISO line
+        SPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected + Ignore the MISO line
     }
     else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX)
-        SPIx->CR1 |= (1U << 15); // Bidirectional data mode selected
+        SPIx->CR1 |= (1U << SPI_CR1_BIDIMODE); // Bidirectional data mode selected
 
     // 4. Configure SCLK speed
-    SPIx->CR1 |= (SCLKSpeed << 3);
+    SPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR);
 
     // 5. Configure data frame format
-    SPIx->CR1 |= (DFF << 11);
+    SPIx->CR1 |= (DFF << SPI_CR1_DFF);
 
     // 6. Configure CPOL
-    SPIx->CR1 |= (CPOL << 1);
+    SPIx->CR1 |= (CPOL << SPI_CR1_CPOL);
 
     // 7. Configure CPHA
-    SPIx->CR1 |= (CPHA << 0);
+    SPIx->CR1 |= (CPHA << SPI_CR1_CPHA);
 
     // 8. Configure SSM
-    SPIx->CR1 |= (SSM << 9);
+    SPIx->CR1 |= (SSM << SPI_CR1_SSM);
 }
 
 
