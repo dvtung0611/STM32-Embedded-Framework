@@ -18,42 +18,42 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
 	{
 		if (pGPIOx == GPIOA)
 			GPIOA_PCLK_EN();
-		if (pGPIOx == GPIOB)
+		else if (pGPIOx == GPIOB)
 			GPIOB_PCLK_EN();
-		if (pGPIOx == GPIOC)
+		else if (pGPIOx == GPIOC)
 			GPIOC_PCLK_EN();
-		if (pGPIOx == GPIOD)
+		else if (pGPIOx == GPIOD)
 			GPIOD_PCLK_EN();
-		if (pGPIOx == GPIOE)
+		else if (pGPIOx == GPIOE)
 			GPIOE_PCLK_EN();
-		if (pGPIOx == GPIOF)
+		else if (pGPIOx == GPIOF)
 			GPIOF_PCLK_EN();
-		if (pGPIOx == GPIOG)
+		else if (pGPIOx == GPIOG)
 			GPIOG_PCLK_EN();
-		if (pGPIOx == GPIOH)
+		else if (pGPIOx == GPIOH)
 			GPIOH_PCLK_EN();
-		if (pGPIOx == GPIOI)
+		else if (pGPIOx == GPIOI)
 			GPIOI_PCLK_EN();
 	}
 	else if (En_or_DI == DISABLE)
 	{
 		if (pGPIOx == GPIOA)
 			GPIOA_PCLK_DI();
-		if (pGPIOx == GPIOB)
+		else if (pGPIOx == GPIOB)
 			GPIOB_PCLK_DI();
-		if (pGPIOx == GPIOC)
+		else if (pGPIOx == GPIOC)
 			GPIOC_PCLK_DI();
-		if (pGPIOx == GPIOD)
+		else if (pGPIOx == GPIOD)
 			GPIOD_PCLK_DI();
-		if (pGPIOx == GPIOE)
+		else if (pGPIOx == GPIOE)
 			GPIOE_PCLK_DI();
-		if (pGPIOx == GPIOF)
+		else if (pGPIOx == GPIOF)
 			GPIOF_PCLK_DI();
-		if (pGPIOx == GPIOG)
+		else if (pGPIOx == GPIOG)
 			GPIOG_PCLK_DI();
-		if (pGPIOx == GPIOH)
+		else if (pGPIOx == GPIOH)
 			GPIOH_PCLK_DI();
-		if (pGPIOx == GPIOI)
+		else if (pGPIOx == GPIOI)
 			GPIOI_PCLK_DI();
 	}
 }
@@ -62,10 +62,12 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
 void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
 {
     GPIO_RegDef_t *GPIOx = pGPIO_Handle->pGPIOx; // (x = A, B, ..., I)
-    GPIO_Config_t GPIO_PinConfig = pGPIO_Handle->GPIO_PinConfig;
-
-    uint8_t PinNumber = GPIO_PinConfig.GPIO_PinNumber;
-    uint8_t PinMode = GPIO_PinConfig.GPIO_PinMode;
+    uint8_t PinNumber = pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
+    uint8_t PinMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinMode;
+    uint8_t PinOutputSpeed = pGPIO_Handle->GPIO_PinConfig.GPIO_PinOutputSpeed;
+    uint8_t PinPuPd = pGPIO_Handle->GPIO_PinConfig.GPIO_PinPuPdControl;
+    uint8_t PinOutputType = pGPIO_Handle->GPIO_PinConfig.GPIO_PinOutputType;
+    uint8_t PinAltFuncMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinAltFunMode;
 
     // 1. Configure the mode of GPIO Pin
     if (PinMode == GPIO_PIN_MODE_INPUT || PinMode == GPIO_PIN_MODE_OUTPUT ||
@@ -78,20 +80,17 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     // 2. Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        uint8_t PinOutputSpeed = GPIO_PinConfig.GPIO_PinOutputSpeed;
         GPIOx->OSPEEDR &= ~(3U << (PinNumber * 2U));
         GPIOx->OSPEEDR |= (PinOutputSpeed << (PinNumber * 2U));
     }
 
     // 3. Configure the Pull-up/Pull-down
-    uint8_t PinPuPd = GPIO_PinConfig.GPIO_PinPuPdControl;
     GPIOx->PUPDR &= ~(3U << (PinNumber * 2U));
     GPIOx->PUPDR |= (PinPuPd << (PinNumber * 2U));
 
     // 4. Configure the output type (Push-pull/Open-drain) (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        uint8_t PinOutputType = GPIO_PinConfig.GPIO_PinOutputType;
         GPIOx->OTYPER &= ~(1U << PinNumber);
         GPIOx->OTYPER |= (PinOutputType << PinNumber);
     }
@@ -99,7 +98,6 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     // 5. Configure the alternate functionality
     if (PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        uint8_t PinAltFuncMode = GPIO_PinConfig.GPIO_PinAltFunMode;
         if (PinNumber < 8)
         {
             GPIOx->AFRL &= ~(15U << (PinNumber * 4));
@@ -118,21 +116,21 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 {
     if (pGPIOx == GPIOA)
         GPIOA_REG_RESET();
-    if (pGPIOx == GPIOB)
+    else if (pGPIOx == GPIOB)
         GPIOB_REG_RESET();
-    if (pGPIOx == GPIOC)
+    else if (pGPIOx == GPIOC)
         GPIOC_REG_RESET();
-    if (pGPIOx == GPIOD)
+    else if (pGPIOx == GPIOD)
         GPIOD_REG_RESET();
-    if (pGPIOx == GPIOE)
+    else if (pGPIOx == GPIOE)
         GPIOE_REG_RESET();
-    if (pGPIOx == GPIOF)
+    else if (pGPIOx == GPIOF)
         GPIOF_REG_RESET();
-    if (pGPIOx == GPIOG)
+    else if (pGPIOx == GPIOG)
         GPIOG_REG_RESET();
-    if (pGPIOx == GPIOH)
+    else if (pGPIOx == GPIOH)
         GPIOH_REG_RESET();
-    if (pGPIOx == GPIOI)
+    else if (pGPIOx == GPIOI)
         GPIOI_REG_RESET();
 }
 
@@ -154,13 +152,9 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx)
 void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value)
 {
     if (Value == GPIO_PIN_SET)
-    {
         pGPIOx->ODR |= (1U << PinNumber);
-    }
     else
-    {
         pGPIOx->ODR &= ~(1U << PinNumber);
-    }
 }
 
 
