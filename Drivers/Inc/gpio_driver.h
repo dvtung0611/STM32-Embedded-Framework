@@ -16,6 +16,33 @@
 /* ================================================== MACROS ================================================== */
 
 /**
+ * @GPIO_RESET_REGISTER_VALUE
+ */
+#define GPIOA_MODER_RESET_VALUE             (0xA8000000U)
+#define GPIOB_MODER_RESET_VALUE             (0x00000280U)
+#define GPIO_MODER_RESET_VALUE              (0x00U)
+
+#define GPIO_OTYPER_RESET_VALUE             (0x00U)
+
+#define GPIOA_OSPEEDR_RESET_VALUE           (0x0C000000U)
+#define GPIOB_OSPEEDR_RESET_VALUE           (0x000000C0U)
+#define GPIO_OSPEEDR_RESET_VALUE            (0x00U)
+
+#define GPIOA_PUPDR_RESET_VALUE             (0x64000000U)
+#define GPIOB_PUPDR_RESET_VALUE             (0x00000100U)
+#define GPIO_PUPDR_RESET_VALUE              (0x00U)
+
+#define GPIO_ODR_RESET_VALUE                (0x00U)
+
+#define GPIO_BSRR_RESET_VALUE               (0x00U)
+
+#define GPIO_LCKR_RESET_VALUE               (0x00U)
+
+#define GPIO_AFRL_RESET_VALUE               (0x00U)
+#define GPIO_AFRH_RESET_VALUE               (0x00U)
+
+
+/**
  * @GPIO_PIN_STATE
  */
 #define GPIO_PIN_SET                        (1U)
