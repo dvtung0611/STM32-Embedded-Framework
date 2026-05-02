@@ -16,6 +16,20 @@
 /* ================================================== MACROS ================================================== */
 
 /**
+ * @SPI_RESET_REGISTER_VALUE
+ */
+#define SPI_CR1_RESET_VALUE                 (0x00U)
+#define SPI_CR2_RESET_VALUE                 (0x00U)
+#define SPI_SR_RESET_VALUE                  (0x02U)
+#define SPI_DR_RESET_VALUE                  (0x00U)
+#define SPI_CRCPR_RESET_VALUE               (0x07U)
+#define SPI_RXCRCR_RESET_VALUE              (0x00U)
+#define SPI_TXCRCR_RESET_VALUE              (0x00U)
+#define SPI_I2SCFGR_RESET_VALUE             (0x00U)
+#define SPI_I2SPR_RESET_VALUE               (0x02U)
+
+
+/**
  * @SPI_DEVICE_MODE
  */
 #define SPI_DEVICE_MODE_SLAVE                   (0U)
