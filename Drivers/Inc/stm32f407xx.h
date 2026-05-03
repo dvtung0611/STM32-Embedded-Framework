@@ -23,6 +23,9 @@
 #define SET				1
 #define RESET			0
 
+#define FLAG_RESET      0
+#define FLAG_SET        1
+
 
 /* ======================================== FLASH + SRAM + SYSTEM MEMORY ======================================== */
 
