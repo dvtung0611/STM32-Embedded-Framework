@@ -106,22 +106,22 @@
 /**
  * @GPIO_PIN_ALTFN
  */
-#define GPIO_AF0                            (0U)
-#define GPIO_AF1                            (1U)
-#define GPIO_AF2                            (2U)
-#define GPIO_AF3                            (3U)
-#define GPIO_AF4                            (4U)
-#define GPIO_AF5                            (5U)
-#define GPIO_AF6                            (6U)
-#define GPIO_AF7                            (7U)
-#define GPIO_AF8                            (8U)
-#define GPIO_AF9                            (9U)
-#define GPIO_AF10                           (10U)
-#define GPIO_AF11                           (11U)
-#define GPIO_AF12                           (12U)
-#define GPIO_AF13                           (13U)
-#define GPIO_AF14                           (14U)
-#define GPIO_AF15                           (15U)
+#define GPIO_PIN_ALTFN_0                    (0U)
+#define GPIO_PIN_ALTFN_1                    (1U)
+#define GPIO_PIN_ALTFN_2                    (2U)
+#define GPIO_PIN_ALTFN_3                    (3U)
+#define GPIO_PIN_ALTFN_4                    (4U)
+#define GPIO_PIN_ALTFN_5                    (5U)
+#define GPIO_PIN_ALTFN_6                    (6U)
+#define GPIO_PIN_ALTFN_7                    (7U)
+#define GPIO_PIN_ALTFN_8                    (8U)
+#define GPIO_PIN_ALTFN_9                    (9U)
+#define GPIO_PIN_ALTFN_10                   (10U)
+#define GPIO_PIN_ALTFN_11                   (11U)
+#define GPIO_PIN_ALTFN_12                   (12U)
+#define GPIO_PIN_ALTFN_13                   (13U)
+#define GPIO_PIN_ALTFN_14                   (14U)
+#define GPIO_PIN_ALTFN_15                   (15U)
 
 
 /* ============================================= Bit Position Definition of GPIO Peripheral ============================================= */

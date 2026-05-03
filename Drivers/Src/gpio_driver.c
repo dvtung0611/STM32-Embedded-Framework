@@ -69,7 +69,10 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     uint8_t PinOutputType = pGPIO_Handle->GPIO_PinConfig.GPIO_PinOutputType;
     uint8_t PinAltFuncMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinAltFunMode;
 
-    // 1. Configure the mode of GPIO Pin
+    // 1. Enable clock for the GPIO peripheral.
+    GPIO_PeriClock_Control(GPIOx, ENABLE);
+
+    // 2. Configure the mode of GPIO Pin
     if (PinMode == GPIO_PIN_MODE_INPUT || PinMode == GPIO_PIN_MODE_OUTPUT ||
         PinMode == GPIO_PIN_MODE_ANALOG || PinMode == GPIO_PIN_MODE_ALTFN)
     {
@@ -77,25 +80,25 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
         GPIOx->MODER |= (PinMode << (PinNumber * 2U));
     }
 
-    // 2. Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
+    // 3. Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
         GPIOx->OSPEEDR &= ~(3U << (PinNumber * 2U));
         GPIOx->OSPEEDR |= (PinOutputSpeed << (PinNumber * 2U));
     }
 
-    // 3. Configure the Pull-up/Pull-down
+    // 4. Configure the Pull-up/Pull-down
     GPIOx->PUPDR &= ~(3U << (PinNumber * 2U));
     GPIOx->PUPDR |= (PinPuPd << (PinNumber * 2U));
 
-    // 4. Configure the output type (Push-pull/Open-drain) (if the mode of GPIO pin is output mode or altfn mode)
+    // 5. Configure the output type (Push-pull/Open-drain) (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
         GPIOx->OTYPER &= ~(1U << PinNumber);
         GPIOx->OTYPER |= (PinOutputType << PinNumber);
     }
 
-    // 5. Configure the alternate functionality
+    // 6. Configure the alternate functionality
     if (PinMode == GPIO_PIN_MODE_ALTFN)
     {
         if (PinNumber < 8)
