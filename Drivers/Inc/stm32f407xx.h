@@ -673,6 +673,7 @@ typedef struct
 /* ============================================= Includes Other File ============================================= */
 
 #include "gpio_driver.h"
+#include "spi_driver.h"
 #include "exti_driver.h"
 #include "nvic_driver.h"
 
