@@ -46,13 +46,16 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     uint8_t CPHA = pSPI_Handle->SPI_Config.SPI_CPHA;
     uint8_t SSM = pSPI_Handle->SPI_Config.SPI_SSM;
 
-    // 1. Reset the SPI Control Register 1
+    // 1. Enable clock for the SPI peripheral
+    SPI_PeriClock_Control(SPIx, ENABLE);
+
+    // 2. Reset the SPI Control Register 1
     SPIx->CR1 = SPI_CR1_RESET_VALUE;
 
-    // 2. Configure the device mode
+    // 3. Configure the device mode
     SPIx->CR1 |= (DeviceMode << SPI_CR1_MSTR);
 
-    // 3. Configure the communication mode
+    // 4. Configure the communication mode
     if (BusConfig == SPI_BUSCONFIG_FULL_DUPLEX)
     {
         SPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected
@@ -69,19 +72,19 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX)
         SPIx->CR1 |= (1U << SPI_CR1_BIDIMODE); // Bidirectional data mode selected
 
-    // 4. Configure SCLK speed
+    // 5. Configure SCLK speed
     SPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR);
 
-    // 5. Configure data frame format
+    // 6. Configure data frame format
     SPIx->CR1 |= (DFF << SPI_CR1_DFF);
 
-    // 6. Configure CPOL
+    // 7. Configure CPOL
     SPIx->CR1 |= (CPOL << SPI_CR1_CPOL);
 
-    // 7. Configure CPHA
+    // 8. Configure CPHA
     SPIx->CR1 |= (CPHA << SPI_CR1_CPHA);
 
-    // 8. Configure SSM
+    // 9. Configure SSM
     SPIx->CR1 |= (SSM << SPI_CR1_SSM);
 }
 
@@ -103,11 +106,27 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 }
 
 
-void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTx_buffer, uint32_t DataLength)
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength)
 {
     while (DataLength > 0)
     {
+        // 1. Wait until TXE is set (Tx buffer is empty)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == FLAG_RESET);
-        
+
+        // 2. Check DFF (Data Frame Format)
+        if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
+        {
+            // 16-bit data frame
+            pSPIx->DR = *((uint16_t *)(pTxData)); // Load the data into the DR
+            DataLength -= 2; // Decrease by 2 bytes
+            pTxData += 2; // Increase pointer by 2 bytes
+        }
+        else
+        {
+            // 8-bit data frame
+            pSPIx->DR = *(pTxData); // Load the data into the DR
+            DataLength -= 1; // Decrease by 1 byte
+            pTxData += 1; // Increase pointer by 1 byte
+        }
     }
 }

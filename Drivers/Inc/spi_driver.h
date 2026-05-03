@@ -199,7 +199,7 @@ void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
  * @brief Initialize and configure the SPI peripheral
  * 
  * @param pSPI_Handle Pointer to SPI Handle struct containing base address
- *                    and configuration.
+ *                    and configuration
  * 
  * @details This function configures the SPI peripherals by:
  *          - Select device mode (Master / Slave)
@@ -239,13 +239,28 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
  * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
  * @param FlagName Flag name in the SPI_SR (SPI Status Register)
  * 
- * @return uint8_t  Flag status is set or reset.
+ * @return uint8_t  Flag status is set or reset
  * 
  * @note
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.3 SPI status register (SPI_SR)
  */
 uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
+
+
+/**
+ * @brief  Transmit data over SPI in blocking mode
+ *
+ * @param  pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param  pTxData Pointer to transmit data buffer
+ * @param  DataLength Length of data (in bytes)
+ *
+ * @note This function polls the TXE flag to ensure the transmit buffer is empty
+ *       before loading new data into the data register (DR).
+ *
+ * @warning This is a blocking API.
+ */
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
