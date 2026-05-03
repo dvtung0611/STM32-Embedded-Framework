@@ -239,11 +239,13 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
  * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
  * @param FlagName Flag name in the SPI_SR (SPI Status Register)
  * 
+ * @return uint8_t  Flag status is set or reset.
+ * 
  * @note
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.3 SPI status register (SPI_SR)
  */
-void SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

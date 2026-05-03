@@ -97,7 +97,17 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 }
 
 
-void SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 {
     return ((pSPIx->SR >> FlagName) & 1U);
+}
+
+
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTx_buffer, uint32_t DataLength)
+{
+    while (DataLength > 0)
+    {
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == FLAG_RESET);
+        
+    }
 }
