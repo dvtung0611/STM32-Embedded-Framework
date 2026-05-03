@@ -133,7 +133,21 @@
 #define SPI_SR_FRE              (8U)    /*!< Frame format error         | Bit 8 */
 
 
-/* ================================================== DATA TYPES ================================================== */
+/**
+ * @SPI_FLAG
+ */
+#define SPI_FLAG_RXNE           (0U)    /*!< Receive buffer not empty   | Bit 0 */
+#define SPI_FLAG_TXE            (1U)    /*!< Transmit buffer empty      | Bit 1 */
+#define SPI_FLAG_CHSIDE         (2U)    /*!< Channel side               | Bit 2 */
+#define SPI_FLAG_UDR            (3U)    /*!< Underrun flag              | Bit 3 */
+#define SPI_FLAG_CRCERR         (4U)    /*!< CRC error flag             | Bit 4 */
+#define SPI_FLAG_MODF           (5U)    /*!< Mode fault                 | Bit 5 */
+#define SPI_FLAG_OVR            (6U)    /*!< Overrun flag               | Bit 6 */
+#define SPI_FLAG_BSY            (7U)    /*!< Busy flag                  | Bit 7 */
+#define SPI_FLAG_FRE            (8U)    /*!< Frame format error         | Bit 8 */
+
+
+/* ================================================== FLAG OF SPI Peripheral ================================================== */
 
 /**
  * @brief SPI configuration structure
@@ -217,6 +231,19 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle);
  *                              Section 7.3.9 RCC APB2 peripheral reset register (RCC_APB2RSTR)
  */
 void SPI_DeInit(SPI_RegDef_t *pSPIx);
+
+
+/**
+ * @brief Returns the flag status of the SPI peripheral
+ * 
+ * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param FlagName Flag name in the SPI_SR (SPI Status Register)
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5.3 SPI status register (SPI_SR)
+ */
+void SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

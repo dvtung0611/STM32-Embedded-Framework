@@ -95,3 +95,9 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
     else if (pSPIx == SPI3)
         SPI3_REG_RESET();
 }
+
+
+void SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
+{
+    return ((pSPIx->SR >> FlagName) & 1U);
+}
