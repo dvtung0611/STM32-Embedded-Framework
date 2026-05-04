@@ -174,7 +174,7 @@ typedef struct
  */
 typedef struct 
 {
-    __IO SPI_RegDef_t *pSPIx;       /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
+    SPI_RegDef_t *pSPIx;       /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
     SPI_Config_t SPI_Config;        /*!< SPI configuration settings */
 } SPI_Handle_t;
 
@@ -275,7 +275,30 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
  * 
  * @warning If enable the peripheral before configuring the SPI register.
  *          the configuration won't take effect.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5.1 SPI control register 1 (SPI_CR1)
  */
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
+
+
+/**
+ * @brief Configure the SSI (Internal Slave Select) bit for the SPI peripheral
+ * 
+ * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param En_or_DI ENABLE or DISABLE macro
+ * 
+ * @details This function sets or clears the SSI bit in the SPI_CR1 register.
+ *          The SSI bit is used in master mode to control the internal 
+ *          slave select signal when SSM (Software Slave Management) is enabled.
+ *          0: SSI low (slave not selected)
+ *          1: SSI high (slave selected)
+ * 
+ * @note This function should be called only when SSM is enabled in the SPI configuration.
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5.1 SPI control register 1 (SPI_CR1)
+ */
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
 
 #endif /* INC_SPI_DRIVER_H_ */
