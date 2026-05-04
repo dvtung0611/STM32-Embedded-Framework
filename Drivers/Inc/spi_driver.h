@@ -263,4 +263,19 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
 
 
+/**
+ * @brief Enable or disable the SPI peripheral
+ * 
+ * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param En_or_DI ENABLE or DISABLE macro
+ * 
+ * @details Set the SPE bit in the SPI_CR1 register:
+ *          0: Peripheral disable
+ *          1: Peripheral enable
+ * 
+ * @warning If enable the peripheral before configuring the SPI register.
+ *          the configuration won't take effect.
+ */
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
+
 #endif /* INC_SPI_DRIVER_H_ */
