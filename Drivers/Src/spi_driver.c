@@ -73,7 +73,7 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     {
         SPIx->CR1 |= (1U << SPI_CR1_BIDIMODE); // Bidirectional data mode selected
     }
-    
+
     // 5. Configure SCLK speed
     SPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR);
 
@@ -131,6 +131,9 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength)
             pTxData += 1; // Increase pointer by 1 byte
         }
     }
+
+    // 3. Wait until the SPI is not busy
+    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY));
 }
 
 

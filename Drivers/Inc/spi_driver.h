@@ -326,7 +326,7 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
  * - RM0090 Reference Manual,   Section 28.3.1 General description
  *                              Section 28.5.2 SPI control register 2 (SPI_CR2)         
  */
-void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
