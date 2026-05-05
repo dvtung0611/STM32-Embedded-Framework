@@ -70,8 +70,10 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
         SPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected + Ignore the MISO line
     }
     else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX)
+    {
         SPIx->CR1 |= (1U << SPI_CR1_BIDIMODE); // Bidirectional data mode selected
-
+    }
+    
     // 5. Configure SCLK speed
     SPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR);
 
@@ -135,24 +137,25 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength)
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI)
 {
     if (En_or_DI == ENABLE)
-    {
         pSPIx->CR1 |= (1U << SPI_CR1_SPE);
-    }
-    else
-    {
+    else if (En_or_DI == DISABLE)
         pSPIx->CR1 &= ~(1U << SPI_CR1_SPE);
-    }
 }
 
 
 void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI)
 {
     if (En_or_DI == ENABLE)
-    {
         pSPIx->CR1 |= (1U << SPI_CR1_SSI);
-    }
-    else
-    {
+    else if (En_or_DI == DISABLE)
         pSPIx->CR1 &= ~(1U << SPI_CR1_SSI);
-    }
+}
+
+
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
+{
+    if (EN_or_DI == ENABLE)
+        pSPIx->CR2 |= (1U << SPI_CR2_SSOE);
+    else if (EN_or_DI == DISABLE)
+        pSPIx->CR2 &= ~(1U << SPI_CR2_SSOE);
 }

@@ -301,4 +301,32 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
  */
 void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
 
+
+/**
+ * @brief Configure the SSOE (SS output enable) bit for the SPI peripheral
+ * 
+ * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param En_or_DI ENABLE or DISABLE macro
+ * 
+ * @details This function sets or clears the SSOE bit in the SPI_CR2 register.
+ *          The SSOE bit is used only in master mode when hardware slave 
+ *          management (SSM = 0) is selected.
+ * 
+ *          0: NSS output is disabled. The NSS pin is not driven by the SPI 
+ *             peripheral and can be used for multi-master configurations or 
+ *             controlled manually via GPIO.
+ * 
+ *          1: NSS output is enabled. When the SPI is enabled (SPE = 1), the 
+ *             NSS pin is automatically driven LOW. When SPI is disabled 
+ *             (SPE = 0), NSS is released HIGH. This allows the SPI hardware 
+ *             to manage the NSS signal automatically.
+ * 
+ * @note In slave mode, NSS is always used as input and SSOE hasn't effect.
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.3.1 General description
+ *                              Section 28.5.2 SPI control register 2 (SPI_CR2)         
+ */
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
+
+
 #endif /* INC_SPI_DRIVER_H_ */
