@@ -126,7 +126,7 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength)
         else
         {
             // 8-bit data frame
-            pSPIx->DR = *(pTxData); // Load the data into the DR
+            pSPIx->DR = *pTxData; // Load the data into the DR
             DataLength -= 1; // Decrease by 1 byte
             pTxData += 1; // Increase pointer by 1 byte
         }
@@ -161,4 +161,28 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
         pSPIx->CR2 |= (1U << SPI_CR2_SSOE);
     else if (EN_or_DI == DISABLE)
         pSPIx->CR2 &= ~(1U << SPI_CR2_SSOE);
+}
+
+
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxData, uint32_t DataLength)
+{
+    while (DataLength > 0)
+    {
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == FLAG_RESET);
+
+        if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
+        {
+            *((uint16_t *)(pRxData)) = pSPIx->DR;
+            DataLength -= 2;
+            pRxData += 2;
+        }
+        else
+        {
+            *pRxData = (uint8_t)(pSPIx->DR);
+            DataLength -= 1;
+            pRxData += 1;
+        }
+    }
+
+    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY));
 }

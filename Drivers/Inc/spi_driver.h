@@ -264,6 +264,26 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
 
 
 /**
+ * @brief  Receive data over SPI in blocking mode
+ *
+ * @param  pSPIx SPI instance (SPI1, SPI2, SPI3)
+ * @param  pRxData Pointer to receive data buffer
+ * @param  DataLength Length of data (in bytes)
+ *
+ * @note   This function polls the RXNE flag (Receive buffer Not Empty)
+ *         to check when data is available in the data register (DR).
+ *         The received data is then read from DR into the buffer.
+ *
+ * @note   In SPI, data reception is coupled with transmission.
+ *         Clock must be generated (typically by sending dummy data)
+ *         to receive data from the slave.
+ *
+ * @warning This is a blocking API.
+ */
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxData, uint32_t DataLength);
+
+
+/**
  * @brief Enable or disable the SPI peripheral
  * 
  * @param pSPIx SPI instance (SPI1, SPI2, SPI3)
