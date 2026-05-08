@@ -86,6 +86,14 @@
 #define SPI_SSM_ENABLE                          (1U)
 
 
+/**
+ * @SPI_STATE
+ */
+#define SPI_READY               (0U)
+#define SPI_BUSY_IN_RX          (1U)
+#define SPI_BUSY_IN_TX          (2U)
+
+
 /* ============================================= Bit Position Definition of SPI Peripheral ============================================= */
 
 /**
@@ -172,10 +180,19 @@ typedef struct
  * @note This structure is used to configure and operate SPI peripheral.
  *       It contains base address and configuration parameters.
  */
-typedef struct 
+typedef struct
 {
-    SPI_RegDef_t *pSPIx;       /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
-    SPI_Config_t SPI_Config;        /*!< SPI configuration settings */
+    SPI_RegDef_t *pSPIx;        /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
+    SPI_Config_t SPI_Config;    /*!< SPI configuration settings */
+
+    uint8_t *pTxBuffer;           /*!< Pointer to TX buffer application data */
+    uint8_t *pRxBuffer;           /*!< Pointer to RX buffer application data */
+
+    uint32_t TxLength;          /*!< Number of bytes remaining to transmit */
+    uint32_t RxLength;          /*!< Number of bytes remaining to receive */
+
+    uint8_t TxState;            /*!< Current TX transfer state */
+    uint8_t RxState;            /*!< Current RX transfer state */
 } SPI_Handle_t;
 
 
@@ -252,7 +269,7 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
  * @brief  Transmit data over SPI in blocking mode
  *
  * @param  pSPIx SPI instance (SPI1, SPI2, SPI3)
- * @param  pTxData Pointer to transmit data buffer
+ * @param  pTxBuffer Pointer to transmit data buffer
  * @param  DataLength Length of data (in bytes)
  *
  * @note This function polls the TXE flag to ensure the transmit buffer is empty
@@ -260,14 +277,14 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
  *
  * @warning This is a blocking API.
  */
-void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t DataLength);
 
 
 /**
  * @brief  Receive data over SPI in blocking mode
  *
  * @param  pSPIx SPI instance (SPI1, SPI2, SPI3)
- * @param  pRxData Pointer to receive data buffer
+ * @param  pRxBuffer Pointer to receive data buffer
  * @param  DataLength Length of data (in bytes)
  *
  * @note   This function polls the RXNE flag (Receive buffer Not Empty)
@@ -280,7 +297,7 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength);
  *
  * @warning This is a blocking API.
  */
-void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxData, uint32_t DataLength);
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLength);
 
 
 /**
@@ -347,6 +364,53 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
  *                              Section 28.5.2 SPI control register 2 (SPI_CR2)         
  */
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
+
+
+/**
+ * @brief Send data over SPI using interrupt mode (non-blocking API)
+ * 
+ * @param pSPI_Handle Pointer to SPI handle structure containing
+ *                    SPI peripheral base address and configuration
+ * @param pTxBuffer   Pointer to transmit data buffer
+ * @param DataLength  Length of data to transmit (in bytes)
+ * 
+ * @return uint8_t Current SPI transmission state
+ * 
+ * @details This API performs the following operations:
+ *          - Save TX buffer pointer and transfer length
+ *          - Set SPI state to SPI_BUSY_IN_TX
+ *          - Enable TXE interrupt (TXEIE bit)
+ * 
+ * @note This function returns immediately after enabling the interrupt.
+ *       Actual data transmission is handled inside the SPI ISR.
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
+ */
+uint8_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t DataLength);
+
+
+/**
+ * @brief Receive data over SPI using interrupt mode (non-blocking API)
+ * 
+ * @param pSPI_Handle Pointer to the SPI handle structure containing
+ *                    the SPI peripheral base address and configuration
+ * @param pRxBuffer   Pointer to the receive data buffer
+ * @param DataLength  Length of data to receive (in bytes)
+ * 
+ * @return uint8_t Current SPI reception state
+ * 
+ * @details This API performs the following operations:
+ *          - Saves RX buffer pointer and transfer length
+ *          - Sets SPI state to SPI_BUSY_IN_RX
+ *          - Enables RXNE interrupt (RXNEIE bit)
+ * 
+ * @note This function returns immediately after enabling the interrupt.
+ *       Actual data reception is handled inside the SPI ISR.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual, Section 28.5.2 SPI control register 2 (SPI_CR2)
+ */
+uint8_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

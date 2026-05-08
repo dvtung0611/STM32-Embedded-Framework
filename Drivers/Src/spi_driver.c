@@ -108,31 +108,60 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 }
 
 
-void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxData, uint32_t DataLength)
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t DataLength)
 {
     while (DataLength > 0)
     {
-        // 1. Wait until TXE is set (Tx buffer is empty)
+        // Wait until TXE is set (Tx buffer is empty)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == FLAG_RESET);
 
-        // 2. Check DFF (Data Frame Format)
+        // Check DFF (Data Frame Format)
         if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
         {
             // 16-bit data frame
-            pSPIx->DR = *((uint16_t *)(pTxData)); // Load the data into the DR
+            pSPIx->DR = *((uint16_t *)(pTxBuffer)); // Load the data into the DR
             DataLength -= 2; // Decrease by 2 bytes
-            pTxData += 2; // Increase pointer by 2 bytes
+            pTxBuffer += 2; // Increase pointer by 2 bytes
         }
         else
         {
             // 8-bit data frame
-            pSPIx->DR = *pTxData; // Load the data into the DR
+            pSPIx->DR = *pTxBuffer; // Load the data into the DR
             DataLength -= 1; // Decrease by 1 byte
-            pTxData += 1; // Increase pointer by 1 byte
+            pTxBuffer += 1; // Increase pointer by 1 byte
         }
     }
 
-    // 3. Wait until the SPI is not busy
+    // Wait until the SPI is not busy
+    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY));
+}
+
+
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLength)
+{
+    while (DataLength > 0)
+    {
+        // Wait until RXNE is set (Rx buffer is not empty = Rx buffer is full)
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == FLAG_RESET);
+
+        // Check DFF (Data Frame Format)
+        if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
+        {
+            // 16-bit data frame
+            *((uint16_t *)(pRxBuffer)) = pSPIx->DR; // Read data from them DR
+            DataLength -= 2; // Decrease by 2 bytes
+            pRxBuffer += 2; // Increase pointer by 2 bytes
+        }
+        else
+        {
+            // 8-bit data frame
+            *pRxBuffer = (uint8_t)(pSPIx->DR); // Read data from them DR
+            DataLength -= 1; // Decrease by 1 byte
+            pRxBuffer += 1; // Increase pointer by 1 byte
+        }
+    }
+
+    // Wait until the SPI is not busy
     while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY));
 }
 
@@ -164,25 +193,47 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
 }
 
 
-void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxData, uint32_t DataLength)
+uint8_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t DataLength)
 {
-    while (DataLength > 0)
-    {
-        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == FLAG_RESET);
+    uint8_t spi_state = pSPI_Handle->TxState;
 
-        if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
-        {
-            *((uint16_t *)(pRxData)) = pSPIx->DR;
-            DataLength -= 2;
-            pRxData += 2;
-        }
-        else
-        {
-            *pRxData = (uint8_t)(pSPIx->DR);
-            DataLength -= 1;
-            pRxData += 1;
-        }
-    }
+    if (spi_state != SPI_READY)
+        return spi_state;
+    
+    SPI_RegDef_t *SPIx = pSPI_Handle->pSPIx;
 
-    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY));
+    // Save TX buffer pointer and transfer length
+    pSPI_Handle->pTxBuffer = pTxBuffer;
+    pSPI_Handle->TxLength = DataLength;
+
+    // Set BUSY_IN_TX
+    pSPI_Handle->TxState = SPI_BUSY_IN_TX;
+
+    // Enable TXEIE bit
+    SPIx->CR2 |= (1U << SPI_CR2_TXEIE);
+
+    return spi_state;
+}
+
+
+uint8_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength)
+{
+    uint8_t spi_state = pSPI_Handle->RxState;
+
+    if (spi_state != SPI_READY)
+        return spi_state;
+    
+    SPI_RegDef_t *SPIx = pSPI_Handle->pSPIx;
+
+    // Save RX buffer pointer and transfer length
+    pSPI_Handle->pRxBuffer = pRxBuffer;
+    pSPI_Handle->RxLength = DataLength;
+
+    // Set BUSY_IN_RX
+    pSPI_Handle->RxState = SPI_BUSY_IN_RX;
+
+    // Enable RXNEIE bit
+    SPIx->CR2 |= (1U << SPI_CR2_RXNEIE);
+
+    return spi_state;
 }
