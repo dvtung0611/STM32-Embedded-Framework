@@ -148,14 +148,14 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLengt
         if ((pSPIx->CR1 >> SPI_CR1_DFF) & 1U)
         {
             // 16-bit data frame
-            *((uint16_t *)(pRxBuffer)) = pSPIx->DR; // Read data from them DR
+            *((uint16_t *)(pRxBuffer)) = pSPIx->DR; // Read data from the DR
             DataLength -= 2; // Decrease by 2 bytes
             pRxBuffer += 2; // Increase pointer by 2 bytes
         }
         else
         {
             // 8-bit data frame
-            *pRxBuffer = (uint8_t)(pSPIx->DR); // Read data from them DR
+            *pRxBuffer = (uint8_t)(pSPIx->DR); // Read data from the DR
             DataLength -= 1; // Decrease by 1 byte
             pRxBuffer += 1; // Increase pointer by 1 byte
         }
@@ -208,6 +208,7 @@ uint8_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t D
 
     // Set BUSY_IN_TX
     pSPI_Handle->TxState = SPI_BUSY_IN_TX;
+    spi_state = pSPI_Handle->TxState;
 
     // Enable TXEIE bit
     SPIx->CR2 |= (1U << SPI_CR2_TXEIE);
@@ -231,6 +232,7 @@ uint8_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_
 
     // Set BUSY_IN_RX
     pSPI_Handle->RxState = SPI_BUSY_IN_RX;
+    spi_state = pSPI_Handle->RxState;
 
     // Enable RXNEIE bit
     SPIx->CR2 |= (1U << SPI_CR2_RXNEIE);
