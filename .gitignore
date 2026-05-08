@@ -3,9 +3,5 @@
 *.o
 *.elf
 
-main.c
-
-Makefile
-
 Examples/
 Src/
