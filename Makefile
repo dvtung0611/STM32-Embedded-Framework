@@ -4,13 +4,25 @@ CC = arm-none-eabi-gcc
 
 # Compiler Flags
 CFLAGS = \
--mthumb \
 -mcpu=cortex-m4 \
+-mthumb \
 -mfloat-abi=soft \
 -std=gnu11 \
+-Og \
 -Wall \
--O0 \
+-Wextra \
+-Wshadow \
+-Wundef \
+-g3 \
+-ffunction-sections \
+-fdata-sections \
+-ffreestanding \
 -IDrivers/Inc
+
+
+# Linker Flags
+LDFLAGS = \
+
 
 
 # Source Files
