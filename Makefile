@@ -8,7 +8,7 @@ CFLAGS = \
 -mthumb \
 -mfloat-abi=soft \
 -std=gnu11 \
--Og \
+-O0 \
 -Wall \
 -Wextra \
 -Wshadow \
@@ -44,6 +44,7 @@ $(wildcard Drivers/Src/*.c)
 OBJ = $(SRC:.c=.o)
 
 
+# PHONY
 .PHONY: all clean
 
 
@@ -56,18 +57,33 @@ all: stm32f407vgtx.elf
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
+# ELF file
+ELF = stm32f407vgtx.elf
+
+
+# stm32f407vgtx.elf
+$(ELF): $(OBJ)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+
 # Clean
 clean:
 	rm -f $(OBJ) *.map *.elf
 
 
 # Flash code
-load:
+flash:
 	openocd \
 	-f board/stm32f4discovery.cfg \
-	-c "program <file_name.elf> verify reset exit”
+	-c "program $(ELF) verify reset exit"
 
 
-# stm32f407vgtx.elf
-stm32f407vgtx.elf: $(OBJ)
-	$(CC) $(LDFLAGS) $^ -o $@
+# Debug-server
+debug:
+	openocd \
+	-f board/stm32f4discovery.cfg
+
+
+# GDB target
+gdb:
+	arm-none-eabi-gdb $(ELF)
