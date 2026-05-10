@@ -277,4 +277,14 @@ void Reset_Handler(void)
         *pbss = 0;
         pbss++;
     }
+
+    // Copy .data section from FLASH to SRAM
+    uint32_t *pDes = (uint32_t *)(&_sdata);
+    uint32_t *pSrc = (uint32_t *)(&_sidata);
+    while (pDes < &_edata)
+    {
+        *pDes = *pSrc;
+        pDes++;
+        pSrc++;
+    }
 }
