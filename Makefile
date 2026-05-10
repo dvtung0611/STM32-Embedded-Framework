@@ -22,7 +22,15 @@ CFLAGS = \
 
 # Linker Flags
 LDFLAGS = \
-
+-mcpu=cortex-m4 \
+-mthumb \
+-mfloat-abi=soft \
+-nostdlib \
+-T Linker/stm32f407vgtx.ld \
+-Wl,--gc-sections \
+-Wl,-Map=stm32f407vgtx.map \
+-Wl,--print-memory-usage \
+-Wl,--print-gc-sections
 
 
 # Source Files
@@ -36,8 +44,11 @@ $(wildcard Drivers/Src/*.c)
 OBJ = $(SRC:.c=.o)
 
 
+.PHONY: all clean
+
+
 # Default Target
-all: $(OBJ)
+all: stm32f407vgtx.elf
 
 
 # Pattern Rule
@@ -47,4 +58,9 @@ all: $(OBJ)
 
 # Clean
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) *.map *.elf
+
+
+# stm32f407vgtx.elf
+stm32f407vgtx.elf: $(OBJ)
+	$(CC) $(LDFLAGS) $^ -o $@
