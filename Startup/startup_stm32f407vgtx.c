@@ -2,6 +2,13 @@
 
 
 extern uint32_t _estack;
+extern uint32_t _stext;
+extern uint32_t _etext;
+extern uint32_t _sidata;
+extern uint32_t _sdata;
+extern uint32_t _edata;
+extern uint32_t _sbss;
+extern uint32_t _ebss;
 
 
 typedef void (*ISR_Handler_t)(void);
@@ -263,5 +270,11 @@ void Default_Handler(void)
 
 void Reset_Handler(void)
 {
-
+    // Initialize .bss section in SRAM
+    uint32_t *pbss = (uint32_t *)(&_sbss);
+    while (pbss < &_ebss)
+    {
+        *pbss = 0;
+        pbss++;
+    }
 }
