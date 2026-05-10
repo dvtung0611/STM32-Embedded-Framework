@@ -10,6 +10,8 @@ extern uint32_t _edata;
 extern uint32_t _sbss;
 extern uint32_t _ebss;
 
+extern int main(void);
+
 
 typedef void (*ISR_Handler_t)(void);
 
@@ -287,4 +289,7 @@ void Reset_Handler(void)
         pDes++;
         pSrc++;
     }
+
+    // Call main function
+    main();
 }
