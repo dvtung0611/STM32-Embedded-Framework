@@ -61,6 +61,13 @@ clean:
 	rm -f $(OBJ) *.map *.elf
 
 
+# Flash code
+load:
+	openocd \
+	-f board/stm32f4discovery.cfg \
+	-c "program <file_name.elf> verify reset exit”
+
+
 # stm32f407vgtx.elf
 stm32f407vgtx.elf: $(OBJ)
 	$(CC) $(LDFLAGS) $^ -o $@
