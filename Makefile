@@ -17,7 +17,8 @@ CFLAGS = \
     -ffunction-sections \
     -fdata-sections \
     -ffreestanding \
-    -IDrivers/Inc
+    -IDrivers/Inc \
+	-ILibC/Inc
 
 
 # Linker Flags
@@ -35,9 +36,10 @@ LDFLAGS = \
 
 # Source Files
 SRC = \
-Src/main.c \
 Startup/startup_stm32f407vgtx.c \
-$(wildcard Drivers/Src/*.c)
+$(wildcard Src/*.c) \
+$(wildcard Drivers/Src/*.c) \
+$(wildcard LibC/Src/*.c)
 
 
 # Object Files
@@ -70,7 +72,7 @@ $(ELF): $(OBJ)
 clean:
 	rm -f \
 	$(OBJ) \
-	Debug/*map \
+	*.map \
 	*.elf
 
 
