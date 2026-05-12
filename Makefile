@@ -21,7 +21,7 @@ CFLAGS = \
 	-ILibC/Inc
 
 
-Linker Flags
+# Linker Flags
 LDFLAGS = \
     -mcpu=cortex-m4 \
     -mthumb \
@@ -30,8 +30,7 @@ LDFLAGS = \
     -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
     -Wl,-Map=Debug/stm32f407vgtx.map \
-    -Wl,--print-memory-usage \
-    -Wl,--print-gc-sections
+    -Wl,--print-memory-usage
 
 
 # Source Files
@@ -47,7 +46,13 @@ OBJ = $(SRC:.c=.o)
 
 
 # PHONY
-.PHONY: all clean flash debug gdb
+.PHONY: \
+    all \
+	clean \
+	flash-code \
+	openocd \
+	gdb \
+	elf-sections
 
 
 # Default Target
@@ -77,14 +82,14 @@ clean:
 
 
 # Flash code
-flash:
+flash-code:
 	openocd \
 	-f board/stm32f4discovery.cfg \
 	-c "program $(ELF) verify reset exit"
 
 
 # Debug server
-debug:
+openocd:
 	openocd \
 	-f board/stm32f4discovery.cfg
 
