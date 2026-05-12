@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "string.h"
 
 
 extern uint32_t _estack;
@@ -274,21 +275,15 @@ void Reset_Handler(void)
 {
     // Initialize .bss section in SRAM
     uint32_t *pbss = (uint32_t *)(&_sbss);
-    while (pbss < &_ebss)
-    {
-        *pbss = 0;
-        pbss++;
-    }
+    uint32_t size = (uint32_t)(&_ebss) - (uint32_t)(&_sbss);
+    memset(pbss, 0, size);
+
 
     // Copy .data section from FLASH to SRAM
     uint32_t *pDes = (uint32_t *)(&_sdata);
     uint32_t *pSrc = (uint32_t *)(&_sidata);
-    while (pDes < &_edata)
-    {
-        *pDes = *pSrc;
-        pDes++;
-        pSrc++;
-    }
+    size = (uint32_t)(&_edata) - (uint32_t)(&_sdata);
+    memcpy(pDes, pSrc, size);
 
     // Call main function
     main();
