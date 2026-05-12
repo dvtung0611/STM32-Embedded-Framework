@@ -21,12 +21,12 @@ CFLAGS = \
 	-ILibC/Inc
 
 
-# Linker Flags
+# Linker Flags (for Semihosting)
 LDFLAGS = \
     -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
-    --specs=nano.specs \
+    --specs=rdimon.specs \
     -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
     -Wl,-Map=Debug/stm32f407vgtx.map \
