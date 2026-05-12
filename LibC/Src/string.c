@@ -30,7 +30,7 @@ void *memset(void *ptr, int32_t value, uint32_t size)
 void *memcpy(void *dest, const void *src, uint32_t size)
 {
     uint8_t *pdest = (uint8_t *)(dest);
-    const uint8_t *psrc = (uint8_t *)(src);
+    const uint8_t *psrc = (const uint8_t *)(src);
 
     while (size--)
     {
