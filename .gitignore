@@ -4,5 +4,6 @@
 *.elf
 *.map
 
-Examples/
-Src/
+/Examples/
+/Src/
+/Debug/
