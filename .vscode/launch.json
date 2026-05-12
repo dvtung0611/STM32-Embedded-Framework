@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STM32 BareMetal Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/stm32f407vgtx.elf",
+
+            "servertype": "external",
+            
+            "gdbTarget": "localhost:3333",
+
+            "device": "STM32F407VG",
+
+            "configFiles": [
+                "board/stm32f4discovery.cfg"
+            ],
+
+            "svdFile": "${workspaceRoot}/SVD/STM32F407.svd",
+
+            "runToEntryPoint": "main",
+
+            "preLaunchTask": "Build",
+        }
+    ]
+}
