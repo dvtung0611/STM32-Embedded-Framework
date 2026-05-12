@@ -4,33 +4,33 @@ CC = arm-none-eabi-gcc
 
 # Compiler Flags
 CFLAGS = \
--mcpu=cortex-m4 \
--mthumb \
--mfloat-abi=soft \
--std=gnu11 \
--O0 \
--Wall \
--Wextra \
--Wshadow \
--Wundef \
--g3 \
--ffunction-sections \
--fdata-sections \
--ffreestanding \
--IDrivers/Inc
+    -mcpu=cortex-m4 \
+    -mthumb \
+    -mfloat-abi=soft \
+    -std=gnu11 \
+    -O0 \
+    -Wall \
+    -Wextra \
+    -Wshadow \
+    -Wundef \
+    -g3 \
+    -ffunction-sections \
+    -fdata-sections \
+    -ffreestanding \
+    -IDrivers/Inc
 
 
 # Linker Flags
 LDFLAGS = \
--mcpu=cortex-m4 \
--mthumb \
--mfloat-abi=soft \
--nostdlib \
--T Linker/stm32f407vgtx.ld \
--Wl,--gc-sections \
--Wl,-Map=stm32f407vgtx.map \
--Wl,--print-memory-usage \
--Wl,--print-gc-sections
+    -mcpu=cortex-m4 \
+    -mthumb \
+    -mfloat-abi=soft \
+    -nostdlib \
+    -T Linker/stm32f407vgtx.ld \
+    -Wl,--gc-sections \
+    -Wl,-Map=Debug/stm32f407vgtx.map \
+    -Wl,--print-memory-usage \
+    -Wl,--print-gc-sections
 
 
 # Source Files
@@ -45,7 +45,7 @@ OBJ = $(SRC:.c=.o)
 
 
 # PHONY
-.PHONY: all clean
+.PHONY: all clean flash debug gdb
 
 
 # Default Target
@@ -68,7 +68,10 @@ $(ELF): $(OBJ)
 
 # Clean
 clean:
-	rm -f $(OBJ) *.map *.elf
+	rm -f \
+	$(OBJ) \
+	Debug/*map \
+	*.elf
 
 
 # Flash code
@@ -78,7 +81,7 @@ flash:
 	-c "program $(ELF) verify reset exit"
 
 
-# Debug-server
+# Debug server
 debug:
 	openocd \
 	-f board/stm32f4discovery.cfg
