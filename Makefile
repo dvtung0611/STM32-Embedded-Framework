@@ -26,11 +26,12 @@ LDFLAGS = \
     -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
-    --specs=nano.specs \
+    -nostdlib \
     -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
     -Wl,-Map=Debug/stm32f407vgtx.map \
     -Wl,--print-memory-usage
+# 	-Wl,--print-gc-sections
 
 
 # Source Files
