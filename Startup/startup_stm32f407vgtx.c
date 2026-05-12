@@ -11,6 +11,7 @@ extern uint32_t _sbss;
 extern uint32_t _ebss;
 
 extern int main(void);
+extern void initialise_monitor_handles(void);
 
 
 typedef void (*ISR_Handler_t)(void);
@@ -291,6 +292,9 @@ void Reset_Handler(void)
         *pbss = 0;
         pbss++;
     }
+
+    // Semihosting init function
+    initialise_monitor_handles();
 
     // Call main function
     main();
