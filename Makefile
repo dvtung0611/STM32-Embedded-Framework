@@ -21,12 +21,12 @@ CFLAGS = \
 	-ILibC/Inc
 
 
-# Linker Flags
+Linker Flags
 LDFLAGS = \
     -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
-    -nostdlib \
+    --specs=nano.specs \
     -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
     -Wl,-Map=Debug/stm32f407vgtx.map \
@@ -72,7 +72,7 @@ $(ELF): $(OBJ)
 clean:
 	rm -f \
 	$(OBJ) \
-	*.map \
+	Debug/*.map \
 	*.elf
 
 
@@ -92,3 +92,7 @@ debug:
 # GDB target
 gdb:
 	arm-none-eabi-gdb $(ELF)
+
+
+elf-sections:
+	arm-none-eabi-objdump -h $(ELF)
