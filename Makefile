@@ -8,6 +8,8 @@ CFLAGS = \
     -mthumb \
     -mfloat-abi=soft \
     -std=gnu11 \
+	-specs=nano.specs \
+	-u _printf_float \
     -O0 \
     -Wall \
     -Wextra \
@@ -26,7 +28,8 @@ LDFLAGS = \
     -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
-    -nostdlib \
+    -specs=nosys.specs \
+	-specs=nano.specs \
     -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
     -Wl,-Map=Debug/stm32f407vgtx.map \

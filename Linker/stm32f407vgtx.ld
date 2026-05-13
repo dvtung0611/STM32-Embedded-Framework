@@ -53,5 +53,8 @@ SECTIONS
 
         . = ALIGN(4);
         _ebss = .;
+
+        . = ALIGN(4);
+        end = .;
     } > SRAM
 }
