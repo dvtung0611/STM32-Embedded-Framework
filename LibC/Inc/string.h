@@ -20,14 +20,14 @@
  *
  * @param  ptr      Pointer to the starting memory address
  * @param  value    Value to be written into memory (byte value)
- * @param  size     Number of bytes to fill
+ * @param  num      Number of bytes to fill
  *
  * @return Pointer to the filled memory block
  *
  * @note This function writes the specified value byte-by-byte
  *       into the memory region starting at ptr.
  */
-void *memset(void *ptr, int32_t value, uint32_t size);
+void *memset(void *ptr, int value, size_t num);
 
 
 /**
@@ -35,7 +35,7 @@ void *memset(void *ptr, int32_t value, uint32_t size);
  *
  * @param dest Pointer to the destination memory address
  * @param src  Pointer to the source memory address
- * @param size Number of bytes to copy
+ * @param num  Number of bytes to copy
  *
  * @return Pointer to the destination memory block
  *
@@ -45,7 +45,7 @@ void *memset(void *ptr, int32_t value, uint32_t size);
  * @warning Source and destination memory regions must not overlap.
  *          Use memmove() for overlapping memory regions.
  */
-void *memcpy(void *dest, const void *src, uint32_t size);
+void *memcpy(void *dest, const void *src, size_t num);
 
 
 #endif /* STRING_H_ */

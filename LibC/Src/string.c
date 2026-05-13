@@ -8,16 +8,17 @@
 /* ================================================== INCLUDES ================================================== */
 
 #include <stdint.h>
+#include <stddef.h>
 #include "string.h"
 
 
 /* ================================================== APIs ================================================== */
 
-void *memset(void *ptr, int32_t value, uint32_t size)
+void *memset(void *ptr, int value, size_t num)
 {
     uint8_t *p = (uint8_t *)(ptr);
     
-    while (size--)
+    while (num--)
     {
         *p = (uint8_t)(value);
         p++;
@@ -27,12 +28,12 @@ void *memset(void *ptr, int32_t value, uint32_t size)
 }
 
 
-void *memcpy(void *dest, const void *src, uint32_t size)
+void *memcpy(void *dest, const void *src, size_t num)
 {
     uint8_t *pdest = (uint8_t *)(dest);
     const uint8_t *psrc = (const uint8_t *)(src);
 
-    while (size--)
+    while (num--)
     {
         *pdest = *psrc;
         pdest++;
