@@ -2,9 +2,13 @@
 CC = arm-none-eabi-gcc
 
 
+# Select board
+BOARD ?= STM32F4-DISC1
+include Boards/$(BOARD)/board.mk
+
+
 # Compiler Flags
 CFLAGS = \
-    -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
     -std=gnu11 \
@@ -19,34 +23,41 @@ CFLAGS = \
     -ffunction-sections \
     -fdata-sections \
     -ffreestanding \
-    -IDrivers/Inc \
-	-ILibC/Inc
+
+CFLAGS += $(CPU_FLAGS)
+CFLAGS += -D$(MCU)
+CFLAGS += -IDrivers/Cortex/Common/Inc
+CFLAGS += -IDrivers/Cortex/$(CPU)/Inc
+CFLAGS += -IDrivers/MCU/Common/Inc
+CFLAGS += -IDrivers/MCU/$(MCU)/Inc
+CFLAGS += -ILibc/Inc
 
 
 # Linker Flags
 LDFLAGS = \
-    -mcpu=cortex-m4 \
     -mthumb \
     -mfloat-abi=soft \
     -specs=nosys.specs \
 	-specs=nano.specs \
-    -T Linker/stm32f407vgtx.ld \
     -Wl,--gc-sections \
-    -Wl,-Map=Debug/stm32f407vgtx.map \
+    -Wl,-Map=Build/$(BOARD)/firmware_map.map \
     -Wl,--print-memory-usage
 # 	-Wl,--print-gc-sections
+
+LDFLAGS += $(CPU_FLAGS)
+LDFLAGS += -T $(LINKER_SCRIPT)
 
 
 # Source Files
 SRC = \
-Startup/startup_stm32f407vgtx.c \
-$(wildcard Src/*.c) \
-$(wildcard Drivers/Src/*.c) \
-$(wildcard LibC/Src/*.c)
-
-
-# Object Files
-OBJ = $(SRC:.c=.o)
+    $(wildcard Applications/main.c) \
+    $(wildcard Core/Src/*.c) \
+	$(STARTUP_FILE) \
+	$(wildcard Drivers/Cortex/Common/Src/*.c) \
+	$(wildcard Drivers/Cortex/$(CPU)/Src/*.c) \
+	$(wildcard Drivers/MCU/Common/Src/*.c) \
+	$(wildcard Drivers/MCU/$(MCU)/Src/*.c) \
+	$(wildcard Libc/Src/*.c) \
 
 
 # PHONY
@@ -60,7 +71,11 @@ OBJ = $(SRC:.c=.o)
 
 
 # Default Target
-all: stm32f407vgtx.elf
+all: ELF
+
+
+# Object Files
+OBJ = $(SRC:.c=.o)
 
 
 # Pattern Rule
@@ -69,7 +84,7 @@ all: stm32f407vgtx.elf
 
 
 # ELF file
-ELF = stm32f407vgtx.elf
+ELF = Build/$(BOARD)/firmware.elf
 
 
 # stm32f407vgtx.elf
@@ -81,21 +96,27 @@ $(ELF): $(OBJ)
 clean:
 	rm -f \
 	$(OBJ) \
-	Debug/*.map \
+	$(ELF) \
+	*.map \
+	*.i \
+	*.s \
+	*.o \
 	*.elf
 
 
 # Flash code
 flash-code:
 	openocd \
-	-f board/stm32f4discovery.cfg \
+	-f $(OPENOCD_INTERFACE) \
+	-f $(OPENOCD_TARGET) \
 	-c "program $(ELF) verify reset exit"
 
 
 # Debug server
 openocd:
 	openocd \
-	-f board/stm32f4discovery.cfg
+	-f $(OPENOCD_INTERFACE) \
+	-f $(OPENOCD_TARGET)
 
 
 # GDB target

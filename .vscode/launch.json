@@ -2,28 +2,27 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "STM32 BareMetal Debug",
+            "name": "STM32 BareMetal Firmware Debug",
             "type": "cortex-debug",
             "request": "launch",
-
             "cwd": "${workspaceRoot}",
 
-            "executable": "${workspaceRoot}/stm32f407vgtx.elf",
+            "executable": "${workspaceRoot}/Build/${env:BOARD}/firmware.elf",
 
             "servertype": "openocd",
 
             "configFiles": [
                 "interface/stlink.cfg",
-                "target/stm32f4x.cfg"
+                "${workspaceRoot}/Boards/${env:BOARD}/openocd.cfg"
             ],
 
             "device": "STM32F407VG",
 
-            "svdFile": "${workspaceRoot}/SVD/STM32F407.svd",
+            "svdFile": "${workspaceRoot}/SVD/${env:MCU}.svd",
 
             "runToEntryPoint": "main",
 
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Build Firmware",
 
             "swoConfig": {
                 "enabled": true,

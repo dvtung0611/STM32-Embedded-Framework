@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.windows": {
+        "BOARD": "STM32F4-DISC1",
+        "MCU": "STM32F407xx"
+    }
+}
