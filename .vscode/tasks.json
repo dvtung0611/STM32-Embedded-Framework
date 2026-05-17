@@ -14,7 +14,7 @@
 
     "options": {
         "env": {
-            "BOARD": "STM32F4-DISC1"
+            "BOARD": "stm32f4-disc1"
         }
     }
 }

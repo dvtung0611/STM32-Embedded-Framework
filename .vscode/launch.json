@@ -7,18 +7,18 @@
             "request": "launch",
             "cwd": "${workspaceRoot}",
 
-            "executable": "${workspaceRoot}/Build/${env:BOARD}/firmware.elf",
+            "executable": "${workspaceRoot}/build/${env:BOARD}/firmware.elf",
 
             "servertype": "openocd",
 
             "configFiles": [
                 "interface/stlink.cfg",
-                "${workspaceRoot}/Boards/${env:BOARD}/openocd.cfg"
+                "${workspaceRoot}/boards/${env:BOARD}/openocd.cfg"
             ],
 
-            "device": "STM32F407VG",
+            "device": "${env:BOARD}",
 
-            "svdFile": "${workspaceRoot}/SVD/${env:MCU}.svd",
+            "svdFile": "${workspaceRoot}/svd/${env:MCU}.svd",
 
             "runToEntryPoint": "main",
 
