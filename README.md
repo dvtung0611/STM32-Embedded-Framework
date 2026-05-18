@@ -1,1 +1,1 @@
-# STM32-BareMetal-Firmware
+# STM32-Embedded-Framework
