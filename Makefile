@@ -3,8 +3,8 @@ CC = arm-none-eabi-gcc
 
 
 # Select board
-BOARD ?= STM32F4-DISC1
-include Boards/$(BOARD)/board.mk
+BOARD ?= stm32f407vg-disc1
+include boards/$(BOARD)/board.mk
 
 
 # Compiler Flags
@@ -25,12 +25,10 @@ CFLAGS = \
     -ffreestanding
 
 CFLAGS += $(CPU_FLAGS)
-CFLAGS += -D$(MCU)
-CFLAGS += -IDrivers/Cortex/Common/Inc
-CFLAGS += -IDrivers/Cortex/$(CPU)/Inc
-CFLAGS += -IDrivers/MCU/Common/Inc
-CFLAGS += -IDrivers/MCU/$(MCU)/Inc
-CFLAGS += -ILibc/Inc
+CFLAGS += -Idrivers/$(MCU_FAMILY)/cpu/inc
+CFLAGS += -Idrivers/$(MCU_FAMILY)/mcu/inc
+CFLAGS += -Ilibc/inc
+CFLAGS += -Iplatform/debug/inc
 
 
 # Linker Flags
@@ -40,24 +38,12 @@ LDFLAGS = \
     -specs=nosys.specs \
 	-specs=nano.specs \
     -Wl,--gc-sections \
-    -Wl,-Map=Build/$(BOARD)/firmware_map.map \
+    -Wl,-Map=Build/$(BOARD)/firmware.map \
     -Wl,--print-memory-usage
 # 	-Wl,--print-gc-sections
 
 LDFLAGS += $(CPU_FLAGS)
 LDFLAGS += -T $(LINKER_SCRIPT)
-
-
-# Source .c files
-SRC = \
-    $(wildcard Applications/main.c) \
-    $(wildcard Core/Src/syscalls.c) \
-	$(STARTUP_FILE) \
-	$(wildcard Drivers/Cortex/Common/Src/*.c) \
-	$(wildcard Drivers/Cortex/$(CPU)/Src/*.c) \
-	$(wildcard Drivers/MCU/Common/Src/*.c) \
-	$(wildcard Drivers/MCU/$(MCU)/Src/*.c) \
-	$(wildcard Libc/Src/*.c)
 
 
 .PHONY: \
@@ -66,14 +52,32 @@ SRC = \
 	flash-code \
 	openocd \
 	gdb \
-	elf-sections
+	elf-sections \
+	print-obj
 
 
-ELF = Build/$(BOARD)/firmware.elf
+# .c files
+SRC = \
+    $(wildcard core/src/*.c) \
+	$(STARTUP_FILE) \
+	$(wildcard drivers/$(MCU_FAMILY)/cpu/src/*.c) \
+	$(wildcard drivers/$(MCU_FAMILY)/mcu/src/*.c) \
+	$(wildcard libc/src/*.c) \
+	$(wildcard platform/debug/src/*.c) \
+	$(wildcard tests/main.c)
+
+
+# .o files
+OBJ_DIR = build/$(BOARD)/obj
+OBJ = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC))
+
+
+# .elf file
+ELF_FILE = build/$(BOARD)/firmware.elf
 
 
 # Build final ELF firmware binary
-all: $(ELF)
+all: $(ELF_FILE)
 
 
 # Compile each .c source file into .o object file
@@ -82,40 +86,37 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-# Link all object files into final ELF executable
-$(ELF): $(OBJ)
+# Link all object files into final ELF executable file
+$(ELF_FILE): $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 
 # Remove all generated build artifacts for selected board
 clean:
-	rm -rf Build/$(BOARD)/*
+	rm -rf build/$(BOARD)/*
 
 
 # Flash firmware to target MCU using OpenOCD
 flash-code:
 	openocd \
-	-f $(OPENOCD_INTERFACE) \
-	-f $(OPENOCD_TARGET) \
-	-c "program $(ELF) verify reset exit"
+	-f $(OPENOCD_FILE)
+	-c "program $(ELF_FILE) verify reset exit"
 
 
 # Start OpenOCD GDB server for debugging
 openocd:
-	openocd \
-	-f $(OPENOCD_INTERFACE) \
-	-f $(OPENOCD_TARGET)
+	openocd -f $(OPENOCD_FILE)
 
 
 # Launch ARM GDB debugger with current ELF file
 gdb:
-	arm-none-eabi-gdb $(ELF)
+	arm-none-eabi-gdb $(ELF_FILE)
 
 
 # Display ELF memory sections and sizes
 elf-sections:
-	arm-none-eabi-objdump -h $(ELF)
+	arm-none-eabi-objdump -h $(ELF_FILE)
 
 
 # Print all generated object file paths

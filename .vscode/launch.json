@@ -1,34 +1,73 @@
 {
     "version": "0.2.0",
+
+    "inputs": [
+        {
+            "id": "board",
+            "type": "pickString",
+            "description": "Select STM32 Board for launch.json",
+            "options": [
+                "stm32f407vg-disc1",
+            ],
+            "default": "stm32f407vg-disc1"
+        },
+
+        {
+            "id": "mcu_family",
+            "type": "pickString",
+            "description": "Select MCU Family",
+            "options": [
+                "stm32f407",
+            ],
+            "default": "stm32f407"
+        },
+
+        {
+            "id": "mcu_device",
+            "type": "pickString",
+            "description": "Select MCU Device",
+            "options": [
+                "STM32F407VG",
+            ],
+            "default": "STM32F407VG"
+        },
+    ],
+
     "configurations": [
         {
             "name": "STM32 BareMetal Firmware Debug",
-            "type": "cortex-debug",
-            "request": "launch",
-            "cwd": "${workspaceRoot}",
 
-            "executable": "${workspaceRoot}/build/${env:BOARD}/firmware.elf",
+            "type": "cortex-debug",
+
+            "request": "launch",
+
+            "cwd": "${workspaceFolder}",
+
+            "executable": "${workspaceFolder}/build/${input:board}/firmware.elf",
 
             "servertype": "openocd",
 
             "configFiles": [
-                "interface/stlink.cfg",
-                "${workspaceRoot}/boards/${env:BOARD}/openocd.cfg"
+                "${workspaceFolder}/boards/${input:board}/openocd.cfg"
             ],
 
-            "device": "${env:BOARD}",
+            "device": "${input:mcu_device}",
 
-            "svdFile": "${workspaceRoot}/svd/${env:MCU}.svd",
+            "svdFile": "${workspaceFolder}/svd/${input:mcu_family}.svd",
 
             "runToEntryPoint": "main",
 
-            "preLaunchTask": "Build Firmware",
+            "preLaunchTask": "Rebuild Firmware",
 
             "swoConfig": {
                 "enabled": true,
+
                 "cpuFrequency": 16000000,
+
                 "swoFrequency": 2000000,
+
                 "source": "probe",
+
                 "decoders": [
                     {
                         "port": 0,

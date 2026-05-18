@@ -1,20 +1,44 @@
 {
     "version": "2.0.0",
 
+    "inputs": [
+        {
+            "id": "board",
+            "type": "pickString",
+            "description": "Select STM32 Board for tasks.json",
+            "options": [
+                "stm32f407vg-disc1",
+            ],
+            "default": "stm32f407vg-disc1"
+        },
+    ],
+
     "tasks": [
+        {
+            "label": "Clean build/",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "clean"
+            ]
+        },
+
         {
             "label": "Build Firmware",
             "type": "shell",
             "command": "make",
             "args": [
-                "BOARD=${env:BOARD}"
+                "BOARD=${input:board}"
+            ]
+        },
+
+        {
+            "label": "Rebuild Firmware",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean build/",
+                "Build Firmware",
             ]
         }
-    ],
-
-    "options": {
-        "env": {
-            "BOARD": "stm32f4-disc1"
-        }
-    }
+    ]
 }
