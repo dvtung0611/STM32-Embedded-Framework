@@ -60,7 +60,7 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
 
 void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
 {
-    GPIO_RegDef_t *GPIOx = pGPIO_Handle->pGPIOx; // (x = A, B, ..., I)
+    GPIO_RegDef_t *pGPIOx = pGPIO_Handle->pGPIOx; // (x = A, B, ..., I)
     uint8_t PinNumber = pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
     uint8_t PinMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinMode;
     uint8_t PinOutputSpeed = pGPIO_Handle->GPIO_PinConfig.GPIO_PinOutputSpeed;
@@ -69,32 +69,32 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     uint8_t PinAltFuncMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinAltFunMode;
 
     // Enable clock for the GPIO peripheral.
-    GPIO_PeriClock_Control(GPIOx, ENABLE);
+    GPIO_PeriClock_Control(pGPIOx, ENABLE);
 
     // Configure the mode of GPIO Pin
     if (PinMode == GPIO_PIN_MODE_INPUT || PinMode == GPIO_PIN_MODE_OUTPUT ||
         PinMode == GPIO_PIN_MODE_ANALOG || PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        GPIOx->MODER &= ~(3U << (PinNumber * 2U));
-        GPIOx->MODER |= (PinMode << (PinNumber * 2U));
+        pGPIOx->MODER &= ~(3U << (PinNumber * 2U));
+        pGPIOx->MODER |= (PinMode << (PinNumber * 2U));
     }
 
     // Configure the speed (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        GPIOx->OSPEEDR &= ~(3U << (PinNumber * 2U));
-        GPIOx->OSPEEDR |= (PinOutputSpeed << (PinNumber * 2U));
+        pGPIOx->OSPEEDR &= ~(3U << (PinNumber * 2U));
+        pGPIOx->OSPEEDR |= (PinOutputSpeed << (PinNumber * 2U));
     }
 
     // Configure the Pull-up/Pull-down
-    GPIOx->PUPDR &= ~(3U << (PinNumber * 2U));
-    GPIOx->PUPDR |= (PinPuPd << (PinNumber * 2U));
+    pGPIOx->PUPDR &= ~(3U << (PinNumber * 2U));
+    pGPIOx->PUPDR |= (PinPuPd << (PinNumber * 2U));
 
     // Configure the output type (Push-pull/Open-drain) (if the mode of GPIO pin is output mode or altfn mode)
     if (PinMode == GPIO_PIN_MODE_OUTPUT || PinMode == GPIO_PIN_MODE_ALTFN)
     {
-        GPIOx->OTYPER &= ~(1U << PinNumber);
-        GPIOx->OTYPER |= (PinOutputType << PinNumber);
+        pGPIOx->OTYPER &= ~(1U << PinNumber);
+        pGPIOx->OTYPER |= (PinOutputType << PinNumber);
     }
 
     // Configure the alternate functionality
@@ -102,13 +102,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     {
         if (PinNumber < 8)
         {
-            GPIOx->AFRL &= ~(15U << (PinNumber * 4));
-            GPIOx->AFRL |= (PinAltFuncMode << (PinNumber * 4));
+            pGPIOx->AFRL &= ~(15U << (PinNumber * 4));
+            pGPIOx->AFRL |= (PinAltFuncMode << (PinNumber * 4));
         }
         else
         {
-            GPIOx->AFRH &= ~(15U << ((PinNumber % 8) * 4));
-            GPIOx->AFRH |= (PinAltFuncMode << ((PinNumber % 8) * 4));
+            pGPIOx->AFRH &= ~(15U << ((PinNumber % 8) * 4));
+            pGPIOx->AFRH |= (PinAltFuncMode << ((PinNumber % 8) * 4));
         }
     }
 }
