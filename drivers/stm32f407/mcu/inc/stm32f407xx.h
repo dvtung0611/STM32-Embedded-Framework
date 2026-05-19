@@ -15,6 +15,7 @@
 /* ===================================================== MACROS ===================================================== */
 
 #define __IO 			volatile
+#define __weak          __attribute__((weak))
 
 #define ENABLE			(1U)
 #define DISABLE			(0U)
