@@ -92,6 +92,14 @@
 #define SPI_BUSY_IN_TX          (2U)
 
 
+/**
+ * @SPI_APPLICATION_EVENT
+ */
+#define SPI_EVENT_TX_COMPLETE       (0U)
+#define SPI_EVENT_RX_COMPLETE       (1U)
+#define SPI_EVENT_OVR_ERROR         (2U)
+
+
 /* ================================================== BIT POSITION ================================================== */
 
 /**
@@ -186,8 +194,8 @@ typedef struct
     SPI_RegDef_t *pSPIx;        /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
     SPI_Config_t SPI_Config;    /*!< SPI configuration settings */
 
-    uint8_t *pTxBuffer;           /*!< Pointer to TX buffer application data */
-    uint8_t *pRxBuffer;           /*!< Pointer to RX buffer application data */
+    uint8_t *pTxBuffer;         /*!< Pointer to TX buffer application data */
+    uint8_t *pRxBuffer;         /*!< Pointer to RX buffer application data */
 
     uint32_t TxLength;          /*!< Number of bytes remaining to transmit */
     uint32_t RxLength;          /*!< Number of bytes remaining to receive */
@@ -197,7 +205,7 @@ typedef struct
 } SPI_Handle_t;
 
 
-/* ================================================== APIs ================================================== */
+/* ====================================================== APIs ====================================================== */
 
 /**
  * @brief Enable or disable clock for SPI peripheral
@@ -418,9 +426,57 @@ uint8_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t D
  *       Actual data reception is handled inside the SPI ISR.
  * 
  * Refer to:
- * - RM0090 Reference Manual, Section 28.5.2 SPI control register 2 (SPI_CR2)
+ * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
  */
 uint8_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength);
+
+
+/**
+ * @brief Handle SPI interrupt events
+ * 
+ * @param pSPI_Handle Pointer to SPI handle structure containing
+ *                    SPI peripheral base address and transfer states
+ * 
+ * @details This function checks and handles SPI interrupt sources:
+ *          - TXE  : Transmit buffer empty interrupt
+ *          - RXNE : Receive buffer not empty interrupt
+ *          - OVR  : Overrun error interrupt
+ * 
+ *          For each interrupt source:
+ *          1. Check the corresponding status flag in SPI_SR register
+ *          2. Check whether the interrupt is enabled in SPI_CR2 register
+ *          3. Call the appropriate internal interrupt handler
+ * 
+ *          Internal handlers:
+ *          - SPI_TXE_InterruptHandle()
+ *          - SPI_RXNE_InterruptHandle()
+ *          - SPI_OVR_InterruptHandle()
+ * 
+ * @note This function should be called inside the actual SPI IRQ handler
+ *       implemented in the application layer.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
+ *                              Section 28.5.3 SPI status register (SPI_SR)
+ */
+void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle);
+
+
+/**
+ * @brief Application callback function for SPI events
+ * 
+ * @param pSPI_Handle     Pointer to SPI handle structure
+ * @param SPI_AppEventFlag SPI application event source
+ * 
+ * @details This callback function is executed by the SPI driver when
+ *          an interrupt event occurs during non-blocking communication.
+ *          The user application should implement this function to handle
+ *          SPI events.
+ * 
+ * @note This function is declared as __weak inside the driver source file,
+ *       allowing the application to override it with a custom implementation.
+ */
+void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, uint8_t SPI_AppEventFlag);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
