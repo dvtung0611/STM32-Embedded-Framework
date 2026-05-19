@@ -301,4 +301,6 @@ void Reset_Handler(void)
 
     // Call main function
     main();
+
+    while (1);
 }
