@@ -39,8 +39,7 @@
  */
 #define SPI_BUSCONFIG_FULL_DUPLEX           (0U)
 #define SPI_BUSCONFIG_HALF_DUPLEX           (1U)
-#define SPI_BUSCONFIG_TXONLY                (2U)
-#define SPI_BUSCONFIG_RXONLY                (3U)
+#define SPI_BUSCONFIG_SIMPLEX_RX            (2U)
 
 
 /**

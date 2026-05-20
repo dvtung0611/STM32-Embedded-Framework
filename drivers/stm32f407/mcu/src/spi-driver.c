@@ -60,22 +60,23 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     pSPIx->CR1 |= (DeviceMode << SPI_CR1_MSTR);
 
     // Configure the communication mode
-    if (BusConfig == SPI_BUSCONFIG_FULL_DUPLEX)
+    if (BusConfig == SPI_BUSCONFIG_FULL_DUPLEX) // 2-line full duplex
     {
-        pSPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected
+        pSPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE);
+        pSPIx->CR1 &= ~(1U << SPI_CR1_RXONLY);
     }
-    else if (BusConfig == SPI_BUSCONFIG_RXONLY)
+    else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX) // 1-line half duplex
     {
-        pSPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected + Ignore the MOSI line
+        pSPIx->CR1 |= (1U << SPI_CR1_BIDIMODE);
+        pSPIx->CR1 &= ~(1U << SPI_CR1_RXONLY);
+        // TX mode: BIDIOE = 1
+        // RX mode: BIDIOE = 0
+        // Direction controlled at runtime
+    }
+    else if (BusConfig == SPI_BUSCONFIG_SIMPLEX_RX) // 2-line receive-only
+    {
+        pSPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE);
         pSPIx->CR1 |= (1U << SPI_CR1_RXONLY);
-    }
-    else if (BusConfig == SPI_BUSCONFIG_TXONLY)
-    {
-        pSPIx->CR1 &= ~(1U << SPI_CR1_BIDIMODE); // Unidirectional data mode selected + Ignore the MISO line
-    }
-    else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX)
-    {
-        pSPIx->CR1 |= (1U << SPI_CR1_BIDIMODE); // Bidirectional data mode selected
     }
 
     // Configure SCLK speed
@@ -340,12 +341,12 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
 
 
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
-{
-    SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
-    
+{    
     // Clear OVR flag
-    if (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == FLAG_SET)
+    if (pSPI_Handle->TxState != SPI_BUSY_IN_TX)
     {
+        SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
+
         (void)pSPIx->DR;
         (void)pSPIx->SR;
 
