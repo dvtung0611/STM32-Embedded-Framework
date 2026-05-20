@@ -83,3 +83,9 @@ void EXTI_ClearPending(uint8_t LineNumber)
 
     EXTI->PR = (1U << LineNumber);
 }
+
+
+uint8_t EXTI_GetPending(uint8_t LineNumber)
+{
+    return (EXTI->PR >> LineNumber) & 1U;
+}
