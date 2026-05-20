@@ -126,4 +126,27 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
 void EXTI_ClearPending(uint8_t LineNumber);
 
 
+/**
+ * @brief Get pending interrupt status of a given EXTI line
+ *
+ * @details Reads the corresponding bit in the EXTI Pending Register (PR)
+ *          to determine whether an interrupt event is pending.
+ * 
+ * @param LineNumber EXTI line number (0–22)
+ * 
+ * @return uint8_t
+ *         - 1: Pending interrupt is active
+ *         - 0: No pending interrupt
+ * 
+ * @note The pending bit is set by hardware when the configured
+ *       trigger event occurs on the EXTI line.
+ *       The pending bit must be cleared manually by software
+ *       using EXTI_ClearPending().
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 12.3.6 Pending register (EXTI_PR)
+ */
+uint8_t EXTI_GetPending(uint8_t LineNumber);
+
+
 #endif /* INC_EXTI_DRIVER_H_ */
