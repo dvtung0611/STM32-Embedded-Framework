@@ -10,7 +10,11 @@
 
 
 static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle);
+static void SPI_CloseTransmission(SPI_Handle_t *pSPI_Handle);
+
 static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle);
+static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle);
+
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 
 
@@ -296,15 +300,24 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     }
 
     // Close transmission
-    if (pSPI_Handle->TxLength <= 0 && SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) && !SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE))
+    if (pSPI_Handle->TxLength == 0)
     {
-        pSPIx->CR2 &= ~(1U << SPI_CR2_TXEIE);
-        pSPI_Handle->pTxBuffer = NULL;
-        pSPI_Handle->TxLength = 0;
-        pSPI_Handle->TxState = SPI_READY;
-
-        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_TX_COMPLETE);
+        SPI_CloseTransmission(pSPI_Handle);
     }
+}
+
+
+static void SPI_CloseTransmission(SPI_Handle_t *pSPI_Handle)
+{
+    SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
+
+    // Disable TXE interrupt
+    pSPIx->CR2 &= ~(1U << SPI_CR2_TXEIE);
+    pSPI_Handle->pTxBuffer = NULL;
+    pSPI_Handle->TxLength = 0;
+    pSPI_Handle->TxState = SPI_READY;
+
+    SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_TX_COMPLETE);
 }
 
 
@@ -328,15 +341,24 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     }
 
     // Close reception
-    if (pSPI_Handle->RxLength <= 0 && SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) && !SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE))
+    if (pSPI_Handle->RxLength == 0)
     {
-        pSPIx->CR2 &= ~(1U << SPI_CR2_RXNEIE);
-        pSPI_Handle->pRxBuffer = NULL;
-        pSPI_Handle->RxLength = 0;
-        pSPI_Handle->RxState = SPI_READY;
-
-        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_RX_COMPLETE);
+        SPI_CloseReception(pSPI_Handle);
     }
+}
+
+
+void SPI_CloseReception(SPI_Handle_t *pSPI_Handle)
+{
+    SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
+
+    // Disable RXNE interrupt
+    pSPIx->CR2 &= ~(1U << SPI_CR2_RXNEIE);
+    pSPI_Handle->pRxBuffer = NULL;
+    pSPI_Handle->RxLength = 0;
+    pSPI_Handle->RxState = SPI_READY;
+
+    SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_RX_COMPLETE);
 }
 
 
