@@ -440,6 +440,14 @@ typedef struct
 /* =============================================== MACROS PERIPHERALS =============================================== */
 
 /**
+ * @brief Bitwise operations
+ */
+#define READ_BIT(REG, BIT_POS)          (((REG) >> (BIT_POS)) & 1U)
+#define WRITE_BIT(REG, BIT_POS)         ((REG) |= (1U << (BIT_POS)))
+#define CLEAR_BIT(REG, BIT_POS)         ((REG) &= ~(1U << (BIT_POS)))
+
+
+/**
  * @brief Enable the GPIO peripheral clock on the AHB1 bus
  * 
  * @details These macros enable the GPIO peripheral clock via the RCC AHB1ENR register.
