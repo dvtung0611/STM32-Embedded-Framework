@@ -397,3 +397,15 @@ __weak void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent
     (void)pSPI_Handle;
     (void)SPI_AppEventFlag;
 }
+
+
+uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle)
+{
+    return pSPI_Handle->TxState == SPI_STATE_BUSY_TX;
+}
+
+
+uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle)
+{
+    return pSPI_Handle->RxState == SPI_STATE_BUSY_RX;
+}

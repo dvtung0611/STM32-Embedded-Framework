@@ -519,4 +519,26 @@ void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle);
 void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_AppEventFlag);
 
 
+/**
+ * @brief Check whether SPI transmission is busy
+ * 
+ * @param pSPI_Handle Pointer to SPI handle structure
+ * 
+ * @return uint8_t 0: SPI Tx is idle
+ *                 1: SPI Tx is busy transmitting
+ */
+uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle);
+
+
+/**
+ * @brief Check whether SPI reception is busy
+ * 
+ * @param pSPI_Handle Pointer to SPI handle structure
+ * 
+ * @return uint8_t 0: SPI Rx is idle
+ *                 1: SPI Rx is busy receiving
+ */
+uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
+
+
 #endif /* INC_SPI_DRIVER_H_ */
