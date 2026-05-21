@@ -1,73 +1,28 @@
 {
     "version": "0.2.0",
-
-    "inputs": [
-        {
-            "id": "board",
-            "type": "pickString",
-            "description": "Select STM32 Board for launch.json",
-            "options": [
-                "stm32f407vg-disc1",
-            ],
-            "default": "stm32f407vg-disc1"
-        },
-
-        {
-            "id": "mcu_family",
-            "type": "pickString",
-            "description": "Select MCU Family",
-            "options": [
-                "stm32f407",
-            ],
-            "default": "stm32f407"
-        },
-
-        {
-            "id": "mcu_device",
-            "type": "pickString",
-            "description": "Select MCU Device",
-            "options": [
-                "STM32F407VG",
-            ],
-            "default": "STM32F407VG"
-        },
-    ],
-
     "configurations": [
         {
-            "name": "STM32 BareMetal Firmware Debug",
-
+            "name": "STM32F407VG-DISC1 BareMetal Firmware Debug",
             "type": "cortex-debug",
-
             "request": "launch",
-
             "cwd": "${workspaceFolder}",
-
-            "executable": "${workspaceFolder}/build/${input:board}/firmware.elf",
-
+            "executable": "${workspaceFolder}/build/stm32f407vg-disc1/firmware.elf",
             "servertype": "openocd",
-
             "configFiles": [
-                "${workspaceFolder}/boards/${input:board}/openocd.cfg"
+                "${workspaceFolder}/boards/stm32f407vg-disc1/openocd.cfg"
             ],
-
-            "device": "${input:mcu_device}",
-
-            "svdFile": "${workspaceFolder}/svd/${input:mcu_family}.svd",
-
+            "openOCDLaunchCommands": [
+                "hla_serial 066BFF564981774867184828"
+            ],
+            "device": "STM32F407VG",
+            "svdFile": "${workspaceFolder}/svd/stm32f407.svd",
             "runToEntryPoint": "main",
-
-            "preLaunchTask": "Rebuild Firmware",
-
+            "preLaunchTask": "Rebuild stm32f407vg-disc1",
             "swoConfig": {
                 "enabled": true,
-
                 "cpuFrequency": 16000000,
-
                 "swoFrequency": 2000000,
-
                 "source": "probe",
-
                 "decoders": [
                     {
                         "port": 0,
