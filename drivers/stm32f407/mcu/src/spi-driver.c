@@ -17,6 +17,10 @@ static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle);
 
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 
+static uint8_t SPI_IsTXEInterruptActive(SPI_Handle_t *pSPI_Handle);
+static uint8_t SPI_IsRXNEInterruptActive(SPI_Handle_t *pSPI_Handle);
+static uint8_t SPI_IsOVRInterruptActive(SPI_Handle_t *pSPI_Handle);
+
 
 /* ====================================================== APIs ====================================================== */
 
@@ -264,33 +268,53 @@ SPI_Status_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, ui
 }
 
 
+static uint8_t SPI_IsTXEInterruptActive(SPI_Handle_t *pSPI_Handle)
+{
+    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_TXE);
+}
+
+
+static uint8_t SPI_IsRXNEInterruptActive(SPI_Handle_t *pSPI_Handle)
+{
+    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_RXNE);
+}
+
+
+static uint8_t SPI_IsOVRInterruptActive(SPI_Handle_t *pSPI_Handle)
+{
+    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_OVR);
+}
+
+
+uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle)
+{
+    uint32_t events = 0;
+
+    if (SPI_IsTXEInterruptActive(pSPI_Handle))
+        events |= SPI_IRQ_EVENT_TXE;
+    
+    if (SPI_IsRXNEInterruptActive(pSPI_Handle))
+        events |= SPI_IRQ_EVENT_RXNE;
+    
+    if (SPI_IsOVRInterruptActive(pSPI_Handle))
+        events |= SPI_IRQ_EVENT_OVR;
+    
+    return events;
+}
+
+
 void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle)
 {
-    SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
+    uint32_t events = SPI_GetPendingEvents(pSPI_Handle);
 
-    // Check for TXE
-    uint8_t temp1 = READ_BIT(pSPIx->SR, SPI_SR_TXE);
-    uint8_t temp2 = READ_BIT(pSPIx->CR2, SPI_CR2_TXEIE);
-    if (temp1 && temp2)
-    {
+    if (events & SPI_IRQ_EVENT_TXE)
         SPI_TXE_InterruptHandle(pSPI_Handle);
-    }
-
-    // Check for RXNE
-    temp1 = READ_BIT(pSPIx->SR, SPI_SR_RXNE);
-    temp2 = READ_BIT(pSPIx->CR2, SPI_CR2_RXNEIE);
-    if (temp1 && temp2)
-    {
+    
+    if (events & SPI_IRQ_EVENT_RXNE)
         SPI_RXNE_InterruptHandle(pSPI_Handle);
-    }
 
-    // Check for OVR
-    temp1 = READ_BIT(pSPIx->SR, SPI_SR_OVR);
-    temp2 = READ_BIT(pSPIx->CR2, SPI_CR2_ERRIE);
-    if (temp1 && temp2)
-    {
+    if (events & SPI_IRQ_EVENT_OVR)
         SPI_OVR_InterruptHandle(pSPI_Handle);
-    }
 }
 
 
@@ -318,7 +342,7 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     if (pSPI_Handle->TxLength == 0)
     {
         SPI_CloseTransmission(pSPI_Handle);
-        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_TX_COMPLETE);
+        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_TX_COMPLETE);
     }
 }
 
@@ -360,12 +384,12 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     if (pSPI_Handle->RxLength == 0)
     {
         SPI_CloseReception(pSPI_Handle);
-        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_RX_COMPLETE);
+        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_RX_COMPLETE);
     }
 }
 
 
-void SPI_CloseReception(SPI_Handle_t *pSPI_Handle)
+static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle)
 {
     SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
 
@@ -387,7 +411,7 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
         (void)pSPIx->DR;
         (void)pSPIx->SR;
 
-        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_EVENT_OVR_ERROR);
+        SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_OVR_ERROR);
     }
 }
 
