@@ -129,13 +129,25 @@ typedef enum
 
 
 /**
- * @SPI_APPLICATION_EVENT
+ * @SPI_IRQ_EVENT
  */
 typedef enum
 {
-    SPI_EVENT_TX_COMPLETE = 0U,
-    SPI_EVENT_RX_COMPLETE,
-    SPI_EVENT_OVR_ERROR
+    SPI_IRQ_EVENT_NONE = 1U,
+    SPI_IRQ_EVENT_TXE = 2U,
+    SPI_IRQ_EVENT_RXNE = 4U,
+    SPI_IRQ_EVENT_OVR = 8U,
+} SPI_IRQEvent_t;
+
+
+/**
+ * @SPI_APP_EVENT
+ */
+typedef enum
+{
+    SPI_APP_EVENT_TX_COMPLETE = 0U,
+    SPI_APP_EVENT_RX_COMPLETE,
+    SPI_APP_EVENT_OVR_ERROR
 } SPI_AppEvent_t;
 
 
@@ -506,7 +518,7 @@ void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle);
  * @brief Application callback function for SPI events
  * 
  * @param pSPI_Handle      Pointer to SPI handle structure
- * @param SPI_AppEventFlag SPI application event source | @SPI_APPLICATION_EVENT
+ * @param SPI_AppEventFlag SPI application event source | @SPI_APP_EVENT
  * 
  * @details This callback function is executed by the SPI driver when
  *          an interrupt event occurs during non-blocking communication.
@@ -539,6 +551,9 @@ uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle);
  *                 1: SPI Rx is busy receiving
  */
 uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
+
+
+uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
