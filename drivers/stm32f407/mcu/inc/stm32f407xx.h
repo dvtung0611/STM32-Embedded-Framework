@@ -603,6 +603,8 @@ typedef struct
 
 
 /**
+ * @IRQ_NUMBER
+ * 
  * @brief IRQ (Interrupt request) number of STM32F407XX MCU
  * 
  * @note
