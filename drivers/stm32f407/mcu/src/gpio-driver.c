@@ -11,9 +11,9 @@
 
 /* ====================================================== APIs ====================================================== */
 
-void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
+void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI)
 {
-	if (En_or_DI == ENABLE)
+	if (EN_or_DI == ENABLE)
 	{
 		if (pGPIOx == GPIOA)
 			GPIOA_PCLK_EN();
@@ -34,7 +34,7 @@ void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI)
 		else if (pGPIOx == GPIOI)
 			GPIOI_PCLK_EN();
 	}
-	else if (En_or_DI == DISABLE)
+	else if (EN_or_DI == DISABLE)
 	{
 		if (pGPIOx == GPIOA)
 			GPIOA_PCLK_DI();
@@ -137,7 +137,7 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 }
 
 
-uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber)
+uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, GPIO_Pin_t PinNumber)
 {
     uint8_t res = (uint8_t)((pGPIOx->IDR >> PinNumber) & 1U);
     return res;
@@ -151,11 +151,11 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx)
 }
 
 
-void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value)
+void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber, uint8_t Value)
 {
-    if (Value == GPIO_PIN_SET)
+    if (Value == SET)
         pGPIOx->ODR |= (1U << PinNumber);
-    else
+    else if (Value == RESET)
         pGPIOx->ODR &= ~(1U << PinNumber);
 }
 
@@ -166,13 +166,13 @@ void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
 }
 
 
-void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
+void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber)
 {
     pGPIOx->ODR ^= (1U << PinNumber);
 }
 
 
-void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
+void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber)
 {
     pGPIOx->LCKR |= (1U << PinNumber);
 
@@ -182,4 +182,29 @@ void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 
     (void)pGPIOx->LCKR;
     (void)pGPIOx->LCKR;
+}
+
+
+GPIO_PortCode_t GPIO_GetPortCode(GPIO_RegDef_t *pGPIOx)
+{
+    if (pGPIOx == GPIOA)
+        return GPIO_PORT_CODE_GPIOA;
+    else if (pGPIOx == GPIOB)
+        return GPIO_PORT_CODE_GPIOB;
+    else if (pGPIOx == GPIOC)
+        return GPIO_PORT_CODE_GPIOC;
+    else if (pGPIOx == GPIOD)
+        return GPIO_PORT_CODE_GPIOD;
+    else if (pGPIOx == GPIOE)
+        return GPIO_PORT_CODE_GPIOE;
+    else if (pGPIOx == GPIOF)
+        return GPIO_PORT_CODE_GPIOF;
+    else if (pGPIOx == GPIOG)
+        return GPIO_PORT_CODE_GPIOG;
+    else if (pGPIOx == GPIOH)
+        return GPIO_PORT_CODE_GPIOH;
+    else if (pGPIOx == GPIOI)
+        return GPIO_PORT_CODE_GPIOI;
+    else
+        return GPIO_PORT_CODE_GPIOA;
 }

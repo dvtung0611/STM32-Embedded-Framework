@@ -11,7 +11,7 @@
 #include "stm32f407xx.h"
 
 
-/* ===================================================== MACROS ===================================================== */
+/* ================================================== DEFINITIONS =================================================== */
 
 /**
  * @GPIO_RESET_REGISTER_VALUE
@@ -41,85 +41,125 @@
 
 
 /**
- * @GPIO_PIN_STATE
+ * @GPIO_PORT_CODE
  */
-#define GPIO_PIN_RESET                      (0U)
-#define GPIO_PIN_SET                        (1U)
+typedef enum
+{
+    GPIO_PORT_CODE_GPIOA = 0U,
+    GPIO_PORT_CODE_GPIOB,
+    GPIO_PORT_CODE_GPIOC,
+    GPIO_PORT_CODE_GPIOD,
+    GPIO_PORT_CODE_GPIOE,
+    GPIO_PORT_CODE_GPIOF,
+    GPIO_PORT_CODE_GPIOG,
+    GPIO_PORT_CODE_GPIOH,
+    GPIO_PORT_CODE_GPIOI,
+
+    GPIO_MAX_PORTCODE = GPIO_PORT_CODE_GPIOI
+} GPIO_PortCode_t;
 
 
 /**
- * @GPIO_PIN_NUMBER
+ * @GPIO_PIN_STATE
  */
-#define GPIO_PIN_NO_0                       (0U)
-#define GPIO_PIN_NO_1                       (1U)
-#define GPIO_PIN_NO_2                       (2U)
-#define GPIO_PIN_NO_3                       (3U)
-#define GPIO_PIN_NO_4                       (4U)
-#define GPIO_PIN_NO_5                       (5U)
-#define GPIO_PIN_NO_6                       (6U)
-#define GPIO_PIN_NO_7                       (7U)
-#define GPIO_PIN_NO_8                       (8U)
-#define GPIO_PIN_NO_9                       (9U)
-#define GPIO_PIN_NO_10                      (10U)
-#define GPIO_PIN_NO_11                      (11U)
-#define GPIO_PIN_NO_12                      (12U)
-#define GPIO_PIN_NO_13                      (13U)
-#define GPIO_PIN_NO_14                      (14U)
-#define GPIO_PIN_NO_15                      (15U)
+typedef enum
+{
+    GPIO_PIN_STATE_RESET = 0U,
+    GPIO_PIN_STATE_SET
+} GPIO_PinState_t;
+
+
+/**
+ * @GPIO_PIN
+ */
+typedef enum
+{
+    GPIO_PIN_0 = 0U,
+    GPIO_PIN_1,
+    GPIO_PIN_2,
+    GPIO_PIN_3,
+    GPIO_PIN_4,
+    GPIO_PIN_5,
+    GPIO_PIN_6,
+    GPIO_PIN_7,
+    GPIO_PIN_8,
+    GPIO_PIN_9,
+    GPIO_PIN_10,
+    GPIO_PIN_11,
+    GPIO_PIN_12,
+    GPIO_PIN_13,
+    GPIO_PIN_14,
+    GPIO_PIN_15
+} GPIO_Pin_t;
 
 
 /**
  * @GPIO_PIN_MODE
  */
-#define GPIO_PIN_MODE_INPUT                 (0U)
-#define GPIO_PIN_MODE_OUTPUT                (1U)
-#define GPIO_PIN_MODE_ALTFN                 (2U)
-#define GPIO_PIN_MODE_ANALOG                (3U)
+typedef enum
+{
+    GPIO_PIN_MODE_INPUT = 0U,
+    GPIO_PIN_MODE_OUTPUT,
+    GPIO_PIN_MODE_ALTFN,
+    GPIO_PIN_MODE_ANALOG
+} GPIO_PinMode_t;
 
 
 /**
  * @GPIO_PIN_OTYPE
  */
-#define GPIO_PIN_OTYPE_PUSHPULL             (0U)
-#define GPIO_PIN_OTYPE_OPENDRAIN            (1U)
+typedef enum
+{
+    GPIO_PIN_OTYPE_PUSHPULL = 0U,
+    GPIO_PIN_OTYPE_OPENDRAIN
+} GPIO_PinOType_t;
 
 
 /**
  * @GPIO_PIN_SPEED
  */
-#define GPIO_PIN_SPEED_LOW                  (0U)
-#define GPIO_PIN_SPEED_MEDIUM               (1U)
-#define GPIO_PIN_SPEED_HIGH                 (2U)
-#define GPIO_PIN_SPEED_VERYHIGH             (3U)
+typedef enum
+{
+    GPIO_PIN_SPEED_LOW = 0U,
+    GPIO_PIN_SPEED_MEDIUM,
+    GPIO_PIN_SPEED_HIGH,
+    GPIO_PIN_SPEED_VERYHIGH
+} GPIO_PinSpeed_t;
 
 
 /**
  * @GPIO_PIN_PUPD
  */
-#define GPIO_PIN_NO_PUPD                    (0U)
-#define GPIO_PIN_PU                         (1U)
-#define GPIO_PIN_PD                         (2U)
+typedef enum
+{
+    GPIO_PIN_NOPULL = 0U,
+    GPIO_PIN_PULLUP,
+    GPIO_PIN_PULLDOWN
+} GPIO_PinPuPd_t;
 
 
 /**
  * @GPIO_PIN_ALTFN
  */
-#define GPIO_PIN_ALTFN_0                    (0U)
-#define GPIO_PIN_ALTFN_1                    (1U)
-#define GPIO_PIN_ALTFN_2                    (2U)
-#define GPIO_PIN_ALTFN_3                    (3U)
-#define GPIO_PIN_ALTFN_4                    (4U)
-#define GPIO_PIN_ALTFN_5                    (5U)
-#define GPIO_PIN_ALTFN_6                    (6U)
-#define GPIO_PIN_ALTFN_7                    (7U)
-#define GPIO_PIN_ALTFN_8                    (8U)
-#define GPIO_PIN_ALTFN_9                    (9U)
-#define GPIO_PIN_ALTFN_10                   (10U)
-#define GPIO_PIN_ALTFN_11                   (11U)
-#define GPIO_PIN_ALTFN_12                   (12U)
-#define GPIO_PIN_ALTFN_13                   (13U)
-#define GPIO_PIN_ALTFN_14                   (14U)
-#define GPIO_PIN_ALTFN_15                   (15U)
+typedef enum
+{
+    GPIO_AF0 = 0U,
+    GPIO_AF1,
+    GPIO_AF2,
+    GPIO_AF3,
+    GPIO_AF4,
+    GPIO_AF5,
+    GPIO_AF6,
+    GPIO_AF7,
+    GPIO_AF8,
+    GPIO_AF9,
+    GPIO_AF10,
+    GPIO_AF11,
+    GPIO_AF12,
+    GPIO_AF13,
+    GPIO_AF14,
+    GPIO_AF15
+} GPIO_AltFn_t;
 
 
 /* ================================================== BIT POSITION ================================================== */
@@ -344,17 +384,18 @@
  */
 typedef struct
 {
-	uint8_t GPIO_PinNumber;			/*!< Specifies the GPIO pin number               | Possible value: @GPIO_PIN_NUMBER */
-	uint8_t GPIO_PinMode;			/*!< Specifies the mode of the GPIO pin          | Possible value: @GPIO_PIN_MODE */
-	uint8_t GPIO_PinOutputSpeed;	/*!< Specifies the speed of the GPIO pin         | Possible value: @GPIO_PIN_SPEED */
-	uint8_t GPIO_PinPuPdControl;	/*!< Specifies Pull-up/Pull-down configuration   | Possible value: @GPIO_PIN_PUPD */
-	uint8_t GPIO_PinOutputType;		/*!< Specifies output type                       | Possible value: @GPIO_PIN_OTYPE */
-	uint8_t GPIO_PinAltFunMode;		/*!< Specifies alternate function mode           | Possible value: @GPIO_PIN_ALTFN */
+	GPIO_Pin_t GPIO_PinNumber;			    /*!< Specifies the GPIO pin number               | Possible value: @GPIO_PIN */
+	GPIO_PinMode_t GPIO_PinMode;			/*!< Specifies the mode of the GPIO pin          | Possible value: @GPIO_PIN_MODE */
+	GPIO_PinSpeed_t GPIO_PinOutputSpeed;    /*!< Specifies the speed of the GPIO pin         | Possible value: @GPIO_PIN_SPEED */
+	GPIO_PinPuPd_t GPIO_PinPuPdControl;	    /*!< Specifies Pull-up/Pull-down configuration   | Possible value: @GPIO_PIN_PUPD */
+	GPIO_PinOType_t GPIO_PinOutputType;		/*!< Specifies output type                       | Possible value: @GPIO_PIN_OTYPE */
+	GPIO_AltFn_t GPIO_PinAltFunMode;	    /*!< Specifies alternate function mode           | Possible value: @GPIO_PIN_ALTFN */
 } GPIO_Config_t;
 
 
 /**
  * @brief GPIO handle structure
+ * 
  * @note  Used to manage GPIO pin configuration and base address
  */
 typedef struct
@@ -368,36 +409,35 @@ typedef struct
 
 /**
  * @brief Enable or disable clock for GPIO peripheral
- *
+ * 
  * @param pGPIOx   GPIO port base address (e.g. GPIOA, GPIOB)
- * @param En_or_DI ENABLE or DISABLE macro
- *
+ * @param EN_or_DI ENABLE or DISABLE macro
+ * 
  * @note Must enable clock before using GPIO registers
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
  */
-void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t En_or_DI);
+void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI);
 
 
 /**
  * @brief Initialize and configure a GPIO pin
- *
- * @param pGPIO_Handle Pointer to GPIO handle structure containing
- *                     port base address and pin configuration
- *
+ * 
+ * @param pGPIO_Handle Pointer to GPIO handle structure
+ * 
  * @details This function configures the selected GPIO pin by:
  *          - Setting pin mode (Input, Output, Alternate, Analog)
  *          - Configuring output speed (for Output/Alternate mode)
  *          - Setting pull-up/pull-down resistors
  *          - Configuring output type (Push-pull/Open-drain)
  *          - Assigning alternate function
- *
+ * 
  *          The configuration is applied by modifying GPIO registers:
  *          MODER, OSPEEDR, PUPDR, OTYPER, AFRL/AFRH.
  * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 8.4 GPIO registers
  */
@@ -406,13 +446,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle);
 
 /**
  * @brief Reset the specified GPIO peripheral
- *
+ * 
  * @param pGPIOx Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
- *
+ * 
  * @details All GPIO registers will be restored to their default reset values.
- *
+ * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 7.3.5 RCC AHB1 peripheral reset register (RCC_AHB1RSTR)
  */
@@ -421,21 +461,21 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
 
 /**
  * @brief Read the logic level from a specific GPIO input pin
- *
+ * 
  * @param pGPIOx    Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
- * @param PinNumber GPIO pin number (0–15)
- *
+ * @param PinNumber GPIO pin number (0–15) | @GPIO_PIN
+ * 
  * @return uint8_t Logic level of the pin (0 or 1)
- *
+ * 
  * @details Reads the corresponding bit from the IDR (Input Data Register)
  *          and returns its value.
  * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 8.4.5 GPIO port input data register (GPIOx_IDR)
  */
-uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, uint8_t PinNumber);
+uint8_t GPIO_ReadFrom_InputPin(GPIO_RegDef_t const *pGPIOx, GPIO_Pin_t PinNumber);
 
 
 /**
@@ -459,30 +499,30 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
  * @brief Write a value to a specific GPIO output pin
  * 
  * @param pGPIOx    Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
- * @param PinNumber GPIO pin number (0–15)
- * @param Value     GPIO_PIN_SET or GPIO_PIN_RESET
+ * @param PinNumber GPIO pin number (0–15) | @GPIO_PIN
+ * @param Value     SET or RESET macro
  * 
  * @details Sets or clears the corresponding bit in the ODR (Output Data Register)
  *          to drive the pin HIGH or LOW.
  * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 8.4.6 GPIO port output data register (GPIOx_ODR)
  */
-void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);
+void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber, uint8_t Value);
 
 
 /**
  * @brief Write a value to the entire GPIO output port
- *
+ * 
  * @param pGPIOx Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
  * @param Value  16-bit value to be written to the port
- *
+ * 
  * @details Writes directly to the ODR (Output Data Register)
  * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual, Section 8.4.6 GPIO port output data register (GPIOx_ODR)
  */
@@ -491,33 +531,47 @@ void GPIO_WriteTo_OutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
 
 /**
  * @brief Toggle the state of a specific GPIO output pin
- *
+ * 
  * @param pGPIOx    Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
- * @param PinNumber GPIO pin number (0–15)
- *
+ * @param PinNumber GPIO pin number (0–15) | @GPIO_PIN
+ * 
  * @details Inverts the current logic level of the selected pin by
  *          XORing the corresponding bit in the ODR (Output Data Register).
  */
-void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+void GPIO_Toggle_OutputPin(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber);
 
 
 /**
  * @brief Lock the configuration of a specific GPIO pin
- *
+ * 
  * @param pGPIOx    Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
- * @param PinNumber GPIO pin number (0–15)
- *
+ * @param PinNumber GPIO pin number (0–15) | @GPIO_PIN
+ * 
  * @details Locks the configuration of the selected pin by performing
  *          the required lock sequence on the LCKR register (LCKK bit).
  *          After locking, GPIO configuration registers cannot be modified
  *          until the next system reset.
- *
+ * 
  * @note
- *
+ * 
  * Refer to:
  * - RM0090 Reference Manual, Section 8.4.8 GPIO port configuration lock register (GPIOx_LCKR)
  */
-void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber);
+
+
+/**
+ * @brief Get GPIO port code from GPIO peripheral base address
+ * 
+ * @param pGPIOx Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
+ * 
+ * @return GPIO_PortCode_t Corresponding GPIO port code
+ * 
+ * @details Converts a GPIO peripheral base address into its associated
+ *          port code value. The returned port code is typically used
+ *          for EXTI configuration or peripheral mapping.
+ */
+GPIO_PortCode_t GPIO_GetPortCode(GPIO_RegDef_t *pGPIOx);
 
 
 #endif /* INC_GPIO_DRIVER_H_ */

@@ -106,14 +106,14 @@ typedef enum
 
 
 /**
- * @SPI_STATE
+ * @SPI_PERIPHERAL_STATE
  */
 typedef enum
 {
-    SPI_STATE_READY = 0U,
-    SPI_STATE_BUSY_RX,
-    SPI_STATE_BUSY_TX
-} SPI_State_t;
+    SPI_PERI_STATE_READY = 0U,
+    SPI_PERI_STATE_BUSY_RX,
+    SPI_PERI_STATE_BUSY_TX
+} SPI_PeripheralState_t;
 
 
 /**
@@ -121,11 +121,11 @@ typedef enum
  */
 typedef enum
 {
-    SPI_STATUS_OK = 0U,
-    SPI_STATUS_BUSY,
-    SPI_STATUS_ERROR,
-    SPI_STATUS_INVALID_PARAMS
-} SPI_Status_t;
+    SPI_FUNC_STATUS_OK = 0U,
+    SPI_FUNC_STATUS_BUSY,
+    SPI_FUNC_STATUS_ERROR,
+    SPI_FUNC_STATUS_INVALID_PARAMETER
+} SPI_FunctionStatus_t;
 
 
 /**
@@ -242,17 +242,17 @@ typedef struct
  */
 typedef struct
 {
-    SPI_RegDef_t *pSPIx;        /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
-    SPI_Config_t SPI_Config;    /*!< SPI configuration settings */
+    SPI_RegDef_t *pSPIx;                    /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
+    SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
 
-    uint8_t *pTxBuffer;         /*!< Pointer to TX buffer application data */
-    uint8_t *pRxBuffer;         /*!< Pointer to RX buffer application data */
+    uint8_t *pTxBuffer;                     /*!< Pointer to TX buffer application data */
+    uint8_t *pRxBuffer;                     /*!< Pointer to RX buffer application data */
 
-    __IO uint32_t TxLength;     /*!< Number of bytes remaining to transmit */
-    __IO uint32_t RxLength;     /*!< Number of bytes remaining to receive */
+    __IO uint32_t TxLength;                 /*!< Number of bytes remaining to transmit */
+    __IO uint32_t RxLength;                 /*!< Number of bytes remaining to receive */
 
-    __IO SPI_State_t TxState;   /*!< Current TX transfer state */
-    __IO SPI_State_t RxState;   /*!< Current RX transfer state */
+    __IO SPI_PeripheralState_t TxState;     /*!< Current TX transfer state */
+    __IO SPI_PeripheralState_t RxState;     /*!< Current RX transfer state */
 } SPI_Handle_t;
 
 
@@ -262,7 +262,7 @@ typedef struct
  * @brief Enable or disable clock for SPI peripheral
  * 
  * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
- * @param En_or_DI ENABLE or DISABLE macro
+ * @param EN_or_DI ENABLE or DISABLE macro
  * 
  * @note Must enable clock before using SPI registers
  * 
@@ -270,14 +270,13 @@ typedef struct
  * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
  *                              Section 7.3.14 RCC APB2 peripheral clock enable register (RCC_APB2ENR)
  */
-void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
+void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 /**
  * @brief Initialize and configure the SPI peripheral
  * 
- * @param pSPI_Handle Pointer to SPI Handle struct containing base address
- *                    and configuration
+ * @param pSPI_Handle Pointer to SPI Handle struct
  * 
  * @details This function configures the SPI peripherals by:
  *          - Select device mode (Master / Slave)
@@ -337,14 +336,14 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
  * @param pTxBuffer  Pointer to transmit data buffer
  * @param DataLength Length of data (in bytes)
  * 
- * @return SPI_Status_t SPI function status value
+ * @return SPI_FunctionStatus_t SPI function status value
  * 
  * @note This function polls the TXE flag to ensure the transmit buffer is empty
  *       before loading new data into the data register (DR).
  * 
  * @warning This is a blocking API.
  */
-SPI_Status_t SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t DataLength);
+SPI_FunctionStatus_t SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t DataLength);
 
 
 /**
@@ -354,7 +353,7 @@ SPI_Status_t SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Data
  * @param pRxBuffer  Pointer to receive data buffer
  * @param DataLength Length of data (in bytes)
  * 
- * @return SPI_Status_t SPI function status value
+ * @return SPI_FunctionStatus_t SPI function status value
  * 
  * @note This function polls the RXNE flag (Receive buffer Not Empty)
  *       to check when data is available in the data register (DR).
@@ -366,14 +365,14 @@ SPI_Status_t SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Data
  * 
  * @warning This is a blocking API.
  */
-SPI_Status_t SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLength);
+SPI_FunctionStatus_t SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLength);
 
 
 /**
  * @brief Enable or disable the SPI peripheral
  * 
  * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
- * @param En_or_DI ENABLE or DISABLE macro
+ * @param EN_or_DI ENABLE or DISABLE macro
  * 
  * @details Set the SPE bit in the SPI_CR1 register:
  *          0: Peripheral disable
@@ -387,14 +386,14 @@ SPI_Status_t SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t D
  * @warning If enable the peripheral before configuring the SPI register.
  *          the configuration won't take effect.
  */
-void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 /**
  * @brief Configure the SSI (Internal Slave Select) bit for the SPI peripheral
  * 
  * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
- * @param En_or_DI ENABLE or DISABLE macro
+ * @param EN_or_DI SET or RESET macro
  * 
  * @details This function sets or clears the SSI bit in the SPI_CR1 register.
  *          The SSI bit is used in master mode to control the internal 
@@ -407,14 +406,14 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.1 SPI control register 1 (SPI_CR1)
  */
-void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t En_or_DI);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 /**
  * @brief Configure the SSOE (SS output enable) bit for the SPI peripheral
  * 
  * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
- * @param En_or_DI ENABLE or DISABLE macro
+ * @param EN_or_DI SET or RESET macro
  * 
  * @details This function sets or clears the SSOE bit in the SPI_CR2 register.
  *          The SSOE bit is used only in master mode when hardware slave 
@@ -445,7 +444,7 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * @param pTxBuffer   Pointer to transmit data buffer
  * @param DataLength  Length of data to transmit (in bytes)
  * 
- * @return SPI_Status_t SPI function status value
+ * @return SPI_FunctionStatus_t SPI function status value | @SPI_FUNCTION_STATUS
  * 
  * @details This API performs the following operations:
  *          - Save TX buffer pointer and transfer length
@@ -458,7 +457,7 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
  */
-SPI_Status_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t DataLength);
+SPI_FunctionStatus_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t DataLength);
 
 
 /**
@@ -468,7 +467,7 @@ SPI_Status_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint3
  * @param pRxBuffer   Pointer to the receive data buffer
  * @param DataLength  Length of data to receive (in bytes)
  * 
- * @return SPI_Status_t SPI function status value | @SPI_FUNCTION_STATUS
+ * @return SPI_FunctionStatus_t SPI function status value | @SPI_FUNCTION_STATUS
  * 
  * @details This API performs the following operations:
  *          - Saves RX buffer pointer and transfer length
@@ -481,7 +480,7 @@ SPI_Status_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint3
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
  */
-SPI_Status_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength);
+SPI_FunctionStatus_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength);
 
 
 /**
@@ -551,9 +550,6 @@ uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle);
  *                 1: SPI Rx is busy receiving
  */
 uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
-
-
-uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

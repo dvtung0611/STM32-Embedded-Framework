@@ -19,7 +19,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
     uint8_t LineNumber = pEXTI_Handle->EXTI_Config.EXTI_LineNumber;
     uint8_t Mode = pEXTI_Handle->EXTI_Config.EXTI_Mode;
     uint8_t Trigger = pEXTI_Handle->EXTI_Config.EXTI_Trigger;
-    uint8_t PortCode = pEXTI_Handle->EXTI_Config.EXTI_PortCode;
+    uint8_t PortCode = pEXTI_Handle->EXTI_Config.EXTI_GPIO_PortCode;
 
     if (LineNumber > EXTI_MAX_LINE || Trigger > EXTI_TRIGGER_BOTH || Mode > EXTI_MODE_EVENT)
         return;
@@ -76,7 +76,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
 }
 
 
-void EXTI_ClearPending(uint8_t LineNumber)
+void EXTI_ClearPending(EXTI_LineNumber_t LineNumber)
 {
     if (LineNumber > EXTI_MAX_LINE)
         return;
@@ -85,7 +85,7 @@ void EXTI_ClearPending(uint8_t LineNumber)
 }
 
 
-uint8_t EXTI_GetPending(uint8_t LineNumber)
+uint8_t EXTI_GetPending(EXTI_LineNumber_t LineNumber)
 {
     return (EXTI->PR >> LineNumber) & 1U;
 }

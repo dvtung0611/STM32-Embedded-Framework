@@ -17,35 +17,10 @@
 #define __IO 			volatile
 #define __weak          __attribute__((weak))
 
-
-/**
- * @PERIPHERAL_STATUS
- */
-typedef enum
-{
-    PERI_DISABLE = 0U,
-    PERI_ENABLE
-} PeripheralStatus_t;
-
-
-/**
- * @PIN_STATUS
- */
-typedef enum
-{
-    PIN_RESET = 0U,
-    PIN_SET
-} PinStatus_t;
-
-
-/**
- * @FLAG_STATUS
- */
-typedef enum
-{
-    FLAG_RESET = 0U,
-    FLAG_SET
-} FlagStatus_t;
+#define DISABLE         (0U)
+#define ENABLE          (1U)
+#define RESET           (0U)
+#define SET             (1U)
 
 
 /* ========================================== FLASH + SRAM + SYSTEM MEMORY ========================================== */
@@ -607,21 +582,6 @@ typedef struct
  * @details These macros disable the SYSCFG peripheral clock via the RCC APB2ENR registers.
  */
 #define SYSCFG_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 14))
-
-
-/**
- * @brief Return port code for given GPIOx base address
- */
-#define GPIO_BASEADDR_TO_CODE(x)    (   (x == GPIOA) ? 0 :\
-                                        (x == GPIOB) ? 1 :\
-                                        (x == GPIOC) ? 2 :\
-                                        (x == GPIOD) ? 3 :\
-                                        (x == GPIOE) ? 4 :\
-                                        (x == GPIOF) ? 5 :\
-                                        (x == GPIOG) ? 6 :\
-                                        (x == GPIOH) ? 7 :\
-                                        (x == GPIOI) ? 8 : 0xFF)
-#define GPIO_MAX_PORTCODE           (8U)
 
 
 /**

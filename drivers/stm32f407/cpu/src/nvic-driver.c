@@ -11,18 +11,18 @@
 
 /* ====================================================== APIs ====================================================== */
 
-void NVIC_IRQ_InterruptConfig(uint8_t IRQNumber, uint8_t En_or_DI)
+void NVIC_IRQ_InterruptConfig(IRQNumber_t IRQNumber, uint8_t EN_or_DI)
 {
     if (IRQNumber > IRQ_MAX_NUMBER)
         return;
-
-    if (En_or_DI == ENABLE)
+    
+    if (EN_or_DI == ENABLE)
     {
         uint8_t ISER_id = IRQNumber / 32;
         uint8_t pos = IRQNumber % 32;
         NVIC->ISER[ISER_id] |= (1U << pos);
     }
-    else if (En_or_DI == DISABLE)
+    else if (EN_or_DI == DISABLE)
     {
         uint8_t ICER_id = IRQNumber / 32;
         uint8_t pos = IRQNumber % 32;
@@ -31,11 +31,11 @@ void NVIC_IRQ_InterruptConfig(uint8_t IRQNumber, uint8_t En_or_DI)
 }
 
 
-void NVIC_IRQ_PriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority)
+void NVIC_IRQ_PriorityConfig(IRQNumber_t IRQNumber, NVIC_PriorityLevel IRQPriority)
 {
     if (IRQNumber > IRQ_MAX_NUMBER || IRQPriority > NVIC_IRQ_MAX_PRIORITY)
         return;
-
+    
     NVIC->IPR[IRQNumber] &= ~(15U << 4U);
     NVIC->IPR[IRQNumber] |= (IRQPriority << 4U);
 }
