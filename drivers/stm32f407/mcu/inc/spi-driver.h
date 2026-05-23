@@ -234,6 +234,19 @@ typedef struct
 } SPI_Config_t;
 
 
+typedef struct
+{
+    uint8_t *pTxBuffer;                     /*!< Pointer to TX buffer application data */
+    uint8_t *pRxBuffer;                     /*!< Pointer to RX buffer application data */
+    
+    __IO uint32_t TxLength;                 /*!< Number of bytes remaining to transmit */
+    __IO uint32_t RxLength;                 /*!< Number of bytes remaining to receive */
+
+    __IO SPI_PeripheralState_t TxState;     /*!< Current TX transfer state */
+    __IO SPI_PeripheralState_t RxState;     /*!< Current RX transfer state */
+} SPI_Transfer_t;
+
+
 /**
  * @brief SPI handle structure
  * 
@@ -245,14 +258,7 @@ typedef struct
     SPI_RegDef_t *pSPIx;                    /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
     SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
 
-    uint8_t *pTxBuffer;                     /*!< Pointer to TX buffer application data */
-    uint8_t *pRxBuffer;                     /*!< Pointer to RX buffer application data */
-
-    __IO uint32_t TxLength;                 /*!< Number of bytes remaining to transmit */
-    __IO uint32_t RxLength;                 /*!< Number of bytes remaining to receive */
-
-    __IO SPI_PeripheralState_t TxState;     /*!< Current TX transfer state */
-    __IO SPI_PeripheralState_t RxState;     /*!< Current RX transfer state */
+    SPI_Transfer_t *pCurrentTransfer;       /*!< Pointer to current SPI transfer */
 } SPI_Handle_t;
 
 
