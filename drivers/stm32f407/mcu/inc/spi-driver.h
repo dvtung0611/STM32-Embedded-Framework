@@ -519,7 +519,10 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
  *          In 16-bit data frame mode, TxLength must be an even number.
  *          Otherwise, the function returns immediately without transmitting data.
  */
-void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+
+
+void SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
