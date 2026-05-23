@@ -360,7 +360,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * @brief Configure the SSI (Internal Slave Select) bit for the SPI peripheral
  * 
  * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param EN_or_DI SET or RESET macro
+ * @param SE_or_RE SET or RESET macro
  * 
  * @details This function sets or clears the SSI bit in the SPI_CR1 register.
  *          The SSI bit is used in master mode to control the internal 
@@ -373,14 +373,14 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.1 SPI control register 1 (SPI_CR1)
  */
-void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_RE);
 
 
 /**
  * @brief Configure the SSOE (SS output enable) bit for the SPI peripheral
  * 
  * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param EN_or_DI SET or RESET macro
+ * @param SE_or_RE SET or RESET macro
  * 
  * @details This function sets or clears the SSOE bit in the SPI_CR2 register.
  *          The SSOE bit is used only in master mode when hardware slave 
@@ -401,7 +401,7 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * - RM0090 Reference Manual,   Section 28.3.1 General description
  *                              Section 28.5.2 SPI control register 2 (SPI_CR2)         
  */
-void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_RE);
 
 
 /**
@@ -501,6 +501,8 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
  * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param pSPI_Transfer Pointer to SPI transfer structure
  * 
+ * @param SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * 
  * @details This function uses polling mode to transmit data frame-by-frame.
  *          The function waits until:
  *              - TXE flag is set before writing new data to DR
@@ -519,10 +521,51 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
  *          In 16-bit data frame mode, TxLength must be an even number.
  *          Otherwise, the function returns immediately without transmitting data.
  */
-void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
 
 
-void SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+/**
+ * @brief Receive data over SPI in blocking mode
+ * 
+ * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
+ * @param pSPI_Transfer Pointer to SPI transfer structure
+ * 
+ * @return SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * 
+ * @note SPI reception requires dummy frame transmission to generate clock.
+ * 
+ * @note The function waits for:
+ *          - TXE before sending dummy frame
+ *          - RXNE before reading received data
+ *          - BSY cleared before returning
+ * 
+ * @warning This is a blocking function.
+ * 
+ * @warning In 16-bit data frame mode, RxLength must be even.
+ */
+SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+
+
+/**
+ * @brief Transmit and receive data over SPI in blocking mode
+ * 
+ * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
+ * @param pSPI_Transfer Pointer to SPI transfer structure
+ * 
+ * @return SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * 
+ * @note SPI transmit and receive operations occur simultaneously.
+ * 
+ * @note The function waits for:
+ *          - TXE before writing transmit data
+ *          - RXNE before reading received data
+ *          - BSY cleared before returning
+ * 
+ * @warning This is a blocking function.
+ * 
+ * @warning In 16-bit data frame mode, transfer length must be even.
+ */
+SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

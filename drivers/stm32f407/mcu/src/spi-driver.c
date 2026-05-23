@@ -321,27 +321,28 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
 }
 
 
-void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
 {
     if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->TxLength % 2 == 1))
-        return;
+        return SPI_FUNC_STATUS_ERROR;
 
     while (pSPI_Transfer->TxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
         
+        // Send data
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
-            // 16-bit data frame format is selected for transmission/reception
-            *((volatile uint16_t *)(&pSPIx->DR)) = *((volatile uint16_t *)(pSPI_Transfer->pTxBuffer));
+            // 16-bit data frame format is selected for transmission
+            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
             pSPI_Transfer->TxLength -= 2;
             pSPI_Transfer->pTxBuffer += 2;
         }
         else
         {
-            // 8-bit data frame format is selected for transmission/reception
-            *((volatile uint8_t *)(&pSPIx->DR)) = *(pSPI_Transfer->pTxBuffer);
+            // 8-bit data frame format is selected for transmission
+            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pSPI_Transfer->pTxBuffer));
             pSPI_Transfer->TxLength -= 1;
             pSPI_Transfer->pTxBuffer += 1;
         }
@@ -349,46 +350,53 @@ void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
         // Wait until RX buffer is full (not empty) (RXNE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
         
+        // Read data
         (void)pSPIx->DR;
     }
 
     // Wait until SPI peripheral transmit and receive everything done
     while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+
+    return SPI_FUNC_STATUS_OK;
 }
 
 
-void SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
 {
     if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->RxLength % 2 == 1))
-        return;
+        return SPI_FUNC_STATUS_ERROR;
 
     while (pSPI_Transfer->RxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
         
+        // Send data
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
-            // 16-bit data frame format is selected for transmission/reception
-            // Send dummy frame
-            *((volatile uint16_t *)(&pSPIx->DR)) = 0xFFFF;
+            // 16-bit data frame format is selected for transmission
+            *((volatile uint16_t *)(&pSPIx->DR)) = 0xFFFF; // Send dummy frame
+        }
+        else
+        {
+            // 8-bit data frame format is selected for transmission
+            *((volatile uint8_t *)(&pSPIx->DR)) = 0xFF; // Send dummy frame
+        }
 
-            // Wait until RX buffer is full (not empty) (RXNE = SET)
-            while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
+        // Wait until RX buffer is full (not empty) (RXNE = SET)
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
 
+        // Read data
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        {
+            // 16-bit data frame format is selected for reception
             *((uint16_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
             pSPI_Transfer->RxLength -= 2;
             pSPI_Transfer->pRxBuffer += 2;
         }
         else
         {
-            // 8-bit data frame format is selected for transmission/reception
-            // Send dummy frame
-            *((volatile uint8_t *)(&pSPIx->DR)) = 0xFF;
-
-            // Wait until RX buffer is full (not empty) (RXNE = SET)
-            while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
-
+            // 8-bit data frame format is selected for reception
             *((uint8_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
             pSPI_Transfer->RxLength -= 1;
             pSPI_Transfer->pRxBuffer += 1;
@@ -397,4 +405,60 @@ void SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
 
     // Wait until SPI peripheral transmit and receive everything done
     while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+
+    return SPI_FUNC_STATUS_OK;
+}
+
+
+SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+{
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && 
+        ((pSPI_Transfer->TxLength % 2 == 1) || (pSPI_Transfer->RxLength % 2 == 1)))
+        return SPI_FUNC_STATUS_ERROR;
+
+    while (pSPI_Transfer->RxLength > 0)
+    {
+        // Wait until TX buffer is empty (TXE = SET)
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
+        
+        // Send data
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        {
+            // 16-bit data frame format is selected for transmission
+            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
+            pSPI_Transfer->TxLength -= 2;
+            pSPI_Transfer->pTxBuffer += 2;
+        }
+        else
+        {
+            // 8-bit data frame format is selected for transmission
+            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pSPI_Transfer->pTxBuffer));
+            pSPI_Transfer->TxLength -= 1;
+            pSPI_Transfer->pTxBuffer += 1;
+        }
+
+        // Wait until RX buffer is full (not empty) (RXNE = SET)
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
+
+        // Read data
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        {
+            // 16-bit data frame format is selected for reception
+            *((uint16_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
+            pSPI_Transfer->RxLength -= 2;
+            pSPI_Transfer->pRxBuffer += 2;
+        }
+        else
+        {
+            // 8-bit data frame format is selected for reception
+            *((uint8_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
+            pSPI_Transfer->RxLength -= 1;
+            pSPI_Transfer->pRxBuffer += 1;
+        }
+    }
+
+    // Wait until SPI peripheral transmit and receive everything done
+    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+
+    return SPI_FUNC_STATUS_OK;
 }
