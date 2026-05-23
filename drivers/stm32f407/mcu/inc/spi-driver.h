@@ -336,45 +336,6 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 
 
 /**
- * @brief Transmit data over SPI in blocking mode
- * 
- * @param pSPIx      SPI peripheral base address (e.g. SPI1, SPI2)
- * @param pTxBuffer  Pointer to transmit data buffer
- * @param DataLength Length of data (in bytes)
- * 
- * @return SPI_FunctionStatus_t SPI function status value
- * 
- * @note This function polls the TXE flag to ensure the transmit buffer is empty
- *       before loading new data into the data register (DR).
- * 
- * @warning This is a blocking API.
- */
-SPI_FunctionStatus_t SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t DataLength);
-
-
-/**
- * @brief Receive data over SPI in blocking mode
- * 
- * @param pSPIx      SPI peripheral base address (e.g. SPI1, SPI2)
- * @param pRxBuffer  Pointer to receive data buffer
- * @param DataLength Length of data (in bytes)
- * 
- * @return SPI_FunctionStatus_t SPI function status value
- * 
- * @note This function polls the RXNE flag (Receive buffer Not Empty)
- *       to check when data is available in the data register (DR).
- *       The received data is then read from DR into the buffer.
- * 
- *       In SPI, data reception is coupled with transmission.
- *       Clock must be generated (typically by sending dummy data)
- *       to receive data from the slave.
- * 
- * @warning This is a blocking API.
- */
-SPI_FunctionStatus_t SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t DataLength);
-
-
-/**
  * @brief Enable or disable the SPI peripheral
  * 
  * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
@@ -444,52 +405,6 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 /**
- * @brief Send data over SPI using interrupt mode (non-blocking API)
- * 
- * @param pSPI_Handle Pointer to SPI handle structure
- * @param pTxBuffer   Pointer to transmit data buffer
- * @param DataLength  Length of data to transmit (in bytes)
- * 
- * @return SPI_FunctionStatus_t SPI function status value | @SPI_FUNCTION_STATUS
- * 
- * @details This API performs the following operations:
- *          - Save TX buffer pointer and transfer length
- *          - Set SPI state to SPI_BUSY_IN_TX
- *          - Enable TXE interrupt (TXEIE bit)
- * 
- * @note This function returns immediately after enabling the interrupt.
- *       Actual data transmission is handled inside the SPI ISR.
- * 
- * Refer to:
- * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
- */
-SPI_FunctionStatus_t SPI_SendDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t DataLength);
-
-
-/**
- * @brief Receive data over SPI using interrupt mode (non-blocking API)
- * 
- * @param pSPI_Handle Pointer to the SPI handle structure
- * @param pRxBuffer   Pointer to the receive data buffer
- * @param DataLength  Length of data to receive (in bytes)
- * 
- * @return SPI_FunctionStatus_t SPI function status value | @SPI_FUNCTION_STATUS
- * 
- * @details This API performs the following operations:
- *          - Saves RX buffer pointer and transfer length
- *          - Sets SPI state to SPI_BUSY_IN_RX
- *          - Enables RXNE interrupt (RXNEIE bit)
- * 
- * @note This function returns immediately after enabling the interrupt.
- *       Actual data reception is handled inside the SPI ISR.
- * 
- * Refer to:
- * - RM0090 Reference Manual,   Section 28.5.2 SPI control register 2 (SPI_CR2)
- */
-SPI_FunctionStatus_t SPI_ReceiveDataIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t DataLength);
-
-
-/**
  * @brief Handle SPI interrupt events
  * 
  * @param pSPI_Handle Pointer to SPI handle structure
@@ -556,6 +471,33 @@ uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle);
  *                 1: SPI Rx is busy receiving
  */
 uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
+
+
+/**
+ * @brief Transmit data over SPI in blocking mode
+ * 
+ * @param pSPI_Handle   Pointer to SPI handle structure
+ * @param pSPI_Transfer Pointer to SPI transfer structure
+ * 
+ * @details This function uses polling mode to transmit data frame-by-frame.
+ *          The function waits until:
+ *              - TXE flag is set before writing new data to DR
+ *              - RXNE flag is set before reading and discarding received data
+ *              - BSY flag is cleared before returning
+ * 
+ * @note SPI is inherently full-duplex. Even during transmit-only operations,
+ *       received data is generated simultaneously. The received data is
+ *       discarded to prevent RX buffer overrun (OVR).
+ * 
+ * @warning This is a blocking function. The CPU will wait until the entire
+ *          transfer is completed.
+ * 
+ *          This function does not clear SPI error flags automatically.
+ * 
+ *          In 16-bit data frame mode, TxLength must be an even number.
+ *          Otherwise, the function returns immediately without transmitting data.
+ */
+void SPI_Transmit(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
