@@ -9,6 +9,7 @@
 #define INC_TINY_STRING_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 
 /**
