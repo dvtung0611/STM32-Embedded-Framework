@@ -289,10 +289,7 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     // Clear OVR flag
     if (pSPI_Handle->pCurrentTransfer->TxState != SPI_PERI_STATE_BUSY_TX)
     {
-        SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
-        (void)pSPIx->DR;
-        (void)pSPIx->SR;
-
+        SPI_ClearOVRFlag(pSPI_Handle->pSPIx);
         SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_OVR_ERROR);
     }
 }
@@ -317,37 +314,44 @@ uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle)
 }
 
 
-void SPI_Transmit(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer)
+void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
 {
-    if ((READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->TxLength % 2 == 1))
+    (void)pSPIx->DR;
+    (void)pSPIx->SR;
+}
+
+
+void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+{
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->TxLength % 2 == 1))
         return;
 
     while (pSPI_Transfer->TxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
-        while (SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_FLAG_TXE) == RESET);
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
         
-        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame format is selected for transmission/reception
-            pSPI_Handle->pSPIx->DR = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
+            pSPIx->DR = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
             pSPI_Transfer->TxLength -= 2;
             pSPI_Transfer->pTxBuffer += 2;
         }
         else
         {
             // 8-bit data frame format is selected for transmission/reception
-            *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR)) = *(pSPI_Transfer->pTxBuffer);
+            *((volatile uint8_t *)(&pSPIx->DR)) = *(pSPI_Transfer->pTxBuffer);
             pSPI_Transfer->TxLength -= 1;
             pSPI_Transfer->pTxBuffer += 1;
         }
         
         // Wait until RX buffer is full (not empty) (RXNE = SET)
-        while (SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_FLAG_RXNE) == RESET);
+        while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == RESET);
         
-        (void)pSPI_Handle->pSPIx->DR;
+        (void)pSPIx->DR;
     }
 
     // Wait until SPI peripheral transmit and receive everything done
-    while (SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_SR_BSY) == SET);
+    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
 }

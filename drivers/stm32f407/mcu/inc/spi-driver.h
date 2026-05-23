@@ -255,7 +255,7 @@ typedef struct
  */
 typedef struct
 {
-    SPI_RegDef_t *pSPIx;                    /*!< Base address of SPI peripheral (e.g. SPI1, SPI2, SPI3)*/
+    SPI_RegDef_t *pSPIx;                    /*!< Pointer to SPI peripheral (SPI1, SPI2,...) */
     SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
 
     SPI_Transfer_t *pCurrentTransfer;       /*!< Pointer to current SPI transfer */
@@ -267,7 +267,7 @@ typedef struct
 /**
  * @brief Enable or disable clock for SPI peripheral
  * 
- * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param EN_or_DI ENABLE or DISABLE macro
  * 
  * @note Must enable clock before using SPI registers
@@ -307,7 +307,7 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle);
 /**
  * @brief Reset SPI peripheral to default state
  * 
- * @param pSPIx SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx Pointer to SPI peripheral (SPI1, SPI2,...)
  * 
  * @note This function resets the selected SPI peripheral using RCC reset register.
  *       After reset, all SPI registers return to default values.
@@ -322,7 +322,7 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
 /**
  * @brief Returns the flag status of the SPI peripheral
  * 
- * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param FlagName Flag name in the SPI_SR (SPI Status Register) | @SPI_FLAG
  * 
  * @return uint8_t Flag status is set or reset
@@ -338,7 +338,7 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName);
 /**
  * @brief Enable or disable the SPI peripheral
  * 
- * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param EN_or_DI ENABLE or DISABLE macro
  * 
  * @details Set the SPE bit in the SPI_CR1 register:
@@ -359,7 +359,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 /**
  * @brief Configure the SSI (Internal Slave Select) bit for the SPI peripheral
  * 
- * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param EN_or_DI SET or RESET macro
  * 
  * @details This function sets or clears the SSI bit in the SPI_CR1 register.
@@ -379,7 +379,7 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 /**
  * @brief Configure the SSOE (SS output enable) bit for the SPI peripheral
  * 
- * @param pSPIx    SPI peripheral base address (e.g. SPI1, SPI2)
+ * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param EN_or_DI SET or RESET macro
  * 
  * @details This function sets or clears the SSOE bit in the SPI_CR2 register.
@@ -474,9 +474,31 @@ uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
 
 
 /**
+ * @brief Clear SPI overrun (OVR) flag
+ *
+ * @param pSPIx Pointer to SPI peripheral (SPI1, SPI2,...)
+ *
+ * @details According to STM32 SPI peripheral requirements, the OVR flag
+ *          is cleared by performing:
+ *              1. A read access to the SPI_DR register
+ *              2. A read access to the SPI_SR register
+ *
+ * @note This function should only be used when an overrun condition
+ *       has occurred and the received data is no longer needed.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 28.3.10 Error flags
+ *
+ * @warning Clearing the OVR flag discards unread received data currently
+ *          stored in the SPI receive buffer.
+ */
+void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
+
+
+/**
  * @brief Transmit data over SPI in blocking mode
  * 
- * @param pSPI_Handle   Pointer to SPI handle structure
+ * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
  * @param pSPI_Transfer Pointer to SPI transfer structure
  * 
  * @details This function uses polling mode to transmit data frame-by-frame.
@@ -497,7 +519,7 @@ uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
  *          In 16-bit data frame mode, TxLength must be an even number.
  *          Otherwise, the function returns immediately without transmitting data.
  */
-void SPI_Transmit(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
+void SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
 
 
 #endif /* INC_SPI_DRIVER_H_ */
