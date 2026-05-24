@@ -111,9 +111,22 @@ typedef enum
 typedef enum
 {
     SPI_PERI_STATE_READY = 0U,
+    SPI_PERI_STATE_BUSY_TX_RX,
     SPI_PERI_STATE_BUSY_RX,
-    SPI_PERI_STATE_BUSY_TX
+    SPI_PERI_STATE_BUSY_TX,
+    SPI_PERI_STATE_ERROR
 } SPI_PeripheralState_t;
+
+
+/**
+ * @SPI_PERIPHERAL_ERROR
+ */
+typedef enum
+{
+    SPI_PERI_ERROR_NONE = 0U,
+    SPI_PERI_ERROR_OVR = 1U,
+    SPI_PERI_ERROR_MODF = 2U
+} SPI_PeripheralError_t;
 
 
 /**
@@ -133,10 +146,11 @@ typedef enum
  */
 typedef enum
 {
-    SPI_IRQ_EVENT_NONE = 1U,
-    SPI_IRQ_EVENT_TXE = 2U,
-    SPI_IRQ_EVENT_RXNE = 4U,
-    SPI_IRQ_EVENT_OVR = 8U,
+    SPI_IRQ_EVENT_NONE = 0U,
+    SPI_IRQ_EVENT_TXE = 1U,
+    SPI_IRQ_EVENT_RXNE = 2U,
+    SPI_IRQ_EVENT_OVR_ERROR = 4U,
+    SPI_IRQ_EVENT_MODF_ERROR = 8U
 } SPI_IRQEvent_t;
 
 
@@ -147,7 +161,8 @@ typedef enum
 {
     SPI_APP_EVENT_TX_COMPLETE = 0U,
     SPI_APP_EVENT_RX_COMPLETE,
-    SPI_APP_EVENT_OVR_ERROR
+    SPI_APP_EVENT_OVR_ERROR,
+    SPI_APP_EVENT_MODF_ERROR
 } SPI_AppEvent_t;
 
 
@@ -241,9 +256,6 @@ typedef struct
     
     __IO uint32_t TxLength;                 /*!< Number of bytes remaining to transmit */
     __IO uint32_t RxLength;                 /*!< Number of bytes remaining to receive */
-
-    __IO SPI_PeripheralState_t TxState;     /*!< Current TX transfer state */
-    __IO SPI_PeripheralState_t RxState;     /*!< Current RX transfer state */
 } SPI_Transfer_t;
 
 
@@ -259,6 +271,10 @@ typedef struct
     SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
 
     SPI_Transfer_t *pCurrentTransfer;       /*!< Pointer to current SPI transfer */
+
+    __IO SPI_PeripheralState_t State;       /*!< Current Tx/Rx transfer state */
+
+    __IO uint32_t Error;                    /*!< Current error */
 } SPI_Handle_t;
 
 
@@ -577,6 +593,35 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
  * @warning In 16-bit data frame mode, transfer length must be even.
  */
 SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength);
+
+
+/**
+ * @brief Transmit data over SPI using interrupt mode
+ * 
+ * @param pSPI_Handle   Pointer to SPI handle structure
+ * @param pSPI_Transfer Pointer to SPI transfer structure
+ * 
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK
+ *         - SPI_FUNC_STATUS_BUSY
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER
+ * 
+ * @details This function starts a non-blocking SPI transmit operation.
+ *          Data transmission is handled by the SPI interrupt service routine (ISR).
+ * 
+ *          The function:
+ *          - Validates parameters
+ *          - Checks SPI peripheral state
+ *          - Stores current transfer information
+ *          - Sets SPI state to BUSY_TX
+ *          - Enables ERR and TXE interrupts
+ * 
+ * @warning SPI is full-duplex. Received data generated during transmission
+ *          must be handled to avoid OVR errors.
+ * 
+ *          The transfer buffer must remain valid until the transfer completes.
+ */
+SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

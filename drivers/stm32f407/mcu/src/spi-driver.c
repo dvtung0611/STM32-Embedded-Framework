@@ -17,11 +17,11 @@ static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle);
 
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 
-static uint8_t SPI_IsTXEInterruptActive(SPI_Handle_t *pSPI_Handle);
-static uint8_t SPI_IsRXNEInterruptActive(SPI_Handle_t *pSPI_Handle);
-static uint8_t SPI_IsOVRInterruptActive(SPI_Handle_t *pSPI_Handle);
+static uint8_t SPI_TXE_InterruptActive(SPI_RegDef_t *pSPIx);
+static uint8_t SPI_RXNE_InterruptActive(SPI_RegDef_t *pSPIx);
+static uint8_t SPI_OVR_InterruptActive(SPI_RegDef_t *pSPIx);
 
-static uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle);
+static uint32_t SPI_GetPendingInterrupts(SPI_RegDef_t *pSPIx);
 
 
 /* ====================================================== APIs ====================================================== */
@@ -150,36 +150,36 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
 }
 
 
-static uint8_t SPI_IsTXEInterruptActive(SPI_Handle_t *pSPI_Handle)
+static uint8_t SPI_TXE_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_TXE);
+    return READ_BIT(pSPIx->SR, SPI_SR_TXE) & READ_BIT(pSPIx->CR2, SPI_CR2_TXEIE);
 }
 
 
-static uint8_t SPI_IsRXNEInterruptActive(SPI_Handle_t *pSPI_Handle)
+static uint8_t SPI_RXNE_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_RXNE);
+    return READ_BIT(pSPIx->SR, SPI_SR_RXNE) & READ_BIT(pSPIx->CR2, SPI_CR2_RXNEIE);
 }
 
 
-static uint8_t SPI_IsOVRInterruptActive(SPI_Handle_t *pSPI_Handle)
+static uint8_t SPI_OVR_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE) & READ_BIT(pSPI_Handle->pSPIx->SR, SPI_SR_OVR);
+    return READ_BIT(pSPIx->SR, SPI_SR_OVR) & READ_BIT(pSPIx->CR2, SPI_CR2_ERRIE);
 }
 
 
-uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle)
+static uint32_t SPI_GetPendingInterrupts(SPI_RegDef_t *pSPIx)
 {
     uint32_t events = 0;
 
-    if (SPI_IsTXEInterruptActive(pSPI_Handle))
+    if (SPI_TXE_InterruptActive(pSPIx))
         events |= SPI_IRQ_EVENT_TXE;
     
-    if (SPI_IsRXNEInterruptActive(pSPI_Handle))
+    if (SPI_RXNE_InterruptActive(pSPIx))
         events |= SPI_IRQ_EVENT_RXNE;
     
-    if (SPI_IsOVRInterruptActive(pSPI_Handle))
-        events |= SPI_IRQ_EVENT_OVR;
+    if (SPI_OVR_InterruptActive(pSPIx))
+        events |= SPI_IRQ_EVENT_OVR_ERROR;
     
     return events;
 }
@@ -187,7 +187,7 @@ uint32_t SPI_GetPendingEvents(SPI_Handle_t *pSPI_Handle)
 
 void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle)
 {
-    uint32_t events = SPI_GetPendingEvents(pSPI_Handle);
+    uint32_t events = SPI_GetPendingInterrupts(pSPI_Handle->pSPIx);
 
     if (events & SPI_IRQ_EVENT_TXE)
         SPI_TXE_InterruptHandle(pSPI_Handle);
@@ -195,7 +195,7 @@ void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle)
     if (events & SPI_IRQ_EVENT_RXNE)
         SPI_RXNE_InterruptHandle(pSPI_Handle);
 
-    if (events & SPI_IRQ_EVENT_OVR)
+    if (events & SPI_IRQ_EVENT_OVR_ERROR)
         SPI_OVR_InterruptHandle(pSPI_Handle);
 }
 
@@ -208,14 +208,14 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF))
     {
         // 16-bit data frame
-        pSPIx->DR = *((uint16_t *)(pSPI_Handle->pCurrentTransfer->pTxBuffer));
+        *((volatile uint16_t *)(pSPIx->DR)) = *((uint16_t *)(pSPI_Handle->pCurrentTransfer->pTxBuffer));
         pSPI_Handle->pCurrentTransfer->TxLength -= 2;
         pSPI_Handle->pCurrentTransfer->pTxBuffer += 2;
     }
     else
     {
         // 8-bit data frame
-        pSPIx->DR = *(pSPI_Handle->pCurrentTransfer->pTxBuffer);
+        *((volatile uint8_t *)(pSPIx->DR)) = *((uint8_t *)(pSPI_Handle->pCurrentTransfer->pTxBuffer));
         pSPI_Handle->pCurrentTransfer->TxLength -= 1;
         pSPI_Handle->pCurrentTransfer->pTxBuffer += 1;
     }
@@ -238,7 +238,7 @@ static void SPI_CloseTransmission(SPI_Handle_t *pSPI_Handle)
 
     pSPI_Handle->pCurrentTransfer->pTxBuffer = NULL;
     pSPI_Handle->pCurrentTransfer->TxLength = 0;
-    pSPI_Handle->pCurrentTransfer->TxState = SPI_PERI_STATE_READY;
+    pSPI_Handle->State = SPI_PERI_STATE_READY;
 }
 
 
@@ -280,14 +280,14 @@ static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle)
 
     pSPI_Handle->pCurrentTransfer->pRxBuffer = NULL;
     pSPI_Handle->pCurrentTransfer->RxLength = 0;
-    pSPI_Handle->pCurrentTransfer->RxState = SPI_PERI_STATE_READY;
+    pSPI_Handle->State = SPI_PERI_STATE_READY;
 }
 
 
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
 {
     // Clear OVR flag
-    if (pSPI_Handle->pCurrentTransfer->TxState != SPI_PERI_STATE_BUSY_TX)
+    if (pSPI_Handle->State != SPI_PERI_STATE_BUSY_TX)
     {
         SPI_ClearOVRFlag(pSPI_Handle->pSPIx);
         SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_OVR_ERROR);
@@ -304,13 +304,13 @@ __weak void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent
 
 uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle)
 {
-    return pSPI_Handle->pCurrentTransfer->TxState == SPI_PERI_STATE_BUSY_TX;
+    return pSPI_Handle->State == SPI_PERI_STATE_BUSY_TX;
 }
 
 
 uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle)
 {
-    return pSPI_Handle->pCurrentTransfer->RxState == SPI_PERI_STATE_BUSY_RX;
+    return pSPI_Handle->State == SPI_PERI_STATE_BUSY_RX;
 }
 
 
@@ -459,6 +459,27 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer
 
     // Wait until SPI peripheral transmit and receive everything done
     while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+
+    return SPI_FUNC_STATUS_OK;
+}
+
+
+SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer)
+{
+    if (pSPI_Handle == NULL || pSPI_Transfer == NULL || pSPI_Transfer->pTxBuffer == NULL || pSPI_Transfer->TxLength == 0)
+        return SPI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    if (pSPI_Handle->State != SPI_PERI_STATE_READY)
+        return SPI_FUNC_STATUS_BUSY;
+    
+    pSPI_Handle->pCurrentTransfer = pSPI_Transfer;
+    pSPI_Handle->State = SPI_PERI_STATE_BUSY_TX;
+
+    // Enable ERROR interrupt
+    WRITE_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+
+    // Enable TXE interrupt
+    WRITE_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
 
     return SPI_FUNC_STATUS_OK;
 }
