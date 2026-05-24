@@ -363,7 +363,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * @param SE_or_RE SET or RESET macro
  * 
  * @details This function sets or clears the SSI bit in the SPI_CR1 register.
- *          The SSI bit is used in master mode to control the internal 
+ *          The SSI bit is used only in master mode to control the internal 
  *          slave select signal when SSM (Software Slave Management) is enabled.
  *          0: SSI low (slave not selected)
  *          1: SSI high (slave selected)
@@ -498,10 +498,13 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
 /**
  * @brief Transmit data over SPI in blocking mode
  * 
- * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param pSPI_Transfer Pointer to SPI transfer structure
+ * @param pSPIx      Pointer to SPI peripheral instance (SPI1, SPI2, ...)
+ * @param pTxBuffer  Pointer to transmit data buffer
+ * @param TxLength   Number of bytes to transmit
  * 
- * @param SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK    : Transmission completed successfully
+ *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
  * 
  * @details This function uses polling mode to transmit data frame-by-frame.
  *          The function waits until:
@@ -521,16 +524,19 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
  *          In 16-bit data frame mode, TxLength must be an even number.
  *          Otherwise, the function returns immediately without transmitting data.
  */
-SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength);
 
 
 /**
  * @brief Receive data over SPI in blocking mode
  * 
- * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param pSPI_Transfer Pointer to SPI transfer structure
+ * @param pSPIx      Pointer to SPI peripheral instance (SPI1, SPI2, ...)
+ * @param pRxBuffer  Pointer to receive data buffer
+ * @param RxLength   Number of bytes to receive
  * 
- * @return SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK    : Reception completed successfully
+ *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
  * 
  * @note SPI reception requires dummy frame transmission to generate clock.
  * 
@@ -543,16 +549,21 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Tran
  * 
  * @warning In 16-bit data frame mode, RxLength must be even.
  */
-SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t RxLength);
 
 
 /**
  * @brief Transmit and receive data over SPI in blocking mode
  * 
- * @param pSPIx         Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param pSPI_Transfer Pointer to SPI transfer structure
+ * @param pSPIx      Pointer to SPI peripheral instance (SPI1, SPI2, ...)
+ * @param pTxBuffer  Pointer to transmit data buffer
+ * @param TxLength   Number of bytes to transmit
+ * @param pRxBuffer  Pointer to receive data buffer
+ * @param RxLength   Number of bytes to receive
  * 
- * @return SPI_FunctionStatus_t SPI function status | @SPI_FUNCTION_STATUS
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK    : Transfer completed successfully
+ *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
  * 
  * @note SPI transmit and receive operations occur simultaneously.
  * 
@@ -565,7 +576,7 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Trans
  * 
  * @warning In 16-bit data frame mode, transfer length must be even.
  */
-SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength);
 
 
 #endif /* INC_SPI_DRIVER_H_ */

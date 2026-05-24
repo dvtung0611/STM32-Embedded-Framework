@@ -321,12 +321,12 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
 }
 
 
-SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength)
 {
-    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->TxLength % 2 == 1))
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (TxLength % 2 == 1))
         return SPI_FUNC_STATUS_ERROR;
 
-    while (pSPI_Transfer->TxLength > 0)
+    while (TxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
@@ -335,16 +335,16 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Tran
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame format is selected for transmission
-            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
-            pSPI_Transfer->TxLength -= 2;
-            pSPI_Transfer->pTxBuffer += 2;
+            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pTxBuffer));
+            TxLength -= 2;
+            pTxBuffer += 2;
         }
         else
         {
             // 8-bit data frame format is selected for transmission
-            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pSPI_Transfer->pTxBuffer));
-            pSPI_Transfer->TxLength -= 1;
-            pSPI_Transfer->pTxBuffer += 1;
+            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pTxBuffer));
+            TxLength -= 1;
+            pTxBuffer += 1;
         }
         
         // Wait until RX buffer is full (not empty) (RXNE = SET)
@@ -361,12 +361,12 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Tran
 }
 
 
-SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t RxLength)
 {
-    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (pSPI_Transfer->RxLength % 2 == 1))
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (RxLength % 2 == 1))
         return SPI_FUNC_STATUS_ERROR;
 
-    while (pSPI_Transfer->RxLength > 0)
+    while (RxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
@@ -390,16 +390,16 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Trans
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame format is selected for reception
-            *((uint16_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
-            pSPI_Transfer->RxLength -= 2;
-            pSPI_Transfer->pRxBuffer += 2;
+            *((uint16_t *)(pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
+            RxLength -= 2;
+            pRxBuffer += 2;
         }
         else
         {
             // 8-bit data frame format is selected for reception
-            *((uint8_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
-            pSPI_Transfer->RxLength -= 1;
-            pSPI_Transfer->pRxBuffer += 1;
+            *((uint8_t *)(pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
+            RxLength -= 1;
+            pRxBuffer += 1;
         }
     }
 
@@ -410,13 +410,13 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Trans
 }
 
 
-SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength)
 {
     if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && 
-        ((pSPI_Transfer->TxLength % 2 == 1) || (pSPI_Transfer->RxLength % 2 == 1)))
+        ((TxLength % 2 == 1) || (RxLength % 2 == 1)))
         return SPI_FUNC_STATUS_ERROR;
 
-    while (pSPI_Transfer->RxLength > 0)
+    while (RxLength > 0)
     {
         // Wait until TX buffer is empty (TXE = SET)
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == RESET);
@@ -425,16 +425,16 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pS
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame format is selected for transmission
-            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pSPI_Transfer->pTxBuffer));
-            pSPI_Transfer->TxLength -= 2;
-            pSPI_Transfer->pTxBuffer += 2;
+            *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pTxBuffer));
+            TxLength -= 2;
+            pTxBuffer += 2;
         }
         else
         {
             // 8-bit data frame format is selected for transmission
-            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pSPI_Transfer->pTxBuffer));
-            pSPI_Transfer->TxLength -= 1;
-            pSPI_Transfer->pTxBuffer += 1;
+            *((volatile uint8_t *)(&pSPIx->DR)) = *((uint8_t *)(pTxBuffer));
+            TxLength -= 1;
+            pTxBuffer += 1;
         }
 
         // Wait until RX buffer is full (not empty) (RXNE = SET)
@@ -444,16 +444,16 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, SPI_Transfer_t *pS
         if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame format is selected for reception
-            *((uint16_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
-            pSPI_Transfer->RxLength -= 2;
-            pSPI_Transfer->pRxBuffer += 2;
+            *((uint16_t *)(pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
+            RxLength -= 2;
+            pRxBuffer += 2;
         }
         else
         {
             // 8-bit data frame format is selected for reception
-            *((uint8_t *)(pSPI_Transfer->pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
-            pSPI_Transfer->RxLength -= 1;
-            pSPI_Transfer->pRxBuffer += 1;
+            *((uint8_t *)(pRxBuffer)) = *((volatile uint8_t *)(&pSPIx->DR));
+            RxLength -= 1;
+            pRxBuffer += 1;
         }
     }
 
