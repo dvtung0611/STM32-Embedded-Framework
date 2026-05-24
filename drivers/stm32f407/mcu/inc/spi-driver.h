@@ -159,8 +159,8 @@ typedef enum
  */
 typedef enum
 {
-    SPI_APP_EVENT_TX_COMPLETE = 0U,
-    SPI_APP_EVENT_RX_COMPLETE,
+    SPI_APP_EVENT_TX_BUFFER_EMPTY = 0U,
+    SPI_APP_EVENT_RX_BUFFER_FULL,
     SPI_APP_EVENT_OVR_ERROR,
     SPI_APP_EVENT_MODF_ERROR
 } SPI_AppEvent_t;
@@ -468,25 +468,39 @@ void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_
 
 
 /**
- * @brief Check whether SPI transmission is busy
- * 
+ * @brief Check whether SPI peripheral is ready
+ *
  * @param pSPI_Handle Pointer to SPI handle structure
- * 
- * @return uint8_t 0: SPI Tx is idle
- *                 1: SPI Tx is busy transmitting
+ *
+ * @return uint8_t
+ *         - 1 : SPI is ready
+ *         - 0 : SPI is busy or in error state
  */
-uint8_t SPI_IsTxBusy(SPI_Handle_t *pSPI_Handle);
+uint8_t SPI_CheckReady(SPI_Handle_t *pSPI_Handle);
 
 
 /**
- * @brief Check whether SPI reception is busy
- * 
+ * @brief Check whether SPI peripheral is busy
+ *
  * @param pSPI_Handle Pointer to SPI handle structure
- * 
- * @return uint8_t 0: SPI Rx is idle
- *                 1: SPI Rx is busy receiving
+ *
+ * @return uint8_t
+ *         - 1 : SPI is busy
+ *         - 0 : SPI is ready
  */
-uint8_t SPI_IsRxBusy(SPI_Handle_t *pSPI_Handle);
+uint8_t SPI_CheckBusy(SPI_Handle_t *pSPI_Handle);
+
+
+/**
+ * @brief Check whether SPI peripheral is in error state
+ *
+ * @param pSPI_Handle Pointer to SPI handle structure
+ *
+ * @return uint8_t
+ *         - 1 : SPI is in error state
+ *         - 0 : No error detected
+ */
+uint8_t SPI_CheckError(SPI_Handle_t *pSPI_Handle);
 
 
 /**
@@ -622,6 +636,35 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer
  *          The transfer buffer must remain valid until the transfer completes.
  */
 SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
+
+
+/**
+ * @brief Receive data over SPI using interrupt mode
+ * 
+ * @param pSPI_Handle   Pointer to SPI handle structure
+ * @param pSPI_Transfer Pointer to SPI transfer structure
+ * 
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK
+ *         - SPI_FUNC_STATUS_BUSY
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER
+ * 
+ * @details This function starts a non-blocking SPI receive operation.
+ *          Data reception is handled by the SPI interrupt service routine (ISR).
+ * 
+ *          The function:
+ *          - Validates parameters
+ *          - Checks SPI peripheral state
+ *          - Stores current transfer information
+ *          - Sets SPI state to BUSY_RX
+ *          - Enables RXNE and ERR interrupts
+ * 
+ * @warning SPI reception requires clock generation from the master device.
+ *          Dummy data transmission may be required during reception.
+ * 
+ *          The receive buffer must remain valid until the transfer completes.
+ */
+SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
