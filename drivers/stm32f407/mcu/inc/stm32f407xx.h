@@ -19,8 +19,10 @@
 
 #define DISABLE         (0U)
 #define ENABLE          (1U)
-#define RESET           (0U)
+#define CLEAR           (0U)
 #define SET             (1U)
+#define LOW             (0U)
+#define HIGH            (1U)
 
 
 /* ========================================== FLASH + SRAM + SYSTEM MEMORY ========================================== */
@@ -440,7 +442,7 @@ typedef struct
  * @brief Bitwise operations
  */
 #define READ_BIT(REG, BIT_POS)          (((REG) >> (BIT_POS)) & 1U)
-#define WRITE_BIT(REG, BIT_POS)         ((REG) |= (1U << (BIT_POS)))
+#define SET_BIT(REG, BIT_POS)           ((REG) |= (1U << (BIT_POS)))
 #define CLEAR_BIT(REG, BIT_POS)         ((REG) &= ~(1U << (BIT_POS)))
 
 

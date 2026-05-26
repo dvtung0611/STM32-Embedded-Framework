@@ -155,7 +155,7 @@ void GPIO_WriteTo_OutputPin(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber, uint8_t
 {
     if (Value == SET)
         pGPIOx->ODR |= (1U << PinNumber);
-    else if (Value == RESET)
+    else if (Value == CLEAR)
         pGPIOx->ODR &= ~(1U << PinNumber);
 }
 

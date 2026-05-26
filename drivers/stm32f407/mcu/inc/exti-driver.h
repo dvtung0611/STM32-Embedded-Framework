@@ -145,9 +145,8 @@ void EXTI_ClearPending(EXTI_LineNumber_t LineNumber);
  * 
  * @param LineNumber EXTI line number (0–22) | @EXTI_LINE_NUMBER
  * 
- * @return uint8_t
- *         - 1: Pending interrupt is active
- *         - 0: No pending interrupt
+ * @return uint8_t 1: Pending interrupt is active
+ *                 0: No pending interrupt
  * 
  * @note The pending bit is set by hardware when the configured
  *       trigger event occurs on the EXTI line.

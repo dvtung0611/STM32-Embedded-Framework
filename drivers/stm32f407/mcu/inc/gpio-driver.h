@@ -500,7 +500,7 @@ uint16_t GPIO_ReadFrom_InputPort(GPIO_RegDef_t const *pGPIOx);
  * 
  * @param pGPIOx    Pointer to GPIO port (e.g. GPIOA, GPIOB, ...)
  * @param PinNumber GPIO pin number (0–15) | @GPIO_PIN
- * @param Value     SET or RESET macro
+ * @param Value     SET or CLEAR macro
  * 
  * @details Sets or clears the corresponding bit in the ODR (Output Data Register)
  *          to drive the pin HIGH or LOW.
