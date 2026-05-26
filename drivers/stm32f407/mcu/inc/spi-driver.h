@@ -106,30 +106,6 @@ typedef enum
 
 
 /**
- * @SPI_PERIPHERAL_STATE
- */
-typedef enum
-{
-    SPI_PERI_STATE_READY = 0U,
-    SPI_PERI_STATE_BUSY_TX_RX,
-    SPI_PERI_STATE_BUSY_RX,
-    SPI_PERI_STATE_BUSY_TX,
-    SPI_PERI_STATE_ERROR
-} SPI_PeripheralState_t;
-
-
-/**
- * @SPI_PERIPHERAL_ERROR
- */
-typedef enum
-{
-    SPI_PERI_ERROR_NONE = 0U,
-    SPI_PERI_ERROR_OVR = 1U,
-    SPI_PERI_ERROR_MODF = 2U
-} SPI_PeripheralError_t;
-
-
-/**
  * @SPI_FUNCTION_STATUS
  */
 typedef enum
@@ -142,6 +118,35 @@ typedef enum
 
 
 /**
+ * @SPI_PERIPHERAL_STATE
+ */
+typedef enum
+{
+    SPI_PERI_STATE_READY = 0U,
+    SPI_PERI_STATE_BUSY_TX_RX,
+
+    SPI_PERI_STATE_BUSY_TX,
+    SPI_PERI_STATE_TX_COMPLETE,
+
+    SPI_PERI_STATE_BUSY_RX,
+    SPI_PERI_STATE_RX_COMPLETE,
+
+    SPI_PERI_STATE_ERROR
+} SPI_PeripheralState_t;
+
+
+/**
+ * @SPI_PERIPERAL_ERROR
+ */
+typedef enum
+{
+    SPI_PERI_ERROR_NONE = 0U,
+    SPI_PERI_ERROR_OVR = 1U,
+    SPI_PERI_ERROR_MODF = 2U
+} SPI_PeripheralError_t;
+
+
+/**
  * @SPI_IRQ_EVENT
  */
 typedef enum
@@ -149,8 +154,8 @@ typedef enum
     SPI_IRQ_EVENT_NONE = 0U,
     SPI_IRQ_EVENT_TXE = 1U,
     SPI_IRQ_EVENT_RXNE = 2U,
-    SPI_IRQ_EVENT_OVR_ERROR = 4U,
-    SPI_IRQ_EVENT_MODF_ERROR = 8U
+    SPI_IRQ_EVENT_ERROR_OVR = 4U,
+    SPI_IRQ_EVENT_ERROR_MODF = 8U
 } SPI_IRQEvent_t;
 
 
@@ -159,11 +164,24 @@ typedef enum
  */
 typedef enum
 {
-    SPI_APP_EVENT_TX_BUFFER_EMPTY = 0U,
-    SPI_APP_EVENT_RX_BUFFER_FULL,
-    SPI_APP_EVENT_OVR_ERROR,
-    SPI_APP_EVENT_MODF_ERROR
+    SPI_APP_EVENT_NONE = 0U,
+    SPI_APP_EVENT_TX_COMPLETE,
+    SPI_APP_EVENT_RX_COMPLETE,
+    SPI_APP_EVENT_ERROR_OVR,
+    SPI_APP_EVENT_ERROR_MODF
 } SPI_AppEvent_t;
+
+
+/**
+ * @SPI_TRANSFER_MODE
+ */
+typedef enum
+{
+    SPI_TRANSFER_MODE_NONE = 0U,
+    SPI_TRANSFER_MODE_TRANSMIT_ONLY,
+    SPI_TRANSFER_MODE_RECEIVE_ONLY,
+    SPI_TRANSFER_MODE_TRANSMIT_RECEIVE
+} SPI_TransferMode_t;
 
 
 /* ================================================== BIT POSITION ================================================== */
@@ -250,7 +268,7 @@ typedef struct
 
 
 typedef struct
-{
+{ 
     uint8_t *pTxBuffer;                     /*!< Pointer to TX buffer application data */
     uint8_t *pRxBuffer;                     /*!< Pointer to RX buffer application data */
     
@@ -270,6 +288,7 @@ typedef struct
     SPI_RegDef_t *pSPIx;                    /*!< Pointer to SPI peripheral (SPI1, SPI2,...) */
     SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
 
+    SPI_TransferMode_t Mode;                /*!< Transfer mode */
     SPI_Transfer_t *pCurrentTransfer;       /*!< Pointer to current SPI transfer */
 
     __IO SPI_PeripheralState_t State;       /*!< Current Tx/Rx transfer state */
@@ -376,7 +395,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * @brief Configure the SSI (Internal Slave Select) bit for the SPI peripheral
  * 
  * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param SE_or_RE SET or RESET macro
+ * @param SE_or_CL SET or CLEAR macro
  * 
  * @details This function sets or clears the SSI bit in the SPI_CR1 register.
  *          The SSI bit is used only in master mode to control the internal 
@@ -389,14 +408,14 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.5.1 SPI control register 1 (SPI_CR1)
  */
-void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_RE);
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_CL);
 
 
 /**
  * @brief Configure the SSOE (SS output enable) bit for the SPI peripheral
  * 
  * @param pSPIx    Pointer to SPI peripheral (SPI1, SPI2,...)
- * @param SE_or_RE SET or RESET macro
+ * @param SE_or_CL SET or CLEAR macro
  * 
  * @details This function sets or clears the SSOE bit in the SPI_CR2 register.
  *          The SSOE bit is used only in master mode when hardware slave 
@@ -417,7 +436,7 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_RE);
  * - RM0090 Reference Manual,   Section 28.3.1 General description
  *                              Section 28.5.2 SPI control register 2 (SPI_CR2)         
  */
-void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_RE);
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_CL);
 
 
 /**
@@ -476,7 +495,7 @@ void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_
  *         - 1 : SPI is ready
  *         - 0 : SPI is busy or in error state
  */
-uint8_t SPI_CheckReady(SPI_Handle_t *pSPI_Handle);
+uint8_t SPI_CheckPeripheralReady(SPI_Handle_t *pSPI_Handle);
 
 
 /**
@@ -488,7 +507,7 @@ uint8_t SPI_CheckReady(SPI_Handle_t *pSPI_Handle);
  *         - 1 : SPI is busy
  *         - 0 : SPI is ready
  */
-uint8_t SPI_CheckBusy(SPI_Handle_t *pSPI_Handle);
+uint8_t SPI_CheckPeripheralBusy(SPI_Handle_t *pSPI_Handle);
 
 
 /**
@@ -500,7 +519,7 @@ uint8_t SPI_CheckBusy(SPI_Handle_t *pSPI_Handle);
  *         - 1 : SPI is in error state
  *         - 0 : No error detected
  */
-uint8_t SPI_CheckError(SPI_Handle_t *pSPI_Handle);
+uint8_t SPI_CheckPeripheralError(SPI_Handle_t *pSPI_Handle);
 
 
 /**
