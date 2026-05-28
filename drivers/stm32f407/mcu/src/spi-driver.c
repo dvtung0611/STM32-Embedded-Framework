@@ -21,6 +21,7 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 
 static void SPI_CloseTxRx(SPI_Handle_t *pSPI_Handle);
 
+static void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
 
 /* ====================================================== APIs ====================================================== */
 
@@ -346,7 +347,7 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
 }
 
 
-void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
+static void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
 {
     (void)pSPIx->DR;
     (void)pSPIx->SR;

@@ -502,28 +502,6 @@ void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_
 
 
 /**
- * @brief Clear SPI overrun (OVR) flag
- * 
- * @param pSPIx Pointer to SPI peripheral (SPI1, SPI2,...)
- *
- * @details According to STM32 SPI peripheral requirements, the OVR flag
- *          is cleared by performing:
- *          1. A read access to the SPI_DR register
- *          2. A read access to the SPI_SR register
- * 
- * @note This function should only be used when an overrun condition
- *       has occurred and the received data is no longer needed.
- * 
- * Refer to:
- * - RM0090 Reference Manual,   Section 28.3.10 Error flags
- * 
- * @warning Clearing the OVR flag discards unread received data currently
- *          stored in the SPI receive buffer.
- */
-void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
-
-
-/**
  * @brief Transmit data over SPI in blocking mode
  * 
  * @param pSPIx      Pointer to SPI peripheral instance (SPI1, SPI2, ...)
