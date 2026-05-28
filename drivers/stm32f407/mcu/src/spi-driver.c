@@ -19,8 +19,7 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle);
 
-static void SPI_CloseTransmission(SPI_Handle_t *pSPI_Handle);
-static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle);
+static void SPI_CloseTxRx(SPI_Handle_t *pSPI_Handle);
 
 
 /* ====================================================== APIs ====================================================== */
@@ -204,44 +203,42 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     // Transmit dummy data
     if (pSPI_Handle->Mode == SPI_TRANSFER_MODE_RECEIVE_ONLY)
     {
-        if (pSPI_Handle->pCurrentTransfer->RxLength > 0)
-        {   
+        if (pSPI_Handle->CurrentTransfer.RxLength > 0)
+        {
             if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
                 *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR)) = (uint16_t)(0xFFFF);
             else
                 *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR)) = (uint8_t)(0xFF);
         }
-
         return;
     }
 
     // Transmit true data
-    if (pSPI_Handle->pCurrentTransfer->TxLength > 0)
+    if (pSPI_Handle->CurrentTransfer.TxLength > 0)
     {
         if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame
-            *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR)) = *((uint16_t *)(pSPI_Handle->pCurrentTransfer->pTxBuffer));
-            pSPI_Handle->pCurrentTransfer->TxLength -= 2;
-            pSPI_Handle->pCurrentTransfer->pTxBuffer += 2;
+            *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR)) = *((uint16_t *)(pSPI_Handle->CurrentTransfer.pTxBuffer));
+            pSPI_Handle->CurrentTransfer.TxLength -= 2;
+            pSPI_Handle->CurrentTransfer.pTxBuffer += 2;
         }
         else
         {
             // 8-bit data frame
-            *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR)) = *((uint8_t *)(pSPI_Handle->pCurrentTransfer->pTxBuffer));
-            pSPI_Handle->pCurrentTransfer->TxLength -= 1;
-            pSPI_Handle->pCurrentTransfer->pTxBuffer += 1;
+            *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR)) = *((uint8_t *)(pSPI_Handle->CurrentTransfer.pTxBuffer));
+            pSPI_Handle->CurrentTransfer.TxLength -= 1;
+            pSPI_Handle->CurrentTransfer.pTxBuffer += 1;
         }
     }
     
-    if (pSPI_Handle->pCurrentTransfer->TxLength == 0)
+    if (pSPI_Handle->CurrentTransfer.TxLength == 0)
     {
-        if (SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_FLAG_BSY) == CLEAR && SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_FLAG_RXNE) == CLEAR)
-        {
-            pSPI_Handle->State = SPI_PERI_STATE_TX_COMPLETE;
-            SPI_CloseTransmission(pSPI_Handle);
-            SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_TX_COMPLETE);
-        }
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+        pSPI_Handle->CurrentTransfer.TxDone = SET;
+
+        if (pSPI_Handle->Mode == SPI_TRANSFER_MODE_TRANSMIT_ONLY)
+            pSPI_Handle->State = SPI_PERI_STATE_WAIT_CLOSE;
     }
 }
 
@@ -251,61 +248,85 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     // Receive dummy data
     if (pSPI_Handle->Mode == SPI_TRANSFER_MODE_TRANSMIT_ONLY)
     {
-        (void)pSPI_Handle->pSPIx->DR;
+        (void)(pSPI_Handle->pSPIx->DR);
         return;
     }
 
     // Receive true data
-    if (pSPI_Handle->pCurrentTransfer->RxLength > 0)
+    if (pSPI_Handle->CurrentTransfer.RxLength > 0)
     {
-        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF))
+        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
         {
             // 16-bit data frame
-            *((uint16_t *)(pSPI_Handle->pCurrentTransfer->pRxBuffer)) = *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR));
-            pSPI_Handle->pCurrentTransfer->RxLength -= 2;
-            pSPI_Handle->pCurrentTransfer->pRxBuffer += 2;
+            *((uint16_t *)(pSPI_Handle->CurrentTransfer.pRxBuffer)) = *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR));
+            pSPI_Handle->CurrentTransfer.RxLength -= 2;
+            pSPI_Handle->CurrentTransfer.pRxBuffer += 2;
         }
         else
         {
             // 8-bit data frame
-            *((uint8_t *)(pSPI_Handle->pCurrentTransfer->pRxBuffer)) = *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR));
-            pSPI_Handle->pCurrentTransfer->RxLength -= 1;
-            pSPI_Handle->pCurrentTransfer->pRxBuffer += 1;
+            *((uint8_t *)(pSPI_Handle->CurrentTransfer.pRxBuffer)) = *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR));
+            pSPI_Handle->CurrentTransfer.RxLength -= 1;
+            pSPI_Handle->CurrentTransfer.pRxBuffer += 1;
         }
     }
+    
+    if (pSPI_Handle->CurrentTransfer.RxLength == 0)
+    {
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+        pSPI_Handle->CurrentTransfer.RxDone = SET;
+        pSPI_Handle->State = SPI_PERI_STATE_WAIT_CLOSE;
+    }
+}
 
-    if (pSPI_Handle->pCurrentTransfer->RxLength == 0)
+
+SPI_FunctionStatus_t SPI_FinalProcess(SPI_Handle_t *pSPI_Handle)
+{
+    if (pSPI_Handle->State == SPI_PERI_STATE_WAIT_CLOSE)
     {
         if (SPI_GetFlagStatus(pSPI_Handle->pSPIx, SPI_FLAG_BSY) == CLEAR)
         {
-            pSPI_Handle->State = SPI_PERI_STATE_RX_COMPLETE;
-            SPI_CloseReception(pSPI_Handle);
-            SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_RX_COMPLETE);
+            if (pSPI_Handle->CurrentTransfer.TxDone == SET && pSPI_Handle->CurrentTransfer.RxDone == SET)
+            {
+                SPI_CloseTxRx(pSPI_Handle);
+                SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_TX_RX_COMPLETE);
+                return SPI_FUNC_STATUS_OK;
+            }
+            else if (pSPI_Handle->CurrentTransfer.TxDone == SET)
+            {
+                SPI_CloseTxRx(pSPI_Handle);
+                SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_TX_COMPLETE);
+                return SPI_FUNC_STATUS_OK;
+            }
+            else if (pSPI_Handle->CurrentTransfer.RxDone == SET)
+            {
+                SPI_CloseTxRx(pSPI_Handle);
+                SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_RX_COMPLETE);
+                return SPI_FUNC_STATUS_OK;
+            }
+            
+            return SPI_FUNC_STATUS_ERROR;
         }
     }
+
+    return SPI_FUNC_STATUS_BUSY;
 }
 
 
-static void SPI_CloseTransmission(SPI_Handle_t *pSPI_Handle)
+static void SPI_CloseTxRx(SPI_Handle_t *pSPI_Handle)
 {
     CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
     CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
     CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
 
-    pSPI_Handle->pCurrentTransfer->pTxBuffer = NULL;
-    pSPI_Handle->pCurrentTransfer->TxLength = 0;
-    pSPI_Handle->State = SPI_PERI_STATE_READY;
-}
-
-
-static void SPI_CloseReception(SPI_Handle_t *pSPI_Handle)
-{
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
-
-    pSPI_Handle->pCurrentTransfer->pRxBuffer = NULL;
-    pSPI_Handle->pCurrentTransfer->RxLength = 0;
+    pSPI_Handle->CurrentTransfer.pTxBuffer = NULL;
+    pSPI_Handle->CurrentTransfer.TxLength = 0;
+    pSPI_Handle->CurrentTransfer.pRxBuffer = NULL;
+    pSPI_Handle->CurrentTransfer.RxLength = 0;
+    pSPI_Handle->CurrentTransfer.TxDone = CLEAR;
+    pSPI_Handle->CurrentTransfer.RxDone = CLEAR;
+    pSPI_Handle->Mode = SPI_TRANSFER_MODE_NONE;
     pSPI_Handle->State = SPI_PERI_STATE_READY;
 }
 
@@ -314,39 +335,14 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
 {
     SPI_ClearOVRFlag(pSPI_Handle->pSPIx);
 
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
     CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
     CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
 
     pSPI_Handle->State = SPI_PERI_STATE_ERROR;
     pSPI_Handle->Error = SPI_PERI_ERROR_OVR;
-    
+
     SPI_ApplicationEventCallBack(pSPI_Handle, SPI_APP_EVENT_ERROR_OVR);
-}
-
-
-__weak void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_AppEventFlag)
-{
-    (void)(pSPI_Handle);
-    (void)(SPI_AppEventFlag);
-}
-
-
-uint8_t SPI_CheckPeripheralReady(SPI_Handle_t *pSPI_Handle)
-{
-    return pSPI_Handle->State == SPI_PERI_STATE_READY;
-}
-
-
-uint8_t SPI_CheckPeripheralBusy(SPI_Handle_t *pSPI_Handle)
-{
-    return pSPI_Handle->State != SPI_PERI_STATE_READY;
-}
-
-
-uint8_t SPI_CheckPeripheralError(SPI_Handle_t *pSPI_Handle)
-{
-    return pSPI_Handle->State == SPI_PERI_STATE_ERROR;
 }
 
 
@@ -357,15 +353,32 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx)
 }
 
 
-SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer)
+__weak void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_AppEventFlag)
 {
-    if (pSPI_Handle == NULL || pSPI_Transfer == NULL || pSPI_Transfer->pTxBuffer == NULL || pSPI_Transfer->TxLength == 0)
+    (void)(pSPI_Handle);
+    (void)(SPI_AppEventFlag);
+}
+
+
+SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t TxLength)
+{
+    if (pSPI_Handle == NULL || pTxBuffer == NULL || TxLength == 0)
+        return SPI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    if (pSPI_Handle->SPI_Config.SPI_DFF == SPI_DFF_16BITS && TxLength % 2 == 1)
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
     
     if (pSPI_Handle->State != SPI_PERI_STATE_READY)
         return SPI_FUNC_STATUS_BUSY;
-    
-    pSPI_Handle->pCurrentTransfer = pSPI_Transfer;
+
+    pSPI_Handle->CurrentTransfer.pTxBuffer = pTxBuffer;
+    pSPI_Handle->CurrentTransfer.TxLength = TxLength;
+    pSPI_Handle->CurrentTransfer.pRxBuffer = NULL;
+    pSPI_Handle->CurrentTransfer.RxLength = 0;
+    pSPI_Handle->CurrentTransfer.TxDone = CLEAR;
+    pSPI_Handle->CurrentTransfer.RxDone = CLEAR;
+
+    pSPI_Handle->Mode = SPI_TRANSFER_MODE_TRANSMIT_ONLY;
     pSPI_Handle->State = SPI_PERI_STATE_BUSY_TX;
 
     // Enable ERROR interrupt
@@ -381,16 +394,60 @@ SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *p
 }
 
 
-SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer)
+SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t RxLength)
 {
-    if (pSPI_Handle == NULL || pSPI_Transfer == NULL || pSPI_Transfer->pRxBuffer == NULL || pSPI_Transfer->RxLength == 0)
+    if (pSPI_Handle == NULL || pRxBuffer == NULL || RxLength == 0)
+        return SPI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    if (pSPI_Handle->SPI_Config.SPI_DFF == SPI_DFF_16BITS && RxLength % 2 == 1)
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
     
     if (pSPI_Handle->State != SPI_PERI_STATE_READY)
         return SPI_FUNC_STATUS_BUSY;
-    
-    pSPI_Handle->pCurrentTransfer = pSPI_Transfer;
+
+    pSPI_Handle->CurrentTransfer.pTxBuffer = NULL;
+    pSPI_Handle->CurrentTransfer.TxLength = 0;
+    pSPI_Handle->CurrentTransfer.pRxBuffer = pRxBuffer;
+    pSPI_Handle->CurrentTransfer.RxLength = RxLength;
+    pSPI_Handle->CurrentTransfer.TxDone = CLEAR;
+    pSPI_Handle->CurrentTransfer.RxDone = CLEAR;
+
+    pSPI_Handle->Mode = SPI_TRANSFER_MODE_RECEIVE_ONLY;
     pSPI_Handle->State = SPI_PERI_STATE_BUSY_RX;
+
+    // Enable ERROR interrupt
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+
+    // Enable RXNE interrupt
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+
+    // Enable TXE interrupt
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+
+    return SPI_FUNC_STATUS_OK;
+}
+
+
+SPI_FunctionStatus_t SPI_TransmitReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength)
+{
+    if (pSPI_Handle == NULL || pTxBuffer == NULL || TxLength == 0 || pRxBuffer == NULL || RxLength == 0 || TxLength != RxLength)
+        return SPI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    if (pSPI_Handle->SPI_Config.SPI_DFF == SPI_DFF_16BITS && (TxLength % 2 == 1 || RxLength % 2 == 1))
+        return SPI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    if (pSPI_Handle->State != SPI_PERI_STATE_READY)
+        return SPI_FUNC_STATUS_BUSY;
+
+    pSPI_Handle->CurrentTransfer.pTxBuffer = pTxBuffer;
+    pSPI_Handle->CurrentTransfer.TxLength = TxLength;
+    pSPI_Handle->CurrentTransfer.pRxBuffer = pRxBuffer;
+    pSPI_Handle->CurrentTransfer.RxLength = RxLength;
+    pSPI_Handle->CurrentTransfer.TxDone = CLEAR;
+    pSPI_Handle->CurrentTransfer.RxDone = CLEAR;
+
+    pSPI_Handle->Mode = SPI_TRANSFER_MODE_TRANSMIT_RECEIVE;
+    pSPI_Handle->State = SPI_PERI_STATE_BUSY_TX_RX;
 
     // Enable ERROR interrupt
     SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);

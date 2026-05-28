@@ -28,6 +28,8 @@
 #define SPI_I2SPR_RESET_VALUE               (0x02U)
 
 
+/* ================================================== DEFINITIONS =================================================== */
+
 /**
  * @SPI_DEVICE_MODE
  */
@@ -123,13 +125,17 @@ typedef enum
 typedef enum
 {
     SPI_PERI_STATE_READY = 0U,
+
     SPI_PERI_STATE_BUSY_TX_RX,
+    SPI_PERI_STATE_TX_RX_COMPLETE,
 
     SPI_PERI_STATE_BUSY_TX,
     SPI_PERI_STATE_TX_COMPLETE,
 
     SPI_PERI_STATE_BUSY_RX,
     SPI_PERI_STATE_RX_COMPLETE,
+
+    SPI_PERI_STATE_WAIT_CLOSE,
 
     SPI_PERI_STATE_ERROR
 } SPI_PeripheralState_t;
@@ -165,6 +171,7 @@ typedef enum
 typedef enum
 {
     SPI_APP_EVENT_NONE = 0U,
+    SPI_APP_EVENT_TX_RX_COMPLETE,
     SPI_APP_EVENT_TX_COMPLETE,
     SPI_APP_EVENT_RX_COMPLETE,
     SPI_APP_EVENT_ERROR_OVR,
@@ -252,46 +259,54 @@ typedef enum
 /**
  * @brief SPI configuration structure
  *
- * @note This structure is used to configure SPI peripheral parameters
- *       such as mode, bus configuration, clock speed, data format, and clock polarity/phase.
+ * @details This structure is used to configure SPI peripheral parameters
+ *          such as mode, bus configuration, clock speed, data format, and clock polarity/phase.
  */
 typedef struct
 {
-    SPI_DeviceMode_t SPI_DeviceMode;    /*!< Device mode selection                          | Possible value: @SPI_DEVICE_MODE */
-    SPI_BusConfig_t SPI_BusConfig;      /*!< Bus configuration                              | Possible value: @SPI_BUS_CONFIG */
-    SPI_SCLKSpeed_t SPI_SCLKSpeed;      /*!< Serial clock speed (baud rate prescaler)       | Possible value: @SPI_SCLK_SPEED */
-    SPI_DFF_t SPI_DFF;                  /*!< Data frame format                              | Possible value: @SPI_DATA_FRAME_FORMAT */
-    SPI_CPOL_t SPI_CPOL;                /*!< Clock polarity                                 | Possible value: @SPI_CLOCK_POLARITY */
-    SPI_CPHA_t SPI_CPHA;                /*!< Clock phase                                    | Possible value: @SPI_CLOCK_PHASE */
-    SPI_SSM_t SPI_SSM;                  /*!< Software slave management                      | Possible value: @SPI_SOFTWARE_SLAVE_MANAGEMENT */
+    __IO SPI_DeviceMode_t SPI_DeviceMode;    /*!< Device mode selection                          | Possible value: @SPI_DEVICE_MODE */
+    __IO SPI_BusConfig_t SPI_BusConfig;      /*!< Bus configuration                              | Possible value: @SPI_BUS_CONFIG */
+    __IO SPI_SCLKSpeed_t SPI_SCLKSpeed;      /*!< Serial clock speed (baud rate prescaler)       | Possible value: @SPI_SCLK_SPEED */
+    __IO SPI_DFF_t SPI_DFF;                  /*!< Data frame format                              | Possible value: @SPI_DATA_FRAME_FORMAT */
+    __IO SPI_CPOL_t SPI_CPOL;                /*!< Clock polarity                                 | Possible value: @SPI_CLOCK_POLARITY */
+    __IO SPI_CPHA_t SPI_CPHA;                /*!< Clock phase                                    | Possible value: @SPI_CLOCK_PHASE */
+    __IO SPI_SSM_t SPI_SSM;                  /*!< Software slave management                      | Possible value: @SPI_SOFTWARE_SLAVE_MANAGEMENT */
 } SPI_Config_t;
 
 
+/**
+ * @brief SPI transfer structure
+ * 
+ * @details This is structure is used to configure SPI transfer
+ */
 typedef struct
 { 
-    uint8_t *pTxBuffer;                     /*!< Pointer to TX buffer application data */
-    uint8_t *pRxBuffer;                     /*!< Pointer to RX buffer application data */
+    __IO uint8_t *pTxBuffer;                /*!< Pointer to TX buffer application data */
+    __IO uint8_t *pRxBuffer;                /*!< Pointer to RX buffer application data */
     
     __IO uint32_t TxLength;                 /*!< Number of bytes remaining to transmit */
     __IO uint32_t RxLength;                 /*!< Number of bytes remaining to receive */
+
+    __IO uint8_t TxDone;                    /*!< Set flag when TxLength = 0 and wait close */
+    __IO uint8_t RxDone;                    /*!< Set flag when RxLength = 0 and wait close */
 } SPI_Transfer_t;
 
 
 /**
  * @brief SPI handle structure
  * 
- * @note This structure is used to configure and operate SPI peripheral.
- *       It contains base address and configuration parameters.
+ * @details This structure is used to configure and operate SPI peripheral.
+ *          It contains base address and configuration parameters.
  */
 typedef struct
 {
     SPI_RegDef_t *pSPIx;                    /*!< Pointer to SPI peripheral (SPI1, SPI2,...) */
-    SPI_Config_t SPI_Config;                /*!< SPI configuration settings */
+    __IO SPI_Config_t SPI_Config;           /*!< SPI configuration settings */
 
-    SPI_TransferMode_t Mode;                /*!< Transfer mode */
-    SPI_Transfer_t *pCurrentTransfer;       /*!< Pointer to current SPI transfer */
+    __IO SPI_Transfer_t CurrentTransfer;    /*!< Current SPI transfer */
+    __IO SPI_TransferMode_t Mode;           /*!< Transfer mode */
 
-    __IO SPI_PeripheralState_t State;       /*!< Current Tx/Rx transfer state */
+    __IO SPI_PeripheralState_t State;       /*!< Current SPI peripheral state */
 
     __IO uint32_t Error;                    /*!< Current error */
 } SPI_Handle_t;
@@ -448,18 +463,20 @@ void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_CL);
  *          - TXE  : Transmit buffer empty interrupt
  *          - RXNE : Receive buffer not empty interrupt
  *          - OVR  : Overrun error interrupt
+ *          - MODF : Master mode fault interrupt
  * 
  *          For each interrupt source:
- *          1. Check the corresponding status flag in SPI_SR register
- *          2. Check whether the interrupt is enabled in SPI_CR2 register
- *          3. Call the appropriate internal interrupt handler
+ *          - Check the corresponding status flag in SPI_SR register
+ *          - Check whether the interrupt is enabled in SPI_CR2 register
+ *          - Call the appropriate internal interrupt handler
  * 
  *          Internal handlers:
  *          - SPI_TXE_InterruptHandle()
  *          - SPI_RXNE_InterruptHandle()
  *          - SPI_OVR_InterruptHandle()
+ *          - SPI_MODF_InterruptHandle()
  * 
- * @note This function should be called inside the actual SPI IRQ handler
+ * @note This function should be called inside the actual SPI IRQ handler (SPIx_IRQHandler, x = 1, 2, 3)
  *       implemented in the application layer.
  * 
  * Refer to:
@@ -477,8 +494,6 @@ void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle);
  * 
  * @details This callback function is executed by the SPI driver when
  *          an interrupt event occurs during non-blocking communication.
- *          The user application should implement this function to handle
- *          SPI events.
  * 
  * @note This function is declared as __weak inside the driver source file,
  *       allowing the application to override it with a custom implementation.
@@ -487,57 +502,21 @@ void SPI_ApplicationEventCallBack(SPI_Handle_t *pSPI_Handle, SPI_AppEvent_t SPI_
 
 
 /**
- * @brief Check whether SPI peripheral is ready
- *
- * @param pSPI_Handle Pointer to SPI handle structure
- *
- * @return uint8_t
- *         - 1 : SPI is ready
- *         - 0 : SPI is busy or in error state
- */
-uint8_t SPI_CheckPeripheralReady(SPI_Handle_t *pSPI_Handle);
-
-
-/**
- * @brief Check whether SPI peripheral is busy
- *
- * @param pSPI_Handle Pointer to SPI handle structure
- *
- * @return uint8_t
- *         - 1 : SPI is busy
- *         - 0 : SPI is ready
- */
-uint8_t SPI_CheckPeripheralBusy(SPI_Handle_t *pSPI_Handle);
-
-
-/**
- * @brief Check whether SPI peripheral is in error state
- *
- * @param pSPI_Handle Pointer to SPI handle structure
- *
- * @return uint8_t
- *         - 1 : SPI is in error state
- *         - 0 : No error detected
- */
-uint8_t SPI_CheckPeripheralError(SPI_Handle_t *pSPI_Handle);
-
-
-/**
  * @brief Clear SPI overrun (OVR) flag
- *
+ * 
  * @param pSPIx Pointer to SPI peripheral (SPI1, SPI2,...)
  *
  * @details According to STM32 SPI peripheral requirements, the OVR flag
  *          is cleared by performing:
- *              1. A read access to the SPI_DR register
- *              2. A read access to the SPI_SR register
- *
+ *          1. A read access to the SPI_DR register
+ *          2. A read access to the SPI_SR register
+ * 
  * @note This function should only be used when an overrun condition
  *       has occurred and the received data is no longer needed.
  * 
  * Refer to:
  * - RM0090 Reference Manual,   Section 28.3.10 Error flags
- *
+ * 
  * @warning Clearing the OVR flag discards unread received data currently
  *          stored in the SPI receive buffer.
  */
@@ -552,26 +531,19 @@ void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
  * @param TxLength   Number of bytes to transmit
  * 
  * @return SPI_FunctionStatus_t
- *         - SPI_FUNC_STATUS_OK    : Transmission completed successfully
- *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
+ *         - SPI_FUNC_STATUS_OK                : Transmission completed successfully
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid parameter or transfer error
  * 
  * @details This function uses polling mode to transmit data frame-by-frame.
  *          The function waits until:
- *              - TXE flag is set before writing new data to DR
- *              - RXNE flag is set before reading and discarding received data
- *              - BSY flag is cleared before returning
+ *          - TXE flag is set before writing new data to DR
+ *          - RXNE flag is set before reading and discarding received data
+ *          - BSY flag is cleared before returning
  * 
- * @note SPI is inherently full-duplex. Even during transmit-only operations,
- *       received data is generated simultaneously. The received data is
- *       discarded to prevent RX buffer overrun (OVR).
+ * @note The received data is discarded to prevent RX buffer overrun (OVR).
  * 
  * @warning This is a blocking function. The CPU will wait until the entire
  *          transfer is completed.
- * 
- *          This function does not clear SPI error flags automatically.
- * 
- *          In 16-bit data frame mode, TxLength must be an even number.
- *          Otherwise, the function returns immediately without transmitting data.
  */
 SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength);
 
@@ -584,19 +556,16 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint3
  * @param RxLength   Number of bytes to receive
  * 
  * @return SPI_FunctionStatus_t
- *         - SPI_FUNC_STATUS_OK    : Reception completed successfully
- *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
+ *         - SPI_FUNC_STATUS_OK                : Reception completed successfully
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid parameter or transfer error
  * 
- * @note SPI reception requires dummy frame transmission to generate clock.
- * 
- * @note The function waits for:
+ * @details SPI reception requires dummy frame transmission to generate clock.
+ *          The function waits for:
  *          - TXE before sending dummy frame
  *          - RXNE before reading received data
  *          - BSY cleared before returning
  * 
  * @warning This is a blocking function.
- * 
- * @warning In 16-bit data frame mode, RxLength must be even.
  */
 SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t RxLength);
 
@@ -611,79 +580,129 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
  * @param RxLength   Number of bytes to receive
  * 
  * @return SPI_FunctionStatus_t
- *         - SPI_FUNC_STATUS_OK    : Transfer completed successfully
- *         - SPI_FUNC_STATUS_ERROR : Invalid parameter or transfer error
+ *         - SPI_FUNC_STATUS_OK                : Transfer completed successfully
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid parameter or transfer error
  * 
- * @note SPI transmit and receive operations occur simultaneously.
- * 
- * @note The function waits for:
+ * @details SPI transmit and receive operations occur simultaneously.
+ *          The function waits for:
  *          - TXE before writing transmit data
  *          - RXNE before reading received data
  *          - BSY cleared before returning
  * 
  * @warning This is a blocking function.
- * 
- * @warning In 16-bit data frame mode, transfer length must be even.
  */
 SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength);
 
 
 /**
- * @brief Transmit data over SPI using interrupt mode
+ * @brief  Transmit data over SPI using interrupt mode
  * 
- * @param pSPI_Handle   Pointer to SPI handle structure
- * @param pSPI_Transfer Pointer to SPI transfer structure
+ * @param  pSPI_Handle Pointer to SPI handle structure
+ * @param  pTxBuffer Pointer to transmit data buffer
+ * @param  TxLength Length of data to transmit (in bytes)
  * 
  * @return SPI_FunctionStatus_t
- *         - SPI_FUNC_STATUS_OK
- *         - SPI_FUNC_STATUS_BUSY
- *         - SPI_FUNC_STATUS_INVALID_PARAMETER
+ *         - SPI_FUNC_STATUS_OK                : Transmission started successfully
+ *         - SPI_FUNC_STATUS_BUSY              : SPI peripheral is busy
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
  * 
- * @details This function starts a non-blocking SPI transmit operation.
- *          Data transmission is handled by the SPI interrupt service routine (ISR).
- * 
- *          The function:
- *          - Validates parameters
- *          - Checks SPI peripheral state
- *          - Stores current transfer information
- *          - Sets SPI state to BUSY_TX
- *          - Enables ERR and TXE interrupts
- * 
- * @warning SPI is full-duplex. Received data generated during transmission
- *          must be handled to avoid OVR errors.
- * 
- *          The transfer buffer must remain valid until the transfer completes.
+ * @details
+ *  - This function initializes an interrupt-based transmit operation.
+ *  - TXE interrupt is used to load data into the data register.
+ *  - RXNE interrupt is enabled to clear received dummy data generated
+ *    during SPI transmission.
+ *  - ERR interrupt is enabled to detect SPI errors such as OVR, MODF, etc.
  */
-SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t TxLength);
 
 
 /**
- * @brief Receive data over SPI using interrupt mode
+ * @brief  Receive data over SPI using interrupt mode
  * 
- * @param pSPI_Handle   Pointer to SPI handle structure
- * @param pSPI_Transfer Pointer to SPI transfer structure
+ * @param  pSPI_Handle Pointer to SPI handle structure
+ * @param  pRxBuffer Pointer to receive data buffer
+ * @param  RxLength Length of data to receive (in bytes)
  * 
  * @return SPI_FunctionStatus_t
- *         - SPI_FUNC_STATUS_OK
- *         - SPI_FUNC_STATUS_BUSY
- *         - SPI_FUNC_STATUS_INVALID_PARAMETER
+ *         - SPI_FUNC_STATUS_OK                : Reception started successfully
+ *         - SPI_FUNC_STATUS_BUSY              : SPI peripheral is busy
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
  * 
- * @details This function starts a non-blocking SPI receive operation.
- *          Data reception is handled by the SPI interrupt service routine (ISR).
- * 
- *          The function:
- *          - Validates parameters
- *          - Checks SPI peripheral state
- *          - Stores current transfer information
- *          - Sets SPI state to BUSY_RX
- *          - Enables RXNE and ERR interrupts
- * 
- * @warning SPI reception requires clock generation from the master device.
- *          Dummy data transmission may be required during reception.
- * 
- *          The receive buffer must remain valid until the transfer completes.
+ * @details
+ *  - This function initializes an interrupt-based receive operation.
+ *  - Since SPI is full-duplex, dummy data will be transmitted automatically
+ *    to generate clock pulses for reception.
+ *  - RXNE interrupt is used to retrieve received data from the data register.
+ *  - TXE interrupt is enabled to continuously send dummy frames.
+ *  - ERR interrupt is enabled to detect SPI errors such as OVR, MODF, etc.
  */
-SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, SPI_Transfer_t *pSPI_Transfer);
+SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer, uint32_t RxLength);
+
+
+/**
+ * @brief  Transmit and receive data simultaneously over SPI using interrupt mode
+ * 
+ * @param  pSPI_Handle Pointer to SPI handle structure
+ * @param  pTxBuffer Pointer to transmit data buffer
+ * @param  TxLength Length of data to transmit (in bytes)
+ * @param  pRxBuffer Pointer to receive data buffer
+ * @param  RxLength Length of data to receive (in bytes)
+ * 
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK                : Full-duplex transfer started successfully
+ *         - SPI_FUNC_STATUS_BUSY              : SPI peripheral is busy
+ *         - SPI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
+ * 
+ * @details
+ *  - This function initializes an interrupt-based full-duplex SPI transfer.
+ *  - TXE interrupt is used to transmit data frames.
+ *  - RXNE interrupt is used to receive incoming data frames.
+ *  - ERR interrupt is enabled to detect SPI errors such as OVR, MODF, etc.
+ */
+SPI_FunctionStatus_t SPI_TransmitReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength);
+
+
+/**
+ * @brief  Finalize an SPI interrupt transfer after communication completes
+ * 
+ * @param  pSPI_Handle Pointer to SPI handle structure
+ * 
+ * @return SPI_FunctionStatus_t
+ *         - SPI_FUNC_STATUS_OK    : Transfer successfully finalized
+ *         - SPI_FUNC_STATUS_ERROR : Invalid completion state detected
+ *         - SPI_FUNC_STATUS_BUSY  : Transfer still in progress
+ * 
+ * @details
+ *  - This function is intended to be called repeatedly from the
+ *    application layer after starting a non-blocking SPI transfer using:
+ *      - SPI_TransmitIT()
+ *      - SPI_ReceiveIT()
+ *      - SPI_TransmitReceiveIT()
+ * 
+ *  - The function checks:
+ *      1. Whether the SPI state is SPI_PERI_STATE_WAIT_CLOSE
+ *      2. Whether the BSY flag is cleared, indicating that the last
+ *         frame has completely finished on the SPI bus
+ * 
+ *  - Once the transfer is fully completed:
+ *      - SPI interrupts are disabled
+ *      - Transfer states and buffers are cleared
+ *      - The SPI state returns to SPI_PERI_STATE_READY
+ *      - The corresponding application callback event is generated:
+ *          - SPI_APP_EVENT_TX_COMPLETE
+ *          - SPI_APP_EVENT_RX_COMPLETE
+ *          - SPI_APP_EVENT_TX_RX_COMPLETE
+ * @example
+ * SPI_TransmitIT(...);
+ * while (SPI_FinalProcess(...) != SPI_FUNC_STATUS_OK);
+ * 
+ * SPI_ReceiveIT(...);
+ * while (SPI_FinalProcess(...) != SPI_FUNC_STATUS_OK);
+ * 
+ * SPI_TransmitReceiveIT(...);
+ * while (SPI_FinalProcess(...) != SPI_FUNC_STATUS_OK);
+ */
+SPI_FunctionStatus_t SPI_FinalProcess(SPI_Handle_t *pSPI_Handle);
 
 
 #endif /* INC_SPI_DRIVER_H_ */
