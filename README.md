@@ -7,6 +7,7 @@ The project focuses on learning and understanding STM32 peripherals, ARM Cortex-
 **Note:** This repository is intended for learning and discovery of STM32 MCU peripherals and ARM Cortex-M architecture. It is not suitable for commercial use. The firmware may contain errors or bugs, so please contact me via email at dvtung0611@gmail.com.
 
 **Author:** Van Tung Dinh
+
 Thank you!
 
 ---
@@ -15,7 +16,9 @@ Thank you!
 
 Currently tested on:
 
-- STM32F407VG
+| Board                 | MCU               |
+| ------                | ------            |
+| STM32F407VG-DISC1     | STM32F407VG       |
 
 ---
 
@@ -78,16 +81,19 @@ STM32-Embedded-Framework/
 
 ## Tools and apps
 
+### Software
 - VSCode
 - VSCode Extensions:
   - Cortex-Debug
   - C/C++
-- Python
 - GNU ARM Toolchain (arm-none-eabi-gcc/gdb/ojdump/...)
 - GNU Make
 - OpenOCD
+- Python
+
+### Hardware
 - STM32 Boards (STM32F407VG-DISC1)
-- ST-Link
+- ST-LINK
 
 ---
 
@@ -111,7 +117,6 @@ python tools/generate_launch.py
 
 Step 5: Press `F5`. VSCode will automatically build and flash the firmware to the target board.
 
-
 ---
 
 ## Drivers
@@ -120,19 +125,6 @@ Step 5: Press `F5`. VSCode will automatically build and flash the firmware to th
 To understand how to use the APIs, please read function comments in the *.h files inside the **drivers/** folder.
 
 **Note:** These APIs are designed for the **STM32F407VG MCU**, **ARM Cortex-M4 architecture**. Other STM32 MCUs may provide more or fewer features, and some APIs (such as DMA) depend on the specific MCU, ARM Cortex-M architecture. However, most STM32 MCUs support the following APIs.
-
-### Implemented Drivers
-
-| Driver    | Status   |
-| ------    | ------   |
-| GPIO      | ✅       |
-| EXTI      | ✅       |
-| NVIC      | ✅       |
-| SPI       | ✅       |
-| USART     | 🚧       |
-| I2C       | 🚧       |
-| TIMER     | 🚧       |
-| ADC       | 🚧       |
 
 ### GPIO
 The current APIs support the following features:
