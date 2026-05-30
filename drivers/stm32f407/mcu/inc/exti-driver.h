@@ -72,6 +72,18 @@ typedef enum
 } EXTI_Trigger_t;
 
 
+/**
+ * @EXTI_FUNCTION_STATUS
+ */
+typedef enum
+{
+    EXTI_FUNC_STATUS_OK = 0U,
+    EXTI_FUNC_STATUS_BUSY,
+    EXTI_FUNC_STATUS_ERROR,
+    EXTI_FUNC_STATUS_INVALID_PARAMETER
+} EXTI_FunctionStatus_t;
+
+
 /* =================================================== STRUCTURES =================================================== */
 
 /**
@@ -110,22 +122,49 @@ typedef struct
  * 
  * @param pEXTI_Handle Pointer to EXTI handle structure
  * 
+ * @return EXTI_FunctionStatus_t
+ *         - EXTI_FUNC_STATUS_OK                : Initialize successfully
+ *         - EXTI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
+ * 
  * @note Valid EXTI lines: 0–22
  *       EXTI lines 0–15 require GPIO port mapping (SYSCFG->EXTICR)
  * 
  * Refer to:
- * - RM0090 Reference Manual,   Section 12.3.1 Interrupt mask register (EXTI_IMR)
+ * - RM0090 Reference Manual,   Section 12.3 EXTI registers
  */
-void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
+EXTI_FunctionStatus_t EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
+
+
+/**
+ * @brief De-Initialize EXTI line configuration.
+ * 
+ * @param LineNumbe EXTI line number (0–22) | @EXTI_LINE_NUMBER
+ * 
+ * @return EXTI_FunctionStatus_t
+ *         - EXTI_FUNC_STATUS_OK                : Initialize successfully
+ *         - EXTI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
+ * 
+ * @note Valid EXTI lines: 0–22
+ *       EXTI lines 0–15 require GPIO port mapping (SYSCFG->EXTICR)
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 12.3 EXTI registers
+ *                              Section 9.2 SYSCFG registers for STM32F405xx/07xx and STM32F415xx/17xx
+ */
+EXTI_FunctionStatus_t EXTI_DeInit(EXTI_LineNumber_t LineNumber);
 
 
 /**
  * @brief Clear pending interrupt flag for a given EXTI line
- *
+ * 
  * @details Clears the pending bit in EXTI Pending Register (PR)
  *          by writing 1 to the corresponding bit position.
- *
+ * 
  * @param LineNumber EXTI line number (0–22) | @EXTI_LINE_NUMBER
+ * 
+ * @return EXTI_FunctionStatus_t
+ *         - EXTI_FUNC_STATUS_OK                : Initialize successfully
+ *         - EXTI_FUNC_STATUS_INVALID_PARAMETER : Invalid input parameters
  *
  * @note - Writing '1' clears the pending flag
  *       - Writing '0' has no effect
@@ -134,7 +173,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle);
  * Refer to:
  * - RM0090 Reference Manual,   Section 12.3.6 Pending register (EXTI_PR)
  */
-void EXTI_ClearPending(EXTI_LineNumber_t LineNumber);
+EXTI_FunctionStatus_t EXTI_ClearPending(EXTI_LineNumber_t LineNumber);
 
 
 /**

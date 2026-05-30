@@ -11,10 +11,10 @@
 
 /* ====================================================== APIs ====================================================== */
 
-void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
+EXTI_FunctionStatus_t EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
 {
     if (pEXTI_Handle == NULL)
-        return;
+        return EXTI_FUNC_STATUS_INVALID_PARAMETER;
     
     uint8_t LineNumber = pEXTI_Handle->EXTI_Config.EXTI_LineNumber;
     uint8_t Mode = pEXTI_Handle->EXTI_Config.EXTI_Mode;
@@ -22,7 +22,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
     uint8_t PortCode = pEXTI_Handle->EXTI_Config.EXTI_GPIO_PortCode;
 
     if (LineNumber > EXTI_MAX_LINE || Trigger > EXTI_TRIGGER_BOTH || Mode > EXTI_MODE_EVENT)
-        return;
+        return EXTI_FUNC_STATUS_INVALID_PARAMETER;
 
     // Configure trigger (clear both first to avoid residual config)
     EXTI->RTSR &= ~(1U << LineNumber);
@@ -48,7 +48,7 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
         if (LineNumber < 16)
         {
             if (PortCode > GPIO_MAX_PORTCODE)
-                return;
+                return EXTI_FUNC_STATUS_INVALID_PARAMETER;
             
             // Map GPIO port to EXTI line (only for lines 0–15)
             uint8_t EXTICR_ID = LineNumber / 4, BIT_ID = LineNumber % 4;
@@ -73,15 +73,41 @@ void EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
     {
         // Event mode not implemented yet
     }
+
+    return EXTI_FUNC_STATUS_OK;
 }
 
 
-void EXTI_ClearPending(EXTI_LineNumber_t LineNumber)
+EXTI_FunctionStatus_t EXTI_DeInit(EXTI_LineNumber_t LineNumber)
 {
     if (LineNumber > EXTI_MAX_LINE)
-        return;
+        return EXTI_FUNC_STATUS_INVALID_PARAMETER;
+    
+    EXTI->IMR &= ~(1U << LineNumber);
+    EXTI->EMR &= ~(1U << LineNumber);
+    EXTI->RTSR &= ~(1U << LineNumber);
+    EXTI->FTSR &= ~(1U << LineNumber);
+    EXTI->PR = (1U << LineNumber);
+
+    if (LineNumber <= 15)
+    {
+        uint8_t temp1 = LineNumber / 4;
+        uint8_t temp2 = LineNumber % 4;
+
+        SYSCFG->EXTICR[temp1] &= ~(15U << (temp2 * 4));
+    }
+    
+    return EXTI_FUNC_STATUS_OK;
+}
+
+
+EXTI_FunctionStatus_t EXTI_ClearPending(EXTI_LineNumber_t LineNumber)
+{
+    if (LineNumber > EXTI_MAX_LINE)
+        return EXTI_FUNC_STATUS_INVALID_PARAMETER;
 
     EXTI->PR = (1U << LineNumber);
+    return EXTI_FUNC_STATUS_OK;
 }
 
 
