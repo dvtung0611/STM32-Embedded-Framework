@@ -249,6 +249,18 @@ typedef enum
 } I2C_DualAddress_t;
 
 
+/**
+ * @I2C_FUNCTION_STATUS
+ */
+typedef enum
+{
+    I2C_FUNC_STATUS_OK = 0U,
+    I2C_FUNC_STATUS_BUSY,
+    I2C_FUNC_STATUS_ERROR,
+    I2C_FUNC_STATUS_INVALID_PARAMETER
+} I2C_FunctionStatus_t;
+
+
 /* =================================================== STRUCTURES =================================================== */
 
 /**
@@ -283,6 +295,23 @@ typedef struct
 
 
 /* ====================================================== APIs ====================================================== */
+
+/**
+ * @brief Enable or disable clock for I2C peripheral
+ * 
+ * @param pI2Cx    Pointer to I2C peripheral (I2C1, I2C2,...)
+ * @param EN_or_DI ENABLE or DISABLE macro
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK    : Enable/Disable successfully 
+ *         - I2C_FUNC_STATUS_ERROR : Enable/Disable failed
+ * 
+ * @note Must enable clock before using I2C registers
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
+ */
+I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
 
 
 #endif /* INC_I2C_DRIVER_H_ */
