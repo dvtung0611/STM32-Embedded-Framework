@@ -24,6 +24,10 @@
 #define LOW             (0U)
 #define HIGH            (1U)
 
+#define READ_BIT(REG, BIT_POS)          (((REG) >> (BIT_POS)) & 1U)
+#define SET_BIT(REG, BIT_POS)           ((REG) |= (1U << (BIT_POS)))
+#define CLEAR_BIT(REG, BIT_POS)         ((REG) &= ~(1U << (BIT_POS)))
+
 
 /* ========================================== FLASH + SRAM + SYSTEM MEMORY ========================================== */
 
@@ -472,17 +476,9 @@ typedef struct
 /* =============================================== MACROS PERIPHERALS =============================================== */
 
 /**
- * @brief Bitwise operations
- */
-#define READ_BIT(REG, BIT_POS)          (((REG) >> (BIT_POS)) & 1U)
-#define SET_BIT(REG, BIT_POS)           ((REG) |= (1U << (BIT_POS)))
-#define CLEAR_BIT(REG, BIT_POS)         ((REG) &= ~(1U << (BIT_POS)))
-
-
-/**
  * @brief Enable the GPIO peripheral clock on the AHB1 bus
  * 
- * @details These macros enable the GPIO peripheral clock via the RCC AHB1ENR register.
+ * @details These macros enable the GPIO peripheral clock via the RCC_AHB1ENR register.
  */
 #define GPIOA_PCLK_EN()				(RCC->AHB1ENR |= (1U << 0))
 #define GPIOB_PCLK_EN()				(RCC->AHB1ENR |= (1U << 1))
@@ -498,7 +494,7 @@ typedef struct
 /**
  * @brief Disable the GPIO peripheral clock on the AHB1 bus
  * 
- * @details These macros disable the GPIO peripheral clock via the RCC AHB1ENR register.
+ * @details These macros disable the GPIO peripheral clock via the RCC_AHB1ENR register.
  */
 #define GPIOA_PCLK_DI()				(RCC->AHB1ENR &= ~(1U << 0))
 #define GPIOB_PCLK_DI()				(RCC->AHB1ENR &= ~(1U << 1))
@@ -514,7 +510,7 @@ typedef struct
 /**
  * @brief Reset GPIO ports
  * 
- * @details These macros reset the GPIO peripheral via the RCC AHB1RSTR register.
+ * @details These macros reset the GPIO peripheral via the RCC_AHB1RSTR register.
  */
 #define GPIOA_REG_RESET()           do {(RCC->AHB1RSTR |= (1U << 0)); (RCC->AHB1RSTR &= ~(1U << 0));} while(0)
 #define GPIOB_REG_RESET()           do {(RCC->AHB1RSTR |= (1U << 1)); (RCC->AHB1RSTR &= ~(1U << 1));} while(0)
@@ -530,7 +526,7 @@ typedef struct
 /**
  * @brief Enable the I2C peripheral clock on the APB1 bus
  * 
- * @details These macros enable the I2C peripheral clock via the RCC APB1ENR register.
+ * @details These macros enable the I2C peripheral clock via the RCC_APB1ENR register.
  */
 #define I2C1_PCLK_EN()				(RCC->APB1ENR |= (1U << 21))
 #define I2C2_PCLK_EN()				(RCC->APB1ENR |= (1U << 22))
@@ -540,7 +536,7 @@ typedef struct
 /**
  * @brief Disable the I2C peripheral clock on the APB1 bus
  * 
- * @details These macros disable the I2C peripheral clock via the RCC APB1ENR register.
+ * @details These macros disable the I2C peripheral clock via the RCC_APB1ENR register.
  */
 #define I2C1_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 21))
 #define I2C2_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 22))
@@ -548,9 +544,19 @@ typedef struct
 
 
 /**
+ * @brief Reset the I2C peripheral registers
+ * 
+ * @details These macros reset the I2C peripheral via the RCC_APB1RSTR register.
+ */
+#define I2C1_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 21)); (RCC->APB2RSTR &= ~(1U << 21));} while(0)
+#define I2C2_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 22)); (RCC->APB1RSTR &= ~(1U << 22));} while(0)
+#define I2C3_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 23)); (RCC->APB1RSTR &= ~(1U << 23));} while(0)
+
+
+/**
  * @brief Enable the SPI peripheral clock on the APB1 and APB2 buses
  * 
- * @details These macros enable the SPI peripheral clock via the RCC APB1ENR and RCC APB2ENR registers.
+ * @details These macros enable the SPI peripheral clock via the RCC_APB1ENR and RCC_APB2ENR registers.
  */
 #define SPI1_PCLK_EN()				(RCC->APB2ENR |= (1U << 12))
 #define SPI2_PCLK_EN()				(RCC->APB1ENR |= (1U << 14))
@@ -560,7 +566,7 @@ typedef struct
 /**
  * @brief Disable the SPI peripheral clock on the APB1 and APB2 buses
  * 
- * @details These macros disable the SPI peripheral clock via the RCC APB1ENR and RCC APB2ENR registers.
+ * @details These macros disable the SPI peripheral clock via the RCC_APB1ENR and RCC_APB2ENR registers.
  */
 #define SPI1_PCLK_DI()				(RCC->APB2ENR &= ~(1U << 12))
 #define SPI2_PCLK_DI()				(RCC->APB1ENR &= ~(1U << 14))
@@ -570,7 +576,7 @@ typedef struct
 /**
  * @brief Reset the SPI peripheral registers
  * 
- * @details These macros reset the SPI peripheral via the RCC APB1RSTR and RCC APB2RSTR register.
+ * @details These macros reset the SPI peripheral via the RCC_APB1RSTR and RCC_APB2RSTR registers.
  */
 #define SPI1_REG_RESET()            do {(RCC->APB2RSTR |= (1U << 12)); (RCC->APB2RSTR &= ~(1U << 12));} while(0)
 #define SPI2_REG_RESET()            do {(RCC->APB1RSTR |= (1U << 14)); (RCC->APB1RSTR &= ~(1U << 14));} while(0)
@@ -580,7 +586,7 @@ typedef struct
 /**
  * @brief Enable the USART/UART peripheral clock on the APB1 and APB2 buses
  * 
- * @details These macros enable the USART/UART peripheral clock via the RCC APB1ENR and RCC APB2ENR registers.
+ * @details These macros enable the USART/UART peripheral clock via the RCC_APB1ENR and RCC_APB2ENR registers.
  */
 #define USART1_PCLK_EN()			(RCC->APB2ENR |= (1U << 4))
 #define USART2_PCLK_EN()			(RCC->APB1ENR |= (1U << 17))
@@ -593,7 +599,7 @@ typedef struct
 /**
  * @brief Disable the USART/UART peripheral clock on the APB1 and APB2 buses
  * 
- * @details These macros disable the USART/UART peripheral clock via the RCC APB1ENR and RCC APB2ENR registers.
+ * @details These macros disable the USART/UART peripheral clock via the RCC_APB1ENR and RCC_APB2ENR registers.
  */
 #define USART1_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 4))
 #define USART2_PCLK_DI()			(RCC->APB1ENR &= ~(1U << 17))
@@ -606,7 +612,7 @@ typedef struct
 /**
  * @brief Enable the SYSCFG peripheral clock on the APB2 bus
  * 
- * @details These macros enable the SYSCFG peripheral clock via the RCC APB2ENR registers.
+ * @details These macros enable the SYSCFG peripheral clock via the RCC_APB2ENR register.
  */
 #define SYSCFG_PCLK_EN()			(RCC->APB2ENR |= (1U << 14))
 
@@ -614,7 +620,7 @@ typedef struct
 /**
  * @brief Disable the SYSCFG peripheral clock on the APB2 bus
  * 
- * @details These macros disable the SYSCFG peripheral clock via the RCC APB2ENR registers.
+ * @details These macros disable the SYSCFG peripheral clock via the RCC_APB2ENR register.
  */
 #define SYSCFG_PCLK_DI()			(RCC->APB2ENR &= ~(1U << 14))
 
