@@ -314,4 +314,22 @@ typedef struct
 I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
 
 
+/**
+ * @brief Reset the I2C peripheral to its default state
+ * 
+ * @param pI2Cx Pointer to I2C peripheral (I2C1, I2C2, ...)
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK    : De-initialized successfully
+ *         - I2C_FUNC_STATUS_ERROR : De-initialization failed
+ * 
+ * @note This function resets the selected I2C peripheral using the RCC reset register.
+ *       After the reset, all I2C registers are returned to their default values.
+ * 
+ * Reference:
+ * - RM0090 Reference Manual, Section 7.3.8 RCC APB1 peripheral reset register (RCC_APB1RSTR)
+ */
+I2C_FunctionStatus_t I2C_DeInit(I2C_RegDef_t *pI2Cx);
+
+
 #endif /* INC_I2C_DRIVER_H_ */
