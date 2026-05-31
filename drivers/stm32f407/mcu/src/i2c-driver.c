@@ -91,3 +91,17 @@ I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI
 
     return I2C_FUNC_STATUS_ERROR;
 }
+
+
+uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName)
+{
+    uint16_t SR1_or_SR2 = FlagName >> 16U;
+    uint16_t flag_position = FlagName & 0xFFFF;
+
+    if (SR1_or_SR2 == 1U)
+        return ((pI2Cx->SR1 >> flag_position) & 1U);
+    else if (SR1_or_SR2 == 2U)
+        return ((pI2Cx->SR2 >> flag_position) & 1U);
+    
+    return 0;
+}

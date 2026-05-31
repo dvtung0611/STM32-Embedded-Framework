@@ -137,17 +137,17 @@
 /* ===================================================== FLAGS ====================================================== */
 
 /**
- * @I2C_FLAG Encoding
+ * @I2C_FLAG_ENCODING
  * 
  * [31:16] : Register Offset
  * [15:0]  : Bit Position
  */
-#define I2C_FLAG_SR1           (0x01U << 16U)
-#define I2C_FLAG_SR2           (0x02U << 16U)
+#define I2C_FLAG_SR1           (1U << 16U)
+#define I2C_FLAG_SR2           (2U << 16U)
 
 
 /**
- * @I2C_SR1 Flags
+ * @I2C_SR1_FLAG
  */
 #define I2C_FLAG_SB            (I2C_FLAG_SR1 | 0U)      /*!< Start bit                     */
 #define I2C_FLAG_ADDR          (I2C_FLAG_SR1 | 1U)      /*!< Address sent/matched          */
@@ -166,7 +166,7 @@
 
 
 /**
- * @I2C_SR2 Flags
+ * @I2C_SR2_FLAG
  */
 #define I2C_FLAG_MSL           (I2C_FLAG_SR2 | 0U)      /*!< Master/slave                  */
 #define I2C_FLAG_BUSY          (I2C_FLAG_SR2 | 1U)      /*!< Bus busy                      */
@@ -175,6 +175,7 @@
 #define I2C_FLAG_SMBDEFAULT    (I2C_FLAG_SR2 | 5U)      /*!< SMBus default address         */
 #define I2C_FLAG_SMBHOST       (I2C_FLAG_SR2 | 6U)      /*!< SMBus host header             */
 #define I2C_FLAG_DUALF         (I2C_FLAG_SR2 | 7U)      /*!< Dual address matched          */
+
 
 /* ================================================== DEFINITIONS =================================================== */
 
@@ -355,6 +356,23 @@ I2C_FunctionStatus_t I2C_DeInit(I2C_RegDef_t *pI2Cx);
  * - RM0090 Reference Manual,   Section 27.6.1 I2C Control register 1 (I2C_CR1)
  */
 I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
+
+
+/**
+ * @brief Returns the flag status of the I2C peripheral
+ * 
+ * @param pI2Cx    Pointer to I2C peripheral (I2C1, I2C2,...)
+ * @param FlagName Flag name in the I2C_SRx (x = 1 or 2) | @I2C_SR1_FLAG / @I2C_SR2_FLAG
+ * 
+ * @return uint8_t Flag status is set or reset
+ * 
+ * @note
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 27.6.6 I2C Status register 1 (I2C_SR1)
+ *                              Section 27.6.7 I2C Status register 2 (I2C_SR2)
+ */
+uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName);
 
 
 #endif /* INC_I2C_DRIVER_H_ */
