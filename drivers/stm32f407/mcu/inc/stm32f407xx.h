@@ -384,6 +384,29 @@ typedef struct
 } SPI_RegDef_t;
 
 
+/**
+ * @brief I2C register definition structure (memory-mapped)
+ * 
+ * @note Must match RM0090 register layout and offsets
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,	Section 27.6 I2C registers
+ */
+typedef struct
+{
+    __IO uint32_t CR1;          /*!< I2C Control register 1         | Offset: 0x00 */
+    __IO uint32_t CR2;          /*!< I2C Control register 2         | Offset: 0x04 */
+    __IO uint32_t OAR1;         /*!< I2C Own address register 1     | Offset: 0x08 */
+    __IO uint32_t OAR2;         /*!< I2C Own address register 2     | Offset: 0x0C */
+    __IO uint32_t DR;           /*!< I2C Data register              | Offset: 0x10 */
+    __IO uint32_t SR1;          /*!< I2C Status register 1          | Offset: 0x14 */
+    __IO uint32_t SR2;          /*!< I2C Status register 2          | Offset: 0x18 */
+    __IO uint32_t CCR;          /*!< I2C Clock control register     | Offset: 0x1C */
+    __IO uint32_t TRISE;        /*!< I2C TRISE register             | Offset: 0x20 */
+    __IO uint32_t FLTR;         /*!< I2C FLTR register              | Offset: 0x24 */
+} I2C_RegDef_t;
+
+
 /* =============================================== PERIPHERALS (MCU) ================================================ */
 
 /**
@@ -434,6 +457,16 @@ typedef struct
 #define SPI1            ((SPI_RegDef_t* const)(SPI1_BASEADDR))
 #define SPI2            ((SPI_RegDef_t* const)(SPI2_I2S2_BASEADDR))
 #define SPI3            ((SPI_RegDef_t* const)(SPI3_I2S3_BASEADDR))
+
+
+/**
+ * @brief I2C peripheral definition (memory-mapped base addresses)
+ *
+ * @details Provides typed access to I2C registers using I2C_RegDef_t
+ */
+#define I2C1            ((I2C_RegDef_t* const)(I2C1_BASEADDR))
+#define I2C2            ((I2C_RegDef_t* const)(I2C2_BASEADDR))
+#define I2C3            ((I2C_RegDef_t* const)(I2C3_BASEADDR))
 
 
 /* =============================================== MACROS PERIPHERALS =============================================== */
