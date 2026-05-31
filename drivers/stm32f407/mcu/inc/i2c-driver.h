@@ -303,8 +303,8 @@ typedef struct
  * @param EN_or_DI ENABLE or DISABLE macro
  * 
  * @return I2C_FunctionStatus_t
- *         - I2C_FUNC_STATUS_OK    : Enable/Disable successfully 
- *         - I2C_FUNC_STATUS_ERROR : Enable/Disable failed
+ *         - I2C_FUNC_STATUS_OK    : Enable/Disable operation succeeded
+ *         - I2C_FUNC_STATUS_ERROR : Enable/Disable operation failed
  * 
  * @note Must enable clock before using I2C registers
  * 
@@ -330,6 +330,31 @@ I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI
  * - RM0090 Reference Manual, Section 7.3.8 RCC APB1 peripheral reset register (RCC_APB1RSTR)
  */
 I2C_FunctionStatus_t I2C_DeInit(I2C_RegDef_t *pI2Cx);
+
+
+/**
+ * @brief Enable or disable the I2C peripheral
+ * 
+ * @param pI2Cx    Pointer to I2C peripheral (I2C1, I2C2,...)
+ * @param EN_or_DI ENABLE or DISABLE macro
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK    : Enable/Disable operation succeeded
+ *         - I2C_FUNC_STATUS_ERROR : Enable/Disable operation failed
+ * 
+ * @details Set the PE bit in the I2C_CR1 register:
+ *          0: Peripheral disable
+ *          1: Peripheral enable
+ * 
+ * @note If this bit is reset while a communication is on going, the peripheral is disabled at the 
+ *       end of the current communication, when back to IDLE state. 
+ *       All bit resets due to PE = 0 occur at the end of the communication.
+ *       In master mode, this bit must not be reset before the end of the communication.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 27.6.1 I2C Control register 1 (I2C_CR1)
+ */
+I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
 
 
 #endif /* INC_I2C_DRIVER_H_ */

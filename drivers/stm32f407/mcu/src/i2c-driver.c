@@ -74,3 +74,20 @@ I2C_FunctionStatus_t I2C_DeInit(I2C_RegDef_t *pI2Cx)
     
     return I2C_FUNC_STATUS_ERROR;
 }
+
+
+I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
+{
+    if (EN_or_DI == ENABLE)
+    {
+        pI2Cx->CR1 |= (1U << I2C_CR1_PE);
+        return I2C_FUNC_STATUS_OK;
+    }
+    else if (EN_or_DI == DISABLE)
+    {
+        pI2Cx->CR1 &= ~(1U << I2C_CR1_PE);
+        return I2C_FUNC_STATUS_OK;
+    }
+
+    return I2C_FUNC_STATUS_ERROR;
+}
