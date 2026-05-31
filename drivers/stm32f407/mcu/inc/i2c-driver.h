@@ -176,5 +176,106 @@
 #define I2C_FLAG_SMBHOST       (I2C_FLAG_SR2 | 6U)      /*!< SMBus host header             */
 #define I2C_FLAG_DUALF         (I2C_FLAG_SR2 | 7U)      /*!< Dual address matched          */
 
+/* ================================================== DEFINITIONS =================================================== */
+
+/**
+ * @I2C_SCL_SPEED
+ */
+typedef enum
+{
+    I2C_SCL_SPEED_STANDARD_MODE = 100000U,
+    I2C_SCL_SPEED_FAST_MODE_200K = 200000U,
+    I2C_SCL_SPEED_FAST_MODE_400K = 400000U
+} I2C_SCLSpeed_t;
+
+
+/**
+ * @I2C_ACK_CONTROL
+ */
+typedef enum
+{
+    I2C_ACK_CONTROL_DISABLE = 0U,
+    I2C_ACK_CONTROL_ENABLE
+} I2C_ACKControl_t;
+
+
+/**
+ * @I2C_FM_DUTY_CYCLE
+ */
+typedef enum
+{
+    I2C_FM_DUTY_CYCLE_2 = 0U,
+    I2C_FM_DUTY_CYCLE_16_9
+} I2C_FMDutyCycle_t;
+
+
+/**
+ * @I2C_ADDRESS_MODE
+ */
+typedef enum
+{
+    I2C_ADDRESS_MODE_7BIT = 0U,
+    I2C_ADDRESS_MODE_10BIT
+} I2C_AddressMode_t;
+
+
+/**
+ * @I2C_GENERAL_CALL
+ */
+typedef enum
+{
+    I2C_GENERAL_CALL_DISABLE = 0U,
+    I2C_GENERAL_CALL_ENABLE
+} I2C_GeneralCall_t;
+
+
+/**
+ * @I2C_CLOCK_STRETCH
+ */
+typedef enum
+{
+    I2C_CLOCK_STRETCH_ENABLE = 0U,
+    I2C_CLOCK_STRETCH_DISABLE
+} I2C_ClockStretch_t;
+
+
+/**
+ * @I2C_DUAL_ADDRESS
+ */
+typedef enum
+{
+    I2C_DUAL_ADDRESS_DISABLE = 0U,
+    I2C_DUAL_ADDRESS_ENABLE
+} I2C_DualAddress_t;
+
+
+/* =================================================== STRUCTURES =================================================== */
+
+/**
+ * @brief I2C configuration structure
+ *
+ * @details This structure is used to configure I2C peripheral parameters
+ *          such as clock speed, device addressing, acknowledge control,
+ *          fast mode duty cycle, general call handling, clock stretching,
+ *          and dual addressing mode.
+ */
+typedef struct
+{
+    I2C_SCLSpeed_t I2C_SCLSpeed;                /*!< SCL clock speed                    | Possible value: @I2C_SCL_SPEED */
+    uint16_t I2C_DeviceAddress;                 /*!< Primary slave address (OAR1)       | Possible value: User configure */
+    uint16_t I2C_SecondaryAddress;              /*!< Secondary slave address (OAR2)     | Possible value: User configure */
+
+    I2C_ACKControl_t I2C_ACKControl;            /*!< ACK control                        | Possible value: @I2C_ACK_CONTROL */
+    I2C_FMDutyCycle_t I2C_FMDutyCycle;          /*!< Fast mode duty cycle               | Possible value: @I2C_FM_DUTY_CYCLE */
+
+    I2C_AddressMode_t I2C_AddressMode;          /*!< Addressing mode                    | Possible value: @I2C_ADDRESS_MODE */
+    I2C_GeneralCall_t I2C_GeneralCall;          /*!< General call handling              | Possible value: @I2C_GENERAL_CALL */
+    I2C_ClockStretch_t I2C_ClockStretch;        /*!< Clock stretching control           | Possible value: @I2C_CLOCK_STRETCH */
+    I2C_DualAddress_t I2C_DualAddress;          /*!< Dual addressing mode               | Possible value: @I2C_DUAL_ADDRESS */
+} I2C_Config_t;
+
+
+/* ====================================================== APIs ====================================================== */
+
 
 #endif /* INC_I2C_DRIVER_H_ */
