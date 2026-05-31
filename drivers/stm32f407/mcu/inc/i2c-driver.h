@@ -275,6 +275,13 @@ typedef struct
 } I2C_Config_t;
 
 
+typedef struct
+{
+    I2C_RegDef_t pI2Cx;         /*!< Pointer to I2C peripheral (I2C1, I2C2,...) */
+    I2C_Config_t I2C_Config;    /*!< I2C configuration settings */
+} I2C_Handle_t;
+
+
 /* ====================================================== APIs ====================================================== */
 
 
