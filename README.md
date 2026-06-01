@@ -45,7 +45,7 @@ Thank you!
 
 ---
 
-## 🎯 1. Supported MCU
+## 🎯 Supported MCU
 
 | Board             | MCU         |
 | ----------------- | ----------- |
@@ -53,7 +53,7 @@ Thank you!
 
 ---
 
-## 🏗️ 2. Architecture
+## 🏗️ Architecture
 
 ```text
 STM32-Embedded-Framework/
@@ -75,9 +75,9 @@ STM32-Embedded-Framework/
 
 ---
 
-## 🛠️ 3. Tools and Apps
+## 🛠️ Tools and Apps
 
-### 3.1 Software
+### Software
 * VSCode: [Download](https://code.visualstudio.com/download)
 * VSCode Extensions:
     * Cortex-Debug
@@ -87,14 +87,14 @@ STM32-Embedded-Framework/
 * OpenOCD: [Download](https://github.com/openocd-org/openocd/releases)
 * Python: [Download](https://www.python.org/downloads/)
 
-### 3.2 Hardware
+### Hardware
 
 * STM32F407VG-DISC1
 * ST-LINK
 
 ---
 
-## 🚀 4. Build
+## 🚀 Build
 
 #### Step 1
 
@@ -132,11 +132,11 @@ VSCode will automatically:
 
 ---
 
-## 5. Why VSCode Instead of STM32CubeIDE?
+## ❓ Why VSCode Instead of STM32CubeIDE?
 
 This project intentionally uses **VSCode + GNU Arm Toolchain + OpenOCD + Makefile** instead of STM32CubeIDE.
 
-### 5.1 Reasons
+### Reasons
 
 #### Better Understanding of the Build Process
 
@@ -227,7 +227,7 @@ using a lightweight editor and external toolchain helps keep attention on the fi
 
 ---
 
-### 5.2 STM32CubeIDE Is Still a Great Tool
+### STM32CubeIDE Is Still a Great Tool
 
 STM32CubeIDE is an excellent IDE and is highly recommended for:
 
@@ -238,7 +238,7 @@ STM32CubeIDE is an excellent IDE and is highly recommended for:
 
 ---
 
-## 📚 6. Drivers
+## 📚 Drivers
 
 To understand how to use the APIs, please read function comments in the `*.h` files inside the `drivers/` folder. If you want to use these drivers in STM32CubeIDE, simply copy the `drivers/` directory into your project and configure the required include paths.
 
@@ -253,7 +253,7 @@ To understand how to use the APIs, please read function comments in the `*.h` fi
 >
 > Some APIs (such as DMA) depend on the specific MCU and Cortex-M architecture.
 
-### 6.1 MCU
+### MCU
 
 #### GPIO
 
@@ -377,7 +377,7 @@ SPI_FunctionStatus_t SPI_TransmitReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *p
 SPI_FunctionStatus_t SPI_FinalProcess(SPI_Handle_t *pSPI_Handle);
 ```
 
-### 6.2 CPU
+### CPU
 
 #### NVIC
 
@@ -395,6 +395,6 @@ void NVIC_IRQ_PriorityConfig(IRQNumber_t IRQNumber, NVIC_PriorityLevel IRQPriori
 
 ---
 
-## 📄 7. License
+## 📄 License
 
 MIT License
