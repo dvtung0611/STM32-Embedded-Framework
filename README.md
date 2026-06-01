@@ -44,16 +44,17 @@ Thank you!
 
 ## 📑 Table of Contents
 
-* [Supported MCU](#-1-supported-mcu)
-* [Architecture](#-2-architecture)
-* [Tools and Apps](#️-3-tools-and-apps)
-* [Build](#-4-build)
-* [Why VSCode Instead of STM32CubeIDE?](#5-why-vscode-instead-of-stm32cubeide)
-* [Drivers](#-6-drivers)
-* [License](#-7-license)
+* [Supported MCU](#supported-mcu)
+* [Architecture](#architecture)
+* [Tools and Apps](#tools-and-apps)
+* [Build](#build)
+* [Why VSCode Instead of STM32CubeIDE?](#why-vscode)
+* [Drivers](#drivers)
+* [License](#license)
 
 ---
 
+<a id="supported-mcu"></a>
 ## 🎯 Supported MCU
 
 | Board             | MCU         |
@@ -62,6 +63,7 @@ Thank you!
 
 ---
 
+<a id="architecture"></a>
 ## 🏗️ Architecture
 
 ```text
@@ -84,6 +86,7 @@ STM32-Embedded-Framework/
 
 ---
 
+<a id="tools-and-apps"></a>
 ## 🛠️ Tools and Apps
 
 ### Software
@@ -103,6 +106,7 @@ STM32-Embedded-Framework/
 
 ---
 
+<a id="build"></a>
 ## 🚀 Build
 
 #### Step 1
@@ -141,6 +145,7 @@ VSCode will automatically:
 
 ---
 
+<a id="why-vscode"></a>
 ## ❓ Why VSCode Instead of STM32CubeIDE?
 
 This project intentionally uses **VSCode + GNU Arm Toolchain + OpenOCD + Makefile** instead of STM32CubeIDE.
@@ -247,6 +252,7 @@ STM32CubeIDE is an excellent IDE and is highly recommended for:
 
 ---
 
+<a id="drivers"></a>
 ## 📚 Drivers
 
 To understand how to use the APIs, please read function comments in the `*.h` files inside the `drivers/` folder. If you want to use these drivers in STM32CubeIDE, simply copy the `drivers/` directory into your project and configure the required include paths.
@@ -404,6 +410,7 @@ void NVIC_IRQ_PriorityConfig(IRQNumber_t IRQNumber, NVIC_PriorityLevel IRQPriori
 
 ---
 
+<a id="license"></a>
 ## 📄 License
 
 MIT License
