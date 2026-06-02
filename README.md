@@ -54,7 +54,7 @@ Thank you!
 ### Project Architecture
 
 <p align="center">
-    <img src="images/project-architecture.png" width="800">
+    <img src="images/project-architecture.png" width="600">
 </p>
 
 ### Repository Structure
