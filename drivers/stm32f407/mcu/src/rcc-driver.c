@@ -171,3 +171,27 @@ uint32_t RCC_GetHCLKFreq(void)
     else
         return system_clock / (1U << (temp - 6));
 }
+
+
+uint32_t RCC_GetPCLK1Freq(void)
+{
+    uint32_t hclk = RCC_GetHCLKFreq();
+    uint32_t temp = ((RCC->CFGR >> RCC_CFGR_PPRE1_Pos) & 7U);
+
+    if (temp <= 3)
+        return hclk;
+    else
+        return hclk / (1U << (temp - 3));
+}
+
+
+uint32_t RCC_GetPCLK2Freq(void)
+{
+    uint32_t hclk = RCC_GetHCLKFreq();
+    uint32_t temp = ((RCC->CFGR >> RCC_CFGR_PPRE2_Pos) & 7U);
+
+    if (temp <= 3)
+        return hclk;
+    else
+        return hclk / (1U << (temp - 3));
+}

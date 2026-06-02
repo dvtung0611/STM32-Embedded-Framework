@@ -645,4 +645,60 @@ uint32_t RCC_GetSystemClockFreq(void);
 uint32_t RCC_GetHCLKFreq(void);
 
 
+/**
+ * @brief Get the current APB1 bus clock frequency (PCLK1).
+ * 
+ * @return PCLK1 frequency in Hertz (Hz).
+ * 
+ * @details This function calculates the APB1 peripheral clock frequency
+ *          based on the current HCLK frequency and the APB1 prescaler
+ *          (PPRE1).
+ * 
+ *          PCLK1 is derived from HCLK as follows: PCLK1 = HCLK / APB1_Prescaler
+ * 
+ *          PPRE1 encoding:
+ *              0xx : HCLK not divided
+ *              100 : HCLK divided by 2
+ *              101 : HCLK divided by 4
+ *              110 : HCLK divided by 8
+ *              111 : HCLK divided by 16
+ * 
+ * @note PCLK1 is the clock supplied to peripherals connected to the
+ *       APB1 bus, such as USART2/3, UART4/5, SPI2/3, I2C1/2/3, TIM2-TIM7, and others.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ */
+uint32_t RCC_GetPCLK1Freq(void);
+
+
+/**
+ * @brief Get the current APB2 bus clock frequency (PCLK2).
+ * 
+ * @return PCLK2 frequency in Hertz (Hz).
+ * 
+ * @details This function calculates the APB2 peripheral clock frequency
+ *          based on the current HCLK frequency and the APB2 prescaler
+ *          (PPRE2).
+ * 
+ *          PCLK2 is derived from HCLK as follows:
+ * 
+ *              PCLK2 = HCLK / APB2_Prescaler
+ * 
+ *          PPRE2 encoding:
+ *              0xx : HCLK not divided
+ *              100 : HCLK divided by 2
+ *              101 : HCLK divided by 4
+ *              110 : HCLK divided by 8
+ *              111 : HCLK divided by 16
+ * 
+ * @note PCLK2 is the clock supplied to peripherals connected to the
+ *       APB2 bus, such as USART1/6, SPI1, TIM1, TIM8, ADC, and others.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ */
+uint32_t RCC_GetPCLK2Freq(void);
+
+
 #endif /* INC_RCC_DRIVER_H_ */
