@@ -121,7 +121,7 @@ RCC_FunctionStatus_t RCC_ResetPeripheral(RCC_Peripheral_t peripheral)
 }
 
 
-RCC_SystemClockSource_t RCC_GetSystemClock(void)
+RCC_SystemClockSource_t RCC_GetSystemClockSource(void)
 {
     uint8_t temp = (RCC->CFGR >> RCC_CFGR_SWS_Pos) & 3U;
     return (RCC_SystemClockSource_t)(temp);
@@ -137,7 +137,7 @@ RCC_PLLClockSource_t RCC_GetPLLClockSource(void)
 
 uint32_t RCC_GetSystemClockFreq(void)
 {
-    RCC_SystemClockSource_t source = RCC_GetSystemClock();
+    RCC_SystemClockSource_t source = RCC_GetSystemClockSource();
     if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
         return 16000000; // 16 Mhz
     else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
