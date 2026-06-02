@@ -513,4 +513,26 @@ RCC_FunctionStatus_t RCC_EnablePeripheralClock(RCC_Peripheral_t peripheral);
  */
 RCC_FunctionStatus_t RCC_DisablePeripheralClock(RCC_Peripheral_t peripheral);
 
+
+/**
+ * @brief Reset a peripheral.
+ * 
+ * @param peripheral Peripheral to reset.
+ * 
+ * @return
+ *      - RCC_FUNC_STATUS_OK    : Peripheral reset successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid peripheral encoding.
+ * 
+ * @details This function performs a hardware reset of the specified peripheral
+ *          by generating a reset pulse on the corresponding RCC reset register.
+ * 
+ *          The reset is done by setting the bit first and then clearing it.
+ * 
+ *          Peripheral information is encoded in RCC_Peripheral_t:
+ *          - [31:16] : Bus identifier (AHB1, AHB2, AHB3, APB1, APB2)
+ *          - [15:0]  : Bit position inside the corresponding RSTR register
+ */
+RCC_FunctionStatus_t RCC_ResetPeripheral(RCC_Peripheral_t peripheral)
+
+
 #endif /* INC_RCC_DRIVER_H_ */
