@@ -1,0 +1,17 @@
+{
+    "name": "STM32F407VG-DISC1",
+
+    "board": "stm32f407vg-disc1",
+
+    "mcu_device": "STM32F407VG",
+
+    "svd": "stm32f407.svd",
+
+    "serial": "066BFF564981774867184828",
+
+    "openocd_cfg": "openocd.cfg",
+
+    "cpu_frequency": 16000000,
+
+    "swo_frequency": 2000000
+}
