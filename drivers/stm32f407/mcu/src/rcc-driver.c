@@ -195,3 +195,11 @@ uint32_t RCC_GetPCLK2Freq(void)
     else
         return hclk / (1U << (temp - 3));
 }
+
+
+uint32_t RCC_GetI2CClockFreq(void)
+{
+    return RCC_GetPCLK1Freq();
+}
+
+

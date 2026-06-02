@@ -701,4 +701,15 @@ uint32_t RCC_GetPCLK1Freq(void);
 uint32_t RCC_GetPCLK2Freq(void);
 
 
+/**
+ * @brief Get the clock frequency supplied to I2C peripherals.
+ *
+ * @return I2C peripheral clock frequency in Hertz (Hz).
+ *
+ * @note On STM32F4, all I2C peripherals are connected to the APB1 bus
+ *       and use PCLK1 as their clock source.
+ */
+uint32_t RCC_GetI2CClockFreq(void);
+
+
 #endif /* INC_RCC_DRIVER_H_ */
