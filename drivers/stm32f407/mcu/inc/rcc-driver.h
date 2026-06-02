@@ -712,4 +712,34 @@ uint32_t RCC_GetPCLK2Freq(void);
 uint32_t RCC_GetI2CClockFreq(void);
 
 
+/**
+ * @brief Check whether the HSI oscillator is ready.
+ * 
+ * @return
+ *      - 1 : HSI is stable and ready.
+ *      - 0 : HSI is not ready.
+ */
+uint8_t RCC_IsHSIReady(void);
+
+
+/**
+ * @brief Check whether the HSE oscillator is ready.
+ * 
+ * @return
+ *      - 1 : HSE is stable and ready.
+ *      - 0 : HSE is not ready.
+ */
+uint8_t RCC_IsHSEReady(void);
+
+
+/**
+ * @brief Check whether the PLL is locked and ready.
+ * 
+ * @return
+ *      - 1 : PLL is ready.
+ *      - 0 : PLL is not ready.
+ */
+uint8_t RCC_IsPLLReady(void);
+
+
 #endif /* INC_RCC_DRIVER_H_ */

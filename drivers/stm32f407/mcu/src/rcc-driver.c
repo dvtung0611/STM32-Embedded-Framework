@@ -203,3 +203,19 @@ uint32_t RCC_GetI2CClockFreq(void)
 }
 
 
+uint8_t RCC_IsHSIReady(void)
+{
+    return READ_BIT(RCC->CR, RCC_CR_HSIRDY_Pos);
+}
+
+
+uint8_t RCC_IsHSEReady(void)
+{
+    return READ_BIT(RCC->CR, RCC_CR_HSERDY_Pos);
+}
+
+
+uint8_t RCC_IsPLLReady(void)
+{
+    return READ_BIT(RCC->CR, RCC_CR_PLLRDY_Pos);
+}
