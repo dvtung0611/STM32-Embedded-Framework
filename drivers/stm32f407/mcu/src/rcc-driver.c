@@ -119,3 +119,41 @@ RCC_FunctionStatus_t RCC_ResetPeripheral(RCC_Peripheral_t peripheral)
 
     return RCC_FUNC_STATUS_ERROR;
 }
+
+
+RCC_SystemClockSource_t RCC_GetSystemClock(void)
+{
+    uint8_t temp = (RCC->CFGR >> RCC_CFGR_SWS_Pos) & 3U;
+    return (RCC_SystemClockSource_t)(temp);
+}
+
+
+RCC_PLLClockSource_t RCC_GetPLLClockSource(void)
+{
+    uint8_t temp = READ_BIT(RCC->PLLCFGR, RCC_PLLCFGR_PLLSRC_Pos);
+    return (RCC_PLLClockSource_t)(temp);
+}
+
+
+uint32_t RCC_GetSystemClockFreq(void)
+{
+    RCC_SystemClockSource_t source = RCC_GetSystemClock();
+    if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+        return 16000000; // 16 Mhz
+    else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+        return HSE_VALUE; // define in rcc-driver.h
+
+    uint32_t PLLM = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLM_Pos) & 63U;
+    uint32_t PLLN = (RCC->PLLCFGR >> RCC_PLLCFGR_PLLN_Pos) & 511U;
+    uint32_t PLLP = 2U * (((RCC->PLLCFGR >> RCC_PLLCFGR_PLLP_Pos) & 3U) + 1);
+
+    uint32_t pll_source = 16000000;
+
+    if (RCC_GetPLLClockSource() == RCC_PLL_CLOCK_SOURCE_HSI)
+        pll_source = 16000000;
+    else if (RCC_GetPLLClockSource() == RCC_PLL_CLOCK_SOURCE_HSE)
+        pll_source = HSE_VALUE;
+    
+    pll_source = (pll_source * PLLN / PLLM) / PLLP;
+    return pll_source;
+}
