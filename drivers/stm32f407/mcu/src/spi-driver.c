@@ -7,6 +7,7 @@
 
 #include "stm32f407xx.h"
 #include "spi-driver.h"
+#include "rcc-driver.h"
 
 
 static uint32_t SPI_GetPendingInterrupts(SPI_RegDef_t *pSPIx);
@@ -23,7 +24,31 @@ static void SPI_CloseTxRx(SPI_Handle_t *pSPI_Handle);
 
 static void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
 
+
 /* ====================================================== APIs ====================================================== */
+
+void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
+{
+    if (EN_or_DI == ENABLE)
+    {
+        if (pSPIx == SPI1)
+            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI1);
+        else if (pSPIx == SPI2)
+            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI2);
+        else if (pSPIx == SPI3)
+            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI3);
+    }
+    else if (EN_or_DI == DISABLE)
+    {
+        if (pSPIx == SPI1)
+            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI1);
+        else if (pSPIx == SPI2)
+            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI2);
+        else if (pSPIx == SPI3)
+            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI3);
+    }
+}
+
 
 void SPI_Init(SPI_Handle_t *pSPI_Handle)
 {
@@ -85,11 +110,11 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
 void SPI_DeInit(SPI_RegDef_t *pSPIx)
 {
     if (pSPIx == SPI1)
-        SPI1_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_SPI1);
     else if (pSPIx == SPI2)
-        SPI2_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_SPI2);
     else if (pSPIx == SPI3)
-        SPI3_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_SPI3);
 }
 
 
