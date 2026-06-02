@@ -408,20 +408,6 @@ typedef struct
 /* ====================================================== APIs ====================================================== */
 
 /**
- * @brief Enable or disable clock for GPIO peripheral
- * 
- * @param pGPIOx   GPIO port base address (e.g. GPIOA, GPIOB)
- * @param EN_or_DI ENABLE or DISABLE macro
- * 
- * @note Must enable clock before using GPIO registers
- * 
- * Refer to:
- * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
- */
-void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI);
-
-
-/**
  * @brief Initialize and configure a GPIO pin
  * 
  * @param pGPIO_Handle Pointer to GPIO handle structure
