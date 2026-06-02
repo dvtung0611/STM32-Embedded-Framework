@@ -298,24 +298,6 @@ typedef struct
 /* ====================================================== APIs ====================================================== */
 
 /**
- * @brief Enable or disable clock for I2C peripheral
- * 
- * @param pI2Cx    Pointer to I2C peripheral (I2C1, I2C2,...)
- * @param EN_or_DI ENABLE or DISABLE macro
- * 
- * @return I2C_FunctionStatus_t
- *         - I2C_FUNC_STATUS_OK    : Enable/Disable operation succeeded
- *         - I2C_FUNC_STATUS_ERROR : Enable/Disable operation failed
- * 
- * @note Must enable clock before using I2C registers
- * 
- * Refer to:
- * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
- */
-I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
-
-
-/**
  * @brief Reset the I2C peripheral to its default state
  * 
  * @param pI2Cx Pointer to I2C peripheral (I2C1, I2C2, ...)

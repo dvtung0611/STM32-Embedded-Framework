@@ -11,49 +11,6 @@
 
 /* ====================================================== APIs ====================================================== */
 
-I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
-{
-    if (EN_or_DI == ENABLE)
-    {
-        if (pI2Cx == I2C1)
-        {
-            I2C1_PCLK_EN();
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C2)
-        {
-            I2C2_PCLK_EN();
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C3)
-        {
-            I2C3_PCLK_EN();
-            return I2C_FUNC_STATUS_OK;
-        }
-    }
-    else if (EN_or_DI == DISABLE)
-    {
-        if (pI2Cx == I2C1)
-        {
-            I2C1_PCLK_DI();
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C2)
-        {
-            I2C2_PCLK_DI();
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C3)
-        {
-            I2C3_PCLK_DI();
-            return I2C_FUNC_STATUS_OK;
-        }
-    }
-
-    return I2C_FUNC_STATUS_ERROR;
-}
-
-
 I2C_FunctionStatus_t I2C_DeInit(I2C_RegDef_t *pI2Cx)
 {
     if (pI2Cx == I2C1)
