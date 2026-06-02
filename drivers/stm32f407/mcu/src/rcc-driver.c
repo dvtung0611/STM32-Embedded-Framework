@@ -219,3 +219,27 @@ uint8_t RCC_IsPLLReady(void)
 {
     return READ_BIT(RCC->CR, RCC_CR_PLLRDY_Pos);
 }
+
+
+RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source)
+{
+    RCC->CFGR &= ~(3U << RCC_CFGR_SW_Pos);
+    if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+    {
+        RCC->CFGR |= (0U << RCC_CFGR_SW_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+    else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+    {
+        RCC->CFGR |= (1U << RCC_CFGR_SW_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+    else if (source == RCC_SYSTEM_CLOCK_SOURCE_PLL)
+    {
+        RCC->CFGR |= (2U << RCC_CFGR_SW_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+
+    return RCC_FUNC_STATUS_ERROR;
+}
+

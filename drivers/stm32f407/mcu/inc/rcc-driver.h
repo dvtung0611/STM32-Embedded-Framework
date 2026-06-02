@@ -618,7 +618,7 @@ uint32_t RCC_GetSystemClockFreq(void);
 /**
  * @brief Get the current AHB bus clock frequency (HCLK).
  * 
- * @return HCLK frequency in Hertz (Hz).
+ * @return uint32_t HCLK frequency in Hertz (Hz).
  * 
  * @details This function calculates the HCLK frequency based on the
  *          current SYSCLK frequency and the AHB prescaler (HPRE).
@@ -648,7 +648,7 @@ uint32_t RCC_GetHCLKFreq(void);
 /**
  * @brief Get the current APB1 bus clock frequency (PCLK1).
  * 
- * @return PCLK1 frequency in Hertz (Hz).
+ * @return uint32_t PCLK1 frequency in Hertz (Hz).
  * 
  * @details This function calculates the APB1 peripheral clock frequency
  *          based on the current HCLK frequency and the APB1 prescaler
@@ -675,7 +675,7 @@ uint32_t RCC_GetPCLK1Freq(void);
 /**
  * @brief Get the current APB2 bus clock frequency (PCLK2).
  * 
- * @return PCLK2 frequency in Hertz (Hz).
+ * @return uint32_t PCLK2 frequency in Hertz (Hz).
  * 
  * @details This function calculates the APB2 peripheral clock frequency
  *          based on the current HCLK frequency and the APB2 prescaler
@@ -704,7 +704,7 @@ uint32_t RCC_GetPCLK2Freq(void);
 /**
  * @brief Get the clock frequency supplied to I2C peripherals.
  *
- * @return I2C peripheral clock frequency in Hertz (Hz).
+ * @return uint32_t I2C peripheral clock frequency in Hertz (Hz).
  *
  * @note On STM32F4, all I2C peripherals are connected to the APB1 bus
  *       and use PCLK1 as their clock source.
@@ -715,7 +715,7 @@ uint32_t RCC_GetI2CClockFreq(void);
 /**
  * @brief Check whether the HSI oscillator is ready.
  * 
- * @return
+ * @return uint8_t
  *      - 1 : HSI is stable and ready.
  *      - 0 : HSI is not ready.
  */
@@ -725,7 +725,7 @@ uint8_t RCC_IsHSIReady(void);
 /**
  * @brief Check whether the HSE oscillator is ready.
  * 
- * @return
+ * @return uint8_t
  *      - 1 : HSE is stable and ready.
  *      - 0 : HSE is not ready.
  */
@@ -735,11 +735,39 @@ uint8_t RCC_IsHSEReady(void);
 /**
  * @brief Check whether the PLL is locked and ready.
  * 
- * @return
+ * @return uint8_t
  *      - 1 : PLL is ready.
  *      - 0 : PLL is not ready.
  */
 uint8_t RCC_IsPLLReady(void);
+
+
+/**
+ * @brief Select the system clock source.
+ *
+ * @param source Desired system clock source.
+ *        - RCC_SYSTEM_CLOCK_SOURCE_HSI
+ *        - RCC_SYSTEM_CLOCK_SOURCE_HSE
+ *        - RCC_SYSTEM_CLOCK_SOURCE_PLL
+ *
+ * @return RCC_FunctionStatus_t
+ *      - RCC_FUNC_STATUS_OK    : Clock source selected successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid clock source.
+ *
+ * @details This function updates the SW field in the RCC_CFGR register
+ *          to select the clock source used as SYSCLK.
+ *
+ * @note The selected clock source must be enabled and ready before
+ *       calling this function.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ */
+RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source);
+
+
+
+RCC_FunctionStatus_t RCC_EnableClockSource(RCC_SystemClockSource_t source);
 
 
 #endif /* INC_RCC_DRIVER_H_ */
