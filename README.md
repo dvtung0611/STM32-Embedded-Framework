@@ -4,23 +4,10 @@
   <b>Modular Bare-Metal Firmware Framework for STM32 Microcontrollers</b>
 </p>
 
-<p align="center">
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
-  </a>
-
-  <a href="https://en.wikipedia.org/wiki/C_(programming_language)">
-    <img src="https://img.shields.io/badge/Language-C-blue" alt="Language">
-  </a>
-
-  <a href="https://www.st.com/en/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus.html">
-    <img src="https://img.shields.io/badge/Platform-STM32-orange" alt="Platform">
-  </a>
-
-  <a href="https://developer.arm.com/Processors/Cortex-M4">
-    <img src="https://img.shields.io/badge/Architecture-ARM_Cortex--M4-red" alt="Architecture">
-  </a>
-</p>
+![License](https://img.shields.io/badge/License-MIT-green)
+![Language](https://img.shields.io/badge/Language-C-blue)
+![Platform](https://img.shields.io/badge/Platform-STM32-orange)
+![Architecture](https://img.shields.io/badge/Architecture-ARM_Cortex--M4-red)
 
 ---
 
@@ -28,7 +15,7 @@ STM32 Embedded Framework is a modular bare-metal firmware framework for STM32 mi
 
 This project focuses on learning and understanding STM32 peripherals, ARM Cortex-M architecture, interrupt handling, and reusable embedded driver design.
 
-> **Note**
+> [!WARNING]
 >
 > This repository is intended for learning and exploration of STM32 peripherals and ARM Cortex-M architecture.
 >
@@ -251,7 +238,7 @@ STM32CubeIDE is an excellent IDE and is highly recommended for:
 
 To understand how to use the APIs, please read function comments in the `*.h` files inside the `drivers/` folder. If you want to use these drivers in STM32CubeIDE, simply copy the `drivers/` directory into your project and configure the required include paths.
 
-> **Note**
+> [!NOTE]
 >
 > These APIs are designed for:
 >
