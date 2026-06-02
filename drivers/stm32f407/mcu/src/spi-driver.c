@@ -25,29 +25,6 @@ static void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
 
 /* ====================================================== APIs ====================================================== */
 
-void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
-{
-    if (EN_or_DI == ENABLE)
-    {
-        if (pSPIx == SPI1)
-            SPI1_PCLK_EN();
-        else if (pSPIx == SPI2)
-            SPI2_PCLK_EN();
-        else if (pSPIx == SPI3)
-            SPI3_PCLK_EN();
-    }
-    else if (EN_or_DI == DISABLE)
-    {
-        if (pSPIx == SPI1)
-            SPI1_PCLK_DI();
-        else if (pSPIx == SPI2)
-            SPI2_PCLK_DI();
-        else if (pSPIx == SPI3)
-            SPI3_PCLK_DI();
-    }
-}
-
-
 void SPI_Init(SPI_Handle_t *pSPI_Handle)
 {
     SPI_RegDef_t *pSPIx = pSPI_Handle->pSPIx;
