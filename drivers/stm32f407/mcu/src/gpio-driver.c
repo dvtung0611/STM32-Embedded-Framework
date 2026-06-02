@@ -176,9 +176,9 @@ void GPIO_LockPinConfig(GPIO_RegDef_t *pGPIOx, GPIO_Pin_t PinNumber)
 {
     pGPIOx->LCKR |= (1U << PinNumber);
 
-    pGPIOx->LCKR |= (1U << GPIO_LCKR_LCKK);
-    pGPIOx->LCKR &= ~(1U << GPIO_LCKR_LCKK);
-    pGPIOx->LCKR |= (1U << GPIO_LCKR_LCKK);
+    pGPIOx->LCKR |= (1U << GPIO_LCKR_LCKK_Pos);
+    pGPIOx->LCKR &= ~(1U << GPIO_LCKR_LCKK_Pos);
+    pGPIOx->LCKR |= (1U << GPIO_LCKR_LCKK_Pos);
 
     (void)pGPIOx->LCKR;
     (void)pGPIOx->LCKR;

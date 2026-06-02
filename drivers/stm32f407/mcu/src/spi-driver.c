@@ -68,42 +68,42 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     pSPIx->CR1 = SPI_CR1_RESET_VALUE;
 
     // Configure the device mode
-    pSPIx->CR1 |= (DeviceMode << SPI_CR1_MSTR);
+    pSPIx->CR1 |= (DeviceMode << SPI_CR1_MSTR_Pos);
 
     // Configure the communication mode
     if (BusConfig == SPI_BUSCONFIG_FULL_DUPLEX) // 2-line full duplex
     {
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE);
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_RXONLY);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE_Pos);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_RXONLY_Pos);
     }
     else if (BusConfig == SPI_BUSCONFIG_HALF_DUPLEX) // 1-line half duplex
     {
-        SET_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE);
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_RXONLY);
+        SET_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE_Pos);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_RXONLY_Pos);
         // TX mode: BIDIOE = 1
         // RX mode: BIDIOE = 0
         // Direction controlled at runtime
     }
     else if (BusConfig == SPI_BUSCONFIG_SIMPLEX_RX) // 2-line receive-only
     {
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE);
-        SET_BIT(pSPIx->CR1, SPI_CR1_RXONLY);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_BIDIMODE_Pos);
+        SET_BIT(pSPIx->CR1, SPI_CR1_RXONLY_Pos);
     }
 
     // Configure SCLK speed
-    pSPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR);
+    pSPIx->CR1 |= (SCLKSpeed << SPI_CR1_BR_Pos);
 
     // Configure data frame format
-    pSPIx->CR1 |= (DFF << SPI_CR1_DFF);
+    pSPIx->CR1 |= (DFF << SPI_CR1_DFF_Pos);
 
     // Configure CPOL
-    pSPIx->CR1 |= (CPOL << SPI_CR1_CPOL);
+    pSPIx->CR1 |= (CPOL << SPI_CR1_CPOL_Pos);
 
     // Configure CPHA
-    pSPIx->CR1 |= (CPHA << SPI_CR1_CPHA);
+    pSPIx->CR1 |= (CPHA << SPI_CR1_CPHA_Pos);
 
     // Configure SSM
-    pSPIx->CR1 |= (SSM << SPI_CR1_SSM);
+    pSPIx->CR1 |= (SSM << SPI_CR1_SSM_Pos);
 }
 
 
@@ -127,45 +127,45 @@ uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint8_t FlagName)
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
 {
     if (EN_or_DI == ENABLE)
-        SET_BIT(pSPIx->CR1, SPI_CR1_SPE);
+        SET_BIT(pSPIx->CR1, SPI_CR1_SPE_Pos);
     else if (EN_or_DI == DISABLE)
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_SPE);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_SPE_Pos);
 }
 
 
 void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_CL)
 {
     if (SE_or_CL == SET)
-        SET_BIT(pSPIx->CR1, SPI_CR1_SSI);
+        SET_BIT(pSPIx->CR1, SPI_CR1_SSI_Pos);
     else if (SE_or_CL == CLEAR)
-        CLEAR_BIT(pSPIx->CR1, SPI_CR1_SSI);
+        CLEAR_BIT(pSPIx->CR1, SPI_CR1_SSI_Pos);
 }
 
 
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t SE_or_CL)
 {
     if (SE_or_CL == SET)
-        SET_BIT(pSPIx->CR2, SPI_CR2_SSOE);
+        SET_BIT(pSPIx->CR2, SPI_CR2_SSOE_Pos);
     else if (SE_or_CL == CLEAR)
-        CLEAR_BIT(pSPIx->CR2, SPI_CR2_SSOE);
+        CLEAR_BIT(pSPIx->CR2, SPI_CR2_SSOE_Pos);
 }
 
 
 static uint8_t SPI_TXE_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPIx->SR, SPI_SR_TXE) & READ_BIT(pSPIx->CR2, SPI_CR2_TXEIE);
+    return READ_BIT(pSPIx->SR, SPI_SR_TXE_Pos) & READ_BIT(pSPIx->CR2, SPI_CR2_TXEIE_Pos);
 }
 
 
 static uint8_t SPI_RXNE_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPIx->SR, SPI_SR_RXNE) & READ_BIT(pSPIx->CR2, SPI_CR2_RXNEIE);
+    return READ_BIT(pSPIx->SR, SPI_SR_RXNE_Pos) & READ_BIT(pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
 }
 
 
 static uint8_t SPI_OVR_InterruptActive(SPI_RegDef_t *pSPIx)
 {
-    return READ_BIT(pSPIx->SR, SPI_SR_OVR) & READ_BIT(pSPIx->CR2, SPI_CR2_ERRIE);
+    return READ_BIT(pSPIx->SR, SPI_SR_OVR_Pos) & READ_BIT(pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 }
 
 
@@ -208,7 +208,7 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     {
         if (pSPI_Handle->CurrentTransfer.RxLength > 0)
         {
-            if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
+            if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
                 *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR)) = (uint16_t)(0xFFFF);
             else
                 *((volatile uint8_t *)(&pSPI_Handle->pSPIx->DR)) = (uint8_t)(0xFF);
@@ -219,7 +219,7 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     // Transmit true data
     if (pSPI_Handle->CurrentTransfer.TxLength > 0)
     {
-        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame
             *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR)) = *((uint16_t *)(pSPI_Handle->CurrentTransfer.pTxBuffer));
@@ -237,7 +237,7 @@ static void SPI_TXE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     
     if (pSPI_Handle->CurrentTransfer.TxLength == 0)
     {
-        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
         pSPI_Handle->CurrentTransfer.TxDone = SET;
 
         if (pSPI_Handle->Mode == SPI_TRANSFER_MODE_TRANSMIT_ONLY)
@@ -258,7 +258,7 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     // Receive true data
     if (pSPI_Handle->CurrentTransfer.RxLength > 0)
     {
-        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPI_Handle->pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame
             *((uint16_t *)(pSPI_Handle->CurrentTransfer.pRxBuffer)) = *((volatile uint16_t *)(&pSPI_Handle->pSPIx->DR));
@@ -276,8 +276,8 @@ static void SPI_RXNE_InterruptHandle(SPI_Handle_t *pSPI_Handle)
     
     if (pSPI_Handle->CurrentTransfer.RxLength == 0)
     {
-        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
-        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
+        CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
         pSPI_Handle->CurrentTransfer.RxDone = SET;
         pSPI_Handle->State = SPI_PERI_STATE_WAIT_CLOSE;
     }
@@ -319,9 +319,9 @@ SPI_FunctionStatus_t SPI_FinalProcess(SPI_Handle_t *pSPI_Handle)
 
 static void SPI_CloseTxRx(SPI_Handle_t *pSPI_Handle)
 {
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 
     pSPI_Handle->CurrentTransfer.pTxBuffer = NULL;
     pSPI_Handle->CurrentTransfer.TxLength = 0;
@@ -338,9 +338,9 @@ static void SPI_OVR_InterruptHandle(SPI_Handle_t *pSPI_Handle)
 {
     SPI_ClearOVRFlag(pSPI_Handle->pSPIx);
 
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
-    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
+    CLEAR_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 
     pSPI_Handle->State = SPI_PERI_STATE_ERROR;
     pSPI_Handle->Error = SPI_PERI_ERROR_OVR;
@@ -385,13 +385,13 @@ SPI_FunctionStatus_t SPI_TransmitIT(SPI_Handle_t *pSPI_Handle, uint8_t *pTxBuffe
     pSPI_Handle->State = SPI_PERI_STATE_BUSY_TX;
 
     // Enable ERROR interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 
     // Enable RXNE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
 
     // Enable TXE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
 
     return SPI_FUNC_STATUS_OK;
 }
@@ -419,13 +419,13 @@ SPI_FunctionStatus_t SPI_ReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *pRxBuffer
     pSPI_Handle->State = SPI_PERI_STATE_BUSY_RX;
 
     // Enable ERROR interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 
     // Enable RXNE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
 
     // Enable TXE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
 
     return SPI_FUNC_STATUS_OK;
 }
@@ -453,13 +453,13 @@ SPI_FunctionStatus_t SPI_TransmitReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *p
     pSPI_Handle->State = SPI_PERI_STATE_BUSY_TX_RX;
 
     // Enable ERROR interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_ERRIE_Pos);
 
     // Enable RXNE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_RXNEIE_Pos);
 
     // Enable TXE interrupt
-    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE);
+    SET_BIT(pSPI_Handle->pSPIx->CR2, SPI_CR2_TXEIE_Pos);
 
     return SPI_FUNC_STATUS_OK;
 }
@@ -467,7 +467,7 @@ SPI_FunctionStatus_t SPI_TransmitReceiveIT(SPI_Handle_t *pSPI_Handle, uint8_t *p
 
 SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength)
 {
-    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (TxLength % 2 == 1))
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET) && (TxLength % 2 == 1))
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
 
     while (TxLength > 0)
@@ -476,7 +476,7 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint3
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == CLEAR);
         
         // Send data
-        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame format is selected for transmission
             *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pTxBuffer));
@@ -499,7 +499,7 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint3
     }
 
     // Wait until SPI peripheral transmit and receive everything done
-    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+    while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_BSY) == SET);
 
     return SPI_FUNC_STATUS_OK;
 }
@@ -507,7 +507,7 @@ SPI_FunctionStatus_t SPI_Transmit(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint3
 
 SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t RxLength)
 {
-    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && (RxLength % 2 == 1))
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET) && (RxLength % 2 == 1))
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
 
     while (RxLength > 0)
@@ -516,7 +516,7 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == CLEAR);
         
         // Send data
-        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame format is selected for transmission
             *((volatile uint16_t *)(&pSPIx->DR)) = 0xFFFF; // Send dummy frame
@@ -531,7 +531,7 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == CLEAR);
 
         // Read data
-        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame format is selected for reception
             *((uint16_t *)(pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
@@ -548,7 +548,7 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
     }
 
     // Wait until SPI peripheral transmit and receive everything done
-    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+    while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_BSY) == SET);
 
     return SPI_FUNC_STATUS_OK;
 }
@@ -556,7 +556,7 @@ SPI_FunctionStatus_t SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32
 
 SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t TxLength, uint8_t *pRxBuffer, uint32_t RxLength)
 {
-    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET) && ((TxLength % 2 == 1) || (RxLength % 2 == 1)))
+    if ((READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET) && ((TxLength % 2 == 1) || (RxLength % 2 == 1)))
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
     if (TxLength != RxLength)
         return SPI_FUNC_STATUS_INVALID_PARAMETER;
@@ -567,7 +567,7 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_TXE) == CLEAR);
         
         // Send data
-        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame format is selected for transmission
             *((volatile uint16_t *)(&pSPIx->DR)) = *((uint16_t *)(pTxBuffer));
@@ -586,7 +586,7 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer
         while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_RXNE) == CLEAR);
 
         // Read data
-        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF) == SET)
+        if (READ_BIT(pSPIx->CR1, SPI_CR1_DFF_Pos) == SET)
         {
             // 16-bit data frame format is selected for reception
             *((uint16_t *)(pRxBuffer)) = *((volatile uint16_t *)(&pSPIx->DR));
@@ -603,7 +603,7 @@ SPI_FunctionStatus_t SPI_TransmitReceive(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer
     }
 
     // Wait until SPI peripheral transmit and receive everything done
-    while (SPI_GetFlagStatus(pSPIx, SPI_SR_BSY) == SET);
+    while (SPI_GetFlagStatus(pSPIx, SPI_FLAG_BSY) == SET);
 
     return SPI_FUNC_STATUS_OK;
 }
