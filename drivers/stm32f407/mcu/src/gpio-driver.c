@@ -7,9 +7,56 @@
 
 #include "stm32f407xx.h"
 #include "gpio-driver.h"
-
+#include "rcc-driver.h"
 
 /* ====================================================== APIs ====================================================== */
+
+void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI)
+{
+	if (EN_or_DI == ENABLE)
+	{
+		if (pGPIOx == GPIOA)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOA);
+		else if (pGPIOx == GPIOB)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOB);
+		else if (pGPIOx == GPIOC)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOC);
+		else if (pGPIOx == GPIOD)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOD);
+		else if (pGPIOx == GPIOE)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOE);
+		else if (pGPIOx == GPIOF)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOF);
+		else if (pGPIOx == GPIOG)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOG);
+		else if (pGPIOx == GPIOH)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOH);
+		else if (pGPIOx == GPIOI)
+			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOI);
+	}
+	else if (EN_or_DI == DISABLE)
+	{
+		if (pGPIOx == GPIOA)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOA);
+		else if (pGPIOx == GPIOB)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOB);
+		else if (pGPIOx == GPIOC)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOC);
+		else if (pGPIOx == GPIOD)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOD);
+		else if (pGPIOx == GPIOE)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOE);
+		else if (pGPIOx == GPIOF)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOF);
+		else if (pGPIOx == GPIOG)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOG);
+		else if (pGPIOx == GPIOH)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOH);
+		else if (pGPIOx == GPIOI)
+			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOI);
+	}
+}
+
 
 void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
 {
@@ -70,23 +117,23 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 {
     if (pGPIOx == GPIOA)
-        GPIOA_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOA);
     else if (pGPIOx == GPIOB)
-        GPIOB_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOB);
     else if (pGPIOx == GPIOC)
-        GPIOC_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOC);
     else if (pGPIOx == GPIOD)
-        GPIOD_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOD);
     else if (pGPIOx == GPIOE)
-        GPIOE_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOE);
     else if (pGPIOx == GPIOF)
-        GPIOF_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOF);
     else if (pGPIOx == GPIOG)
-        GPIOG_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOG);
     else if (pGPIOx == GPIOH)
-        GPIOH_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOH);
     else if (pGPIOx == GPIOI)
-        GPIOI_REG_RESET();
+        RCC_ResetPeripheral(RCC_PERIPHERAL_GPIOI);
 }
 
 
