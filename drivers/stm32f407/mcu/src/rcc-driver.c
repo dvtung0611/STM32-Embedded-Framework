@@ -157,3 +157,17 @@ uint32_t RCC_GetSystemClockFreq(void)
     pll_source = (pll_source * PLLN / PLLM) / PLLP;
     return pll_source;
 }
+
+
+uint32_t RCC_GetHCLKFreq(void)
+{
+    uint32_t system_clock = RCC_GetSystemClockFreq();
+    uint32_t temp = ((RCC->CFGR >> RCC_CFGR_HPRE_Pos) & 15U);
+
+    if (temp <= 7)
+        return system_clock;
+    else if (temp <= 11)
+        return system_clock / (1U << (temp - 7));
+    else
+        return system_clock / (1U << (temp - 6));
+}

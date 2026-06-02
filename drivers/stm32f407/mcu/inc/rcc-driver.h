@@ -569,6 +569,9 @@ RCC_FunctionStatus_t RCC_ResetPeripheral(RCC_Peripheral_t peripheral);
  * @details This function reads the SWS (System Clock Switch Status) field
  *          in the RCC_CFGR register to determine the clock source currently
  *          driving the system clock.
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
  */
 RCC_SystemClockSource_t RCC_GetSystemClockSource(void);
 
@@ -582,6 +585,10 @@ RCC_SystemClockSource_t RCC_GetSystemClockSource(void);
  * 
  * @details This function reads the PLLSRC bit in the RCC_PLLCFGR register
  *          to determine which clock source is currently feeding the PLL.
+ * 
+ * @note
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.2 RCC PLL configuration register (RCC_PLLCFGR)
  */
 RCC_PLLClockSource_t RCC_GetPLLClockSource(void);
 
@@ -602,8 +609,40 @@ RCC_PLLClockSource_t RCC_GetPLLClockSource(void);
  * 
  * @note This function returns the SYSCLK frequency only. It does not account
  *       for AHB or APB prescalers.
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.2 RCC PLL configuration register (RCC_PLLCFGR)
  */
 uint32_t RCC_GetSystemClockFreq(void);
+
+
+/**
+ * @brief Get the current AHB bus clock frequency (HCLK).
+ * 
+ * @return HCLK frequency in Hertz (Hz).
+ * 
+ * @details This function calculates the HCLK frequency based on the
+ *          current SYSCLK frequency and the AHB prescaler (HPRE).
+ * 
+ *          HCLK is derived from SYSCLK as follows: HCLK = SYSCLK / AHB_Prescaler
+ * 
+ *          HPRE encoding:
+ *              0xxx : SYSCLK not divided
+ *              1000 : SYSCLK divided by 2
+ *              1001 : SYSCLK divided by 4
+ *              1010 : SYSCLK divided by 8
+ *              1011 : SYSCLK divided by 16
+ *              1100 : SYSCLK divided by 64
+ *              1101 : SYSCLK divided by 128
+ *              1110 : SYSCLK divided by 256
+ *              1111 : SYSCLK divided by 512
+ * 
+ * @note HCLK is the clock supplied to the Cortex-M core, AHB bus,
+ *       DMA, SRAM, and other AHB peripherals.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ */
+uint32_t RCC_GetHCLKFreq(void);
 
 
 #endif /* INC_RCC_DRIVER_H_ */
