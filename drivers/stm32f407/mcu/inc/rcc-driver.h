@@ -476,5 +476,23 @@ typedef enum
 
 /* ====================================================== APIs ====================================================== */
 
+/**
+ * @brief Enable clock for a peripheral.
+ * 
+ * @param peripheral Peripheral to enable clock for.
+ *
+ * @return
+ *      - RCC_FUNC_STATUS_OK    : Clock enabled successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid peripheral encoding.
+ * 
+ * @details This function enables the clock signal for the specified peripheral
+ *          by setting the corresponding bit in the RCC clock enable register.
+ *
+ *          Peripheral information is encoded in RCC_Peripheral_t:
+ *          - [31:16] : Bus identifier (AHB1, AHB2, AHB3, APB1, APB2)
+ *          - [15:0]  : Bit position inside the corresponding ENR register
+ */
+RCC_FunctionStatus_t RCC_EnablePeripheralClock(RCC_Peripheral_t peripheral);
+
 
 #endif /* INC_RCC_DRIVER_H_ */
