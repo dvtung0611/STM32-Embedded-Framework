@@ -51,6 +51,13 @@ Thank you!
 
 ## 🏗️ Architecture
 
+### Project Architecture
+
+<p align="center">
+    <img src="images/project-architecture.png" width="800">
+</p>
+
+### Repository Structure
 ```text
 STM32-Embedded-Framework/
 │
