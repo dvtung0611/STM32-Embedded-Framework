@@ -766,7 +766,33 @@ uint8_t RCC_IsPLLReady(void);
 RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source);
 
 
-
+/**
+ * @brief Enable a clock source.
+ * 
+ * @param source Clock source to enable.
+ *        - RCC_SYSTEM_CLOCK_SOURCE_HSI
+ *        - RCC_SYSTEM_CLOCK_SOURCE_HSE
+ *        - RCC_SYSTEM_CLOCK_SOURCE_PLL
+ * 
+ * @return RCC_FunctionStatus_t
+ *      - RCC_FUNC_STATUS_OK    : Clock source enabled successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid clock source.
+ * 
+ * @details This function enables the selected clock source by setting
+ *          the corresponding ON bit in the RCC_CR register.
+ * 
+ * @note Enabling a clock source does not guarantee that it is ready for
+ *       use.
+ *       Use RCC_IsHSIReady(), RCC_IsHSEReady(), or RCC_IsPLLReady()
+ *       to check the ready status before switching the system clock.
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ * 
+ * @example
+ * RCC_EnableClockSource(RCC_SYSTEM_CLOCK_SOURCE_HSI);
+ * while (RCC_IsHSIReady() == LOW);
+ */
 RCC_FunctionStatus_t RCC_EnableClockSource(RCC_SystemClockSource_t source);
 
 

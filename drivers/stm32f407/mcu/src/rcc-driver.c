@@ -243,3 +243,25 @@ RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source)
     return RCC_FUNC_STATUS_ERROR;
 }
 
+
+
+RCC_FunctionStatus_t RCC_EnableClockSource(RCC_SystemClockSource_t source)
+{
+    if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+    {
+        RCC->CR |= (1U << RCC_CR_HSION_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+    else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+    {
+        RCC->CR |= (1U << RCC_CR_HSEON_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+    else if (source == RCC_SYSTEM_CLOCK_SOURCE_PLL)
+    {
+        RCC->CR |= (1U << RCC_CR_PLLON_Pos);
+        return RCC_FUNC_STATUS_OK;
+    }
+
+    return RCC_FUNC_STATUS_ERROR;
+}
