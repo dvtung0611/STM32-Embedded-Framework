@@ -54,8 +54,8 @@ EXTI_FunctionStatus_t EXTI_Init(EXTI_Handle_t *pEXTI_Handle)
             // Map GPIO port to EXTI line (only for lines 0–15)
             uint8_t EXTICR_ID = LineNumber / 4, BIT_ID = LineNumber % 4;
 
-           RCC_EnablePeripheralClock(RCC_PERIPHERAL_SYSCFG); // Enable SYSCFG clock
-
+            RCC_PeripheralClockControl(RCC_PERIPHERAL_SYSCFG, ENABLE); // Enable SYSCFG clock
+            
             // Clear previous mapping and set new port
             SYSCFG->EXTICR[EXTICR_ID] &= ~(15U << (BIT_ID * 4U));
             SYSCFG->EXTICR[EXTICR_ID] |= (PortCode << (BIT_ID * 4U));

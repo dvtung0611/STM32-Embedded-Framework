@@ -9,52 +9,29 @@
 #include "gpio-driver.h"
 #include "rcc-driver.h"
 
+
 /* ====================================================== APIs ====================================================== */
 
-void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI)
+void GPIO_PeripheralClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI)
 {
-	if (EN_or_DI == ENABLE)
-	{
-		if (pGPIOx == GPIOA)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOA);
-		else if (pGPIOx == GPIOB)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOB);
-		else if (pGPIOx == GPIOC)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOC);
-		else if (pGPIOx == GPIOD)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOD);
-		else if (pGPIOx == GPIOE)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOE);
-		else if (pGPIOx == GPIOF)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOF);
-		else if (pGPIOx == GPIOG)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOG);
-		else if (pGPIOx == GPIOH)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOH);
-		else if (pGPIOx == GPIOI)
-			RCC_EnablePeripheralClock(RCC_PERIPHERAL_GPIOI);
-	}
-	else if (EN_or_DI == DISABLE)
-	{
-		if (pGPIOx == GPIOA)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOA);
-		else if (pGPIOx == GPIOB)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOB);
-		else if (pGPIOx == GPIOC)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOC);
-		else if (pGPIOx == GPIOD)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOD);
-		else if (pGPIOx == GPIOE)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOE);
-		else if (pGPIOx == GPIOF)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOF);
-		else if (pGPIOx == GPIOG)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOG);
-		else if (pGPIOx == GPIOH)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOH);
-		else if (pGPIOx == GPIOI)
-			RCC_DisablePeripheralClock(RCC_PERIPHERAL_GPIOI);
-	}
+    if (pGPIOx == GPIOA)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOA, EN_or_DI);
+    else if (pGPIOx == GPIOB)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOB, EN_or_DI);
+    else if (pGPIOx == GPIOC)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOC, EN_or_DI);
+    else if (pGPIOx == GPIOD)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOD, EN_or_DI);
+    else if (pGPIOx == GPIOE)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOE, EN_or_DI);
+    else if (pGPIOx == GPIOF)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOF, EN_or_DI);
+    else if (pGPIOx == GPIOG)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOG, EN_or_DI);
+    else if (pGPIOx == GPIOH)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOH, EN_or_DI);
+    else if (pGPIOx == GPIOI)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_GPIOI, EN_or_DI);
 }
 
 
@@ -69,7 +46,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIO_Handle)
     uint8_t PinAltFuncMode = pGPIO_Handle->GPIO_PinConfig.GPIO_PinAltFunMode;
 
     // Enable clock for the GPIO peripheral.
-    GPIO_PeriClock_Control(pGPIOx, ENABLE);
+    GPIO_PeripheralClockControl(pGPIOx, ENABLE);
 
     // Configure the mode of GPIO Pin
     if (PinMode == GPIO_PIN_MODE_INPUT || PinMode == GPIO_PIN_MODE_OUTPUT ||

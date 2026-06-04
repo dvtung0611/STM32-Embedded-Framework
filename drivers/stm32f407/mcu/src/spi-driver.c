@@ -27,26 +27,14 @@ static void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
 
 /* ====================================================== APIs ====================================================== */
 
-void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
+void SPI_PeripheralClockControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI)
 {
-    if (EN_or_DI == ENABLE)
-    {
-        if (pSPIx == SPI1)
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI1);
-        else if (pSPIx == SPI2)
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI2);
-        else if (pSPIx == SPI3)
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_SPI3);
-    }
-    else if (EN_or_DI == DISABLE)
-    {
-        if (pSPIx == SPI1)
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI1);
-        else if (pSPIx == SPI2)
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI2);
-        else if (pSPIx == SPI3)
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_SPI3);
-    }
+    if (pSPIx == SPI1)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_SPI1, EN_or_DI);
+    else if (pSPIx == SPI2)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_SPI2, EN_or_DI);
+    else if (pSPIx == SPI3)
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_SPI3, EN_or_DI);
 }
 
 
@@ -62,7 +50,7 @@ void SPI_Init(SPI_Handle_t *pSPI_Handle)
     SPI_SSM_t SSM = pSPI_Handle->SPI_Config.SPI_SSM;
 
     // Enable clock for the SPI peripheral
-    SPI_PeriClock_Control(pSPIx, ENABLE);
+    SPI_PeripheralClockControl(pSPIx, ENABLE);
 
     // Reset the SPI Control Register 1
     pSPIx->CR1 = SPI_CR1_RESET_VALUE;

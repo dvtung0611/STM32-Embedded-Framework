@@ -326,7 +326,7 @@ typedef struct
  * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
  *                              Section 7.3.14 RCC APB2 peripheral clock enable register (RCC_APB2ENR)
  */
-void SPI_PeriClock_Control(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
+void SPI_PeripheralClockControl(SPI_RegDef_t *pSPIx, uint8_t EN_or_DI);
 
 
 /**
