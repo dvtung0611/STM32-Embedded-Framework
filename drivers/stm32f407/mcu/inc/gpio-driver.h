@@ -418,7 +418,7 @@ typedef struct
  * Refer to:
  * - RM0090 Reference Manual,	Section 7.3.10 RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
  */
-void GPIO_PeriClock_Control(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI);
+void GPIO_PeripheralClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EN_or_DI);
 
 
 /**

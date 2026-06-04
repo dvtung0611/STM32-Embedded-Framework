@@ -13,46 +13,52 @@
 
 /* ====================================================== APIs ====================================================== */
 
-I2C_FunctionStatus_t I2C_PeriClock_Control(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
+I2C_FunctionStatus_t I2C_PeripheralClockControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
 {
-    if (EN_or_DI == ENABLE)
+    if (pI2Cx == I2C1)
     {
-        if (pI2Cx == I2C1)
-        {
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_I2C1);
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C2)
-        {
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_I2C2);
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C3)
-        {
-            RCC_EnablePeripheralClock(RCC_PERIPHERAL_I2C3);
-            return I2C_FUNC_STATUS_OK;
-        }
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_I2C1, EN_or_DI);
+        return I2C_FUNC_STATUS_OK;
     }
-    else if (EN_or_DI == DISABLE)
+    else if (pI2Cx == I2C2)
     {
-        if (pI2Cx == I2C1)
-        {
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_I2C1);
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C2)
-        {
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_I2C2);
-            return I2C_FUNC_STATUS_OK;
-        }
-        else if (pI2Cx == I2C3)
-        {
-            RCC_DisablePeripheralClock(RCC_PERIPHERAL_I2C3);
-            return I2C_FUNC_STATUS_OK;
-        }
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_I2C2, EN_or_DI);
+        return I2C_FUNC_STATUS_OK;
+    }
+    else if (pI2Cx == I2C3)
+    {
+        RCC_PeripheralClockControl(RCC_PERIPHERAL_I2C3, EN_or_DI);
+        return I2C_FUNC_STATUS_OK;
     }
 
     return I2C_FUNC_STATUS_ERROR;
+}
+
+
+I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle)
+{
+    if (pI2C_Handle == NULL)
+        return I2C_FUNC_STATUS_INVALID_PARAMETER;
+    
+    I2C_RegDef_t *pI2Cx = pI2C_Handle->pI2Cx;
+    I2C_ACKControl_t ACKControl = pI2C_Handle->I2C_Config.I2C_ACKControl;
+    I2C_SCLSpeed_t SCLSpeed = pI2C_Handle->I2C_Config.I2C_SCLSpeed;
+    uint16_t I2C_DeviceAddress = pI2C_Handle->I2C_Config.I2C_DeviceAddress;
+    I2C_FMDutyCycle_t FMDutyCycle = pI2C_Handle->I2C_Config.I2C_FMDutyCycle;
+
+    // Enable clock for the I2C peripheral
+    I2C_PeripheralClockControl(pI2Cx, ENABLE);
+
+    // Configure ACK
+    if (ACKControl == I2C_ACK_CONTROL_ENABLE)
+        pI2Cx->CR1 |= (1U << I2C_CR1_ACK_Pos);
+    else if (ACKControl == I2C_ACK_CONTROL_DISABLE)
+        pI2Cx->CR1 &= ~(1U << I2C_CR1_ACK_Pos);
+    else
+        return I2C_FUNC_STATUS_INVALID_PARAMETER;
+    
+    // Configure
+
 }
 
 
