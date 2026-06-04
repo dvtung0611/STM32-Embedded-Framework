@@ -63,8 +63,8 @@
 /**
  * @I2C_OAR1
  */
-#define I2C_OAR1_ADD0_Pos           (0U)    /*!< Interface address          | Bit 0 */
-#define I2C_OAR1_ADD_Pos            (1U)    /*!< Interface address          | Bits 9:1 */
+#define I2C_OAR1_ADD10_Pos           (0U)    /*!< Interface address          | Bit 9:0 */
+#define I2C_OAR1_ADD7_Pos            (1U)    /*!< Interface address          | Bits 7:1 */
 #define I2C_OAR1_ADDMODE_Pos        (15U)   /*!< Addressing mode            | Bit 15 */
 
 
@@ -241,12 +241,12 @@ typedef enum
 
 
 /**
- * @I2C_DUAL_ADDRESS
+ * @I2C_DUAL_ADDRESS_MODE
  */
 typedef enum
 {
-    I2C_DUAL_ADDRESS_DISABLE = 0U,
-    I2C_DUAL_ADDRESS_ENABLE
+    I2C_DUAL_ADDRESS_MODE_DISABLE = 0U,
+    I2C_DUAL_ADDRESS_MODE_ENABLE
 } I2C_DualAddress_t;
 
 
@@ -274,17 +274,18 @@ typedef enum
  */
 typedef struct
 {
-    I2C_SCLSpeed_t I2C_SCLSpeed;                /*!< SCL clock speed                    | Possible value: @I2C_SCL_SPEED */
+    I2C_ACKControl_t I2C_ACKControl;            /*!< ACK control                        | Possible value: @I2C_ACK_CONTROL */
+
+    I2C_AddressMode_t I2C_AddressMode;          /*!< Addressing mode                    | Possible value: @I2C_ADDRESS_MODE */
+    I2C_DualAddress_t I2C_DualAddressMode;      /*!< Dual addressing mode               | Possible value: @I2C_DUAL_ADDRESS_MODE */
     uint16_t I2C_DeviceAddress;                 /*!< Primary slave address (OAR1)       | Possible value: User configure */
     uint16_t I2C_SecondaryAddress;              /*!< Secondary slave address (OAR2)     | Possible value: User configure */
 
-    I2C_ACKControl_t I2C_ACKControl;            /*!< ACK control                        | Possible value: @I2C_ACK_CONTROL */
+    I2C_SCLSpeed_t I2C_SCLSpeed;                /*!< SCL clock speed                    | Possible value: @I2C_SCL_SPEED */
     I2C_FMDutyCycle_t I2C_FMDutyCycle;          /*!< Fast mode duty cycle               | Possible value: @I2C_FM_DUTY_CYCLE */
-
-    I2C_AddressMode_t I2C_AddressMode;          /*!< Addressing mode                    | Possible value: @I2C_ADDRESS_MODE */
-    I2C_GeneralCall_t I2C_GeneralCall;          /*!< General call handling              | Possible value: @I2C_GENERAL_CALL */
+    
     I2C_ClockStretch_t I2C_ClockStretch;        /*!< Clock stretching control           | Possible value: @I2C_CLOCK_STRETCH */
-    I2C_DualAddress_t I2C_DualAddress;          /*!< Dual addressing mode               | Possible value: @I2C_DUAL_ADDRESS */
+    I2C_GeneralCall_t I2C_GeneralCall;          /*!< General call handling              | Possible value: @I2C_GENERAL_CALL */
 } I2C_Config_t;
 
 
@@ -313,6 +314,56 @@ typedef struct
  * - RM0090 Reference Manual,	Section 7.3.13 RCC APB1 peripheral clock enable register (RCC_APB1ENR)
  */
 I2C_FunctionStatus_t I2C_PeripheralClockControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
+
+
+/**
+ * @brief Initialize an I2C peripheral.
+ * 
+ * @param pI2C_Handle Pointer to the I2C handle structure containing
+ *        the peripheral instance and configuration parameters.
+ * 
+ * @return I2C_FunctionStatus_t
+ *      - I2C_FUNC_STATUS_OK                : Initialization completed successfully.
+ *      - I2C_FUNC_STATUS_INVALID_PARAMETER : One or more configuration parameters are invalid.
+ * 
+ * @details This function configures the selected I2C peripheral according
+ *          to the parameters stored in the I2C handle structure.
+ * 
+ *          The following configurations are applied:
+ *          - Enable peripheral clock.
+ *          - ACK control.
+ *          - 7-bit or 10-bit own address mode.
+ *          - Dual addressing mode.
+ *          - General call response.
+ *          - Clock stretching.
+ *          - Peripheral clock frequency (CR2.FREQ).
+ *          - Standard mode or Fast mode timing (CCR).
+ *          - Fast mode duty cycle selection.
+ * 
+ *          Supported bus speeds:
+ *          - Standard Mode : 100 kHz
+ *          - Fast Mode     : 200 kHz, 400 kHz
+ * 
+ *          CCR is calculated according to the selected operating mode:
+ * 
+ *          Standard Mode:
+ *              CCR = FPCLK1 / (2 × FSCL)
+ * 
+ *          Fast Mode (Duty = 2):
+ *              CCR = FPCLK1 / (3 × FSCL)
+ * 
+ *          Fast Mode (Duty = 16/9):
+ *              CCR = FPCLK1 / (25 × FSCL)
+ * 
+ * @note This function configures the peripheral registers only.
+ *       It does not enable the I2C peripheral (PE bit).
+ * 
+ * Refer to:
+ * - RM0090 Reference Manual,   Section 27.3 I2C Functional description
+ *                              Section 27.6 I2C registers
+ */
+
+I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle);
 
 
 /**
