@@ -10,6 +10,10 @@
 #include "rcc-driver.h"
 
 
+uint16_t AHB_Prescaler[] = {2, 4, 8, 16, 64, 128, 256, 512};
+uint8_t APB_Prescaler[] = {2, 4, 8, 16};
+
+
 /* ====================================================== APIs ====================================================== */
 
 RCC_FunctionStatus_t RCC_PeripheralClockControl(RCC_Peripheral_t peripheral, uint8_t EN_or_DI)
@@ -163,10 +167,8 @@ uint32_t RCC_GetHCLKFreq(void)
 
     if (temp <= 7)
         return system_clock;
-    else if (temp <= 11)
-        return system_clock / (1U << (temp - 7));
-    else
-        return system_clock / (1U << (temp - 6));
+    
+    return system_clock / AHB_Prescaler[temp - 8U];
 }
 
 
@@ -177,8 +179,8 @@ uint32_t RCC_GetPCLK1Freq(void)
 
     if (temp <= 3)
         return hclk;
-    else
-        return hclk / (1U << (temp - 3));
+
+    return hclk / APB_Prescaler[temp - 4U];
 }
 
 
@@ -189,8 +191,8 @@ uint32_t RCC_GetPCLK2Freq(void)
 
     if (temp <= 3)
         return hclk;
-    else
-        return hclk / (1U << (temp - 3));
+
+    return hclk / APB_Prescaler[temp - 4U];
 }
 
 

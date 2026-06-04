@@ -57,7 +57,7 @@ I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle)
     else
         return I2C_FUNC_STATUS_INVALID_PARAMETER;
     
-    // Configure
+    // Configure 
 
 }
 
