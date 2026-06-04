@@ -500,41 +500,27 @@ typedef enum
 /* ====================================================== APIs ====================================================== */
 
 /**
- * @brief Enable clock for a peripheral.
+ * @brief Enable or disable clock for a peripheral.
  * 
- * @param peripheral Peripheral to enable clock for.
+ * @param peripheral Peripheral whose clock will be controlled.
+ * 
+ * @param EN_or_DI Clock control action:
+ *        - ENABLE  : Enable peripheral clock.
+ *        - DISABLE : Disable peripheral clock.
  * 
  * @return RCC_FunctionStatus_t
- *      - RCC_FUNC_STATUS_OK    : Clock enabled successfully.
- *      - RCC_FUNC_STATUS_ERROR : Invalid peripheral encoding.
+ *      - RCC_FUNC_STATUS_OK    : Clock operation completed successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid peripheral encoding or control action.
  * 
- * @details This function enables the clock signal for the specified peripheral
- *          by setting the corresponding bit in the RCC clock enable register.
+ * @details This function enables or disables the clock signal for the
+ *          specified peripheral by setting or clearing the corresponding
+ *          bit in the appropriate RCC clock enable register.
  * 
  *          Peripheral information is encoded in RCC_Peripheral_t:
  *          - [31:16] : Bus identifier (AHB1, AHB2, AHB3, APB1, APB2)
  *          - [15:0]  : Bit position inside the corresponding ENR register
  */
-RCC_FunctionStatus_t RCC_EnablePeripheralClock(RCC_Peripheral_t peripheral);
-
-
-/**
- * @brief Disable clock for a peripheral.
- * 
- * @param peripheral Peripheral to disable clock for.
- * 
- * @return RCC_FunctionStatus_t
- *      - RCC_FUNC_STATUS_OK    : Clock disabled successfully.
- *      - RCC_FUNC_STATUS_ERROR : Invalid peripheral encoding.
- * 
- * @details This function disables the clock signal for the specified peripheral
- *          by setting the corresponding bit in the RCC clock disable register.
- * 
- *          Peripheral information is encoded in RCC_Peripheral_t:
- *          - [31:16] : Bus identifier (AHB1, AHB2, AHB3, APB1, APB2)
- *          - [15:0]  : Bit position inside the corresponding ENR register
- */
-RCC_FunctionStatus_t RCC_DisablePeripheralClock(RCC_Peripheral_t peripheral);
+RCC_FunctionStatus_t RCC_PeripheralClockControl(RCC_Peripheral_t peripheral, uint8_t EN_or_DI);
 
 
 /**
@@ -767,33 +753,36 @@ RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source);
 
 
 /**
- * @brief Enable a clock source.
+ * @brief Enable or disable a clock source.
  * 
- * @param source Clock source to enable.
+ * @param source Clock source to control.
  *        - RCC_SYSTEM_CLOCK_SOURCE_HSI
  *        - RCC_SYSTEM_CLOCK_SOURCE_HSE
  *        - RCC_SYSTEM_CLOCK_SOURCE_PLL
  * 
- * @return RCC_FunctionStatus_t
- *      - RCC_FUNC_STATUS_OK    : Clock source enabled successfully.
- *      - RCC_FUNC_STATUS_ERROR : Invalid clock source.
+ * @param EN_or_DI Clock control action:
+ *        - ENABLE  : Enable clock source.
+ *        - DISABLE : Disable clock source.
  * 
- * @details This function enables the selected clock source by setting
- *          the corresponding ON bit in the RCC_CR register.
+ * @return RCC_FunctionStatus_t
+ *      - RCC_FUNC_STATUS_OK    : Clock source operation completed successfully.
+ *      - RCC_FUNC_STATUS_ERROR : Invalid clock source or control action.
+ * 
+ * @details This function enables or disables the selected clock source
+ *          by setting or clearing the corresponding ON bit in the RCC_CR
+ *          register.
  * 
  * @note Enabling a clock source does not guarantee that it is ready for
- *       use.
- *       Use RCC_IsHSIReady(), RCC_IsHSEReady(), or RCC_IsPLLReady()
+ *       use. Use RCC_IsHSIReady(), RCC_IsHSEReady(), or RCC_IsPLLReady()
  *       to check the ready status before switching the system clock.
  * 
- * Refer to:
- * - RM0090 Reference Manual,   Section 7.3.3 RCC clock configuration register (RCC_CFGR)
+ * @warning Disabling the clock source currently used as SYSCLK may cause
+ *          unpredictable system behavior.
  * 
- * @example
- * RCC_EnableClockSource(RCC_SYSTEM_CLOCK_SOURCE_HSI);
- * while (RCC_IsHSIReady() == LOW);
+ * Refer to:
+ * - RM0090 Reference Manual, Section 7.3.1 RCC clock control register (RCC_CR)
  */
-RCC_FunctionStatus_t RCC_EnableClockSource(RCC_SystemClockSource_t source);
+RCC_FunctionStatus_t RCC_ClockSourceControl(RCC_SystemClockSource_t source, uint8_t EN_or_DI);
 
 
 #endif /* INC_RCC_DRIVER_H_ */

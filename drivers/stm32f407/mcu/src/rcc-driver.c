@@ -9,72 +9,69 @@
 #include "stm32f407xx.h"
 #include "rcc-driver.h"
 
+
 /* ====================================================== APIs ====================================================== */
 
-RCC_FunctionStatus_t RCC_EnablePeripheralClock(RCC_Peripheral_t peripheral)
+RCC_FunctionStatus_t RCC_PeripheralClockControl(RCC_Peripheral_t peripheral, uint8_t EN_or_DI)
 {
     uint32_t bus = ((uint32_t)(peripheral) & RCC_BUS_MASK);
     uint32_t bit_position = ((uint32_t)(peripheral) & RCC_BITPOS_MASK);
 
-    if (bus == RCC_BUS_AHB1)
+    if (EN_or_DI == ENABLE)
     {
-        RCC->AHB1ENR |= (1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
+        if (bus == RCC_BUS_AHB1)
+        {
+            RCC->AHB1ENR |= (1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_AHB2)
+        {
+            RCC->AHB2ENR |= (1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_AHB3)
+        {
+            RCC->AHB3ENR |= (1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_APB1)
+        {
+            RCC->APB1ENR |= (1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_APB2)
+        {
+            RCC->APB2ENR |= (1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
     }
-    else if (bus == RCC_BUS_AHB2)
+    else if (EN_or_DI == DISABLE)
     {
-        RCC->AHB2ENR |= (1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_AHB3)
-    {
-        RCC->AHB3ENR |= (1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_APB1)
-    {
-        RCC->APB1ENR |= (1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_APB2)
-    {
-        RCC->APB2ENR |= (1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-
-    return RCC_FUNC_STATUS_ERROR;
-}
-
-
-RCC_FunctionStatus_t RCC_DisablePeripheralClock(RCC_Peripheral_t peripheral)
-{
-    uint32_t bus = ((uint32_t)(peripheral) & RCC_BUS_MASK);
-    uint32_t bit_position = ((uint32_t)(peripheral) & RCC_BITPOS_MASK);
-
-    if (bus == RCC_BUS_AHB1)
-    {
-        RCC->AHB1ENR &= ~(1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_AHB2)
-    {
-        RCC->AHB2ENR &= ~(1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_AHB3)
-    {
-        RCC->AHB3ENR &= ~(1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_APB1)
-    {
-        RCC->APB1ENR &= ~(1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (bus == RCC_BUS_APB2)
-    {
-        RCC->APB2ENR &= ~(1U << bit_position);
-        return RCC_FUNC_STATUS_OK;
+        if (bus == RCC_BUS_AHB1)
+        {
+            RCC->AHB1ENR &= ~(1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_AHB2)
+        {
+            RCC->AHB2ENR &= ~(1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_AHB3)
+        {
+            RCC->AHB3ENR &= ~(1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_APB1)
+        {
+            RCC->APB1ENR &= ~(1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (bus == RCC_BUS_APB2)
+        {
+            RCC->APB2ENR &= ~(1U << bit_position);
+            return RCC_FUNC_STATUS_OK;
+        }
     }
 
     return RCC_FUNC_STATUS_ERROR;
@@ -244,23 +241,43 @@ RCC_FunctionStatus_t RCC_SetSystemClock(RCC_SystemClockSource_t source)
 }
 
 
-
-RCC_FunctionStatus_t RCC_EnableClockSource(RCC_SystemClockSource_t source)
+RCC_FunctionStatus_t RCC_ClockSourceControl(RCC_SystemClockSource_t source, uint8_t EN_or_DI)
 {
-    if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+    if (EN_or_DI == ENABLE)
     {
-        RCC->CR |= (1U << RCC_CR_HSION_Pos);
-        return RCC_FUNC_STATUS_OK;
+        if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+        {
+            RCC->CR |= (1U << RCC_CR_HSION_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+        {
+            RCC->CR |= (1U << RCC_CR_HSEON_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (source == RCC_SYSTEM_CLOCK_SOURCE_PLL)
+        {
+            RCC->CR |= (1U << RCC_CR_PLLON_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
     }
-    else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+    else if (EN_or_DI == DISABLE)
     {
-        RCC->CR |= (1U << RCC_CR_HSEON_Pos);
-        return RCC_FUNC_STATUS_OK;
-    }
-    else if (source == RCC_SYSTEM_CLOCK_SOURCE_PLL)
-    {
-        RCC->CR |= (1U << RCC_CR_PLLON_Pos);
-        return RCC_FUNC_STATUS_OK;
+        if (source == RCC_SYSTEM_CLOCK_SOURCE_HSI)
+        {
+            RCC->CR &= ~(1U << RCC_CR_HSION_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (source == RCC_SYSTEM_CLOCK_SOURCE_HSE)
+        {
+            RCC->CR &= ~(1U << RCC_CR_HSEON_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
+        else if (source == RCC_SYSTEM_CLOCK_SOURCE_PLL)
+        {
+            RCC->CR &= ~(1U << RCC_CR_PLLON_Pos);
+            return RCC_FUNC_STATUS_OK;
+        }
     }
 
     return RCC_FUNC_STATUS_ERROR;
