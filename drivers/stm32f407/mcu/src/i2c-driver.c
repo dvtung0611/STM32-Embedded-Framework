@@ -97,7 +97,7 @@ I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle)
     pI2Cx->CR2 &= ~(63U << I2C_CR2_FREQ_Pos);
     pI2Cx->CR2 |= (freq << I2C_CR2_FREQ_Pos);
 
-    // CRR calculations
+    // CCR calculations
     pI2Cx->CCR &= ~(4095U << I2C_CCR_CCR_Pos);
     uint32_t f_pclk1 = RCC_GetPCLK1Freq();
     uint32_t ccr_value = 0;
@@ -201,3 +201,22 @@ uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName)
     
     return 0;
 }
+
+
+I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
+{
+    if (EN_or_DI == ENABLE)
+    {
+        pI2Cx->CR1 |= (1U << I2C_CR1_ACK_Pos);
+        return I2C_FUNC_STATUS_OK;
+    }
+    else if (EN_or_DI == DISABLE)
+    {
+        pI2Cx->CR1 &= ~(1U << I2C_CR1_ACK_Pos);
+        return I2C_FUNC_STATUS_OK;
+    }
+
+    return I2C_FUNC_STATUS_ERROR;
+}
+
+

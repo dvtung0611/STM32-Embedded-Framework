@@ -426,4 +426,26 @@ I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI
 uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName);
 
 
+/**
+ * @brief  Enable or disable ACK generation in I2C peripheral.
+ * 
+ * @param pI2Cx Pointer to I2C peripheral (I2C1, I2C2,...)
+ * @param EN_or_DI ENABLE or DISABLE macro
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK    : Enable/Disable operation succeeded
+ *         - I2C_FUNC_STATUS_ERROR : Enable/Disable operation failed
+ * 
+ * @note   This function configures the ACK bit (CR1.ACK).
+ *         When ACK is enabled, the I2C peripheral automatically
+ *         acknowledges received bytes.
+ * 
+ *         In Master Receiver mode:
+ *         - ACK = 1 : Continue receiving next byte.
+ *         - ACK = 0 : NACK the next received byte, typically used
+ *                     before receiving the last byte.
+ */
+I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
+
+
 #endif /* INC_I2C_DRIVER_H_ */
