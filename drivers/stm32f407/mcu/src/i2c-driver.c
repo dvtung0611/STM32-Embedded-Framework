@@ -11,6 +11,16 @@
 #include "rcc-driver.h"
 
 
+static inline void I2C_GeneratStartCondition(I2C_RegDef_t *pI2Cx);
+static inline void I2C_GenerateStopCondition(I2C_RegDef_t *pI2Cx);
+
+static inline void I2C_ExecuteAddressPhaseWrite(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress);
+static inline void I2C_ExecuteAddressPhaseRead(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress);
+
+static inline void I2C_ClearADDRFlag(I2C_RegDef_t *pI2Cx);
+static inline void I2C_ClearAFFlag(I2C_RegDef_t *pI2Cx);
+
+
 /* ====================================================== APIs ====================================================== */
 
 I2C_FunctionStatus_t I2C_PeripheralClockControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
@@ -189,14 +199,14 @@ I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI
 }
 
 
-uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName)
+uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint32_t FlagName)
 {
-    uint16_t SR1_or_SR2 = FlagName >> 16U;
-    uint16_t flag_position = FlagName & 0xFFFF;
+    uint32_t SR1_or_SR2 = FlagName & I2C_SR_MASK;
+    uint32_t flag_position = FlagName & I2C_FLAGPOS_MASK;
 
-    if (SR1_or_SR2 == 1U)
+    if (SR1_or_SR2 == I2C_FLAG_SR1)
         return ((pI2Cx->SR1 >> flag_position) & 1U);
-    else if (SR1_or_SR2 == 2U)
+    else if (SR1_or_SR2 == I2C_FLAG_SR2)
         return ((pI2Cx->SR2 >> flag_position) & 1U);
     
     return 0;
@@ -220,3 +230,97 @@ I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
 }
 
 
+static inline void I2C_GeneratStartCondition(I2C_RegDef_t *pI2Cx)
+{
+    pI2Cx->CR1 |= (1U << I2C_CR1_START_Pos);
+}
+
+
+static inline void I2C_GenerateStopCondition(I2C_RegDef_t *pI2Cx)
+{
+    pI2Cx->CR1 |= (1U << I2C_CR1_STOP_Pos);
+}
+
+
+static inline void I2C_ExecuteAddressPhaseWrite(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress)
+{
+    SlaveAddress = (SlaveAddress << 1U);
+    pI2Cx->DR = SlaveAddress;
+}
+
+
+static inline void I2C_ExecuteAddressPhaseRead(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress)
+{
+    SlaveAddress = (SlaveAddress << 1U) | (1U);
+    pI2Cx->DR = SlaveAddress;
+}
+
+
+static inline void I2C_ClearADDRFlag(I2C_RegDef_t *pI2Cx)
+{
+    volatile uint32_t dummy_read = pI2Cx->SR1;
+    dummy_read = pI2Cx->SR2;
+    (void)dummy_read;
+}
+
+
+static inline void I2C_ClearAFFlag(I2C_RegDef_t *pI2Cx)
+{
+    pI2Cx->SR1 &= ~(1U << I2C_SR1_AF_Pos);
+}
+
+
+I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress)
+{
+    if (pI2C_Handle == NULL || pTxBuffer == NULL || DataLength == 0)
+        return I2C_FUNC_STATUS_INVALID_PARAMETER;
+    
+    // Wait until I2C peripheral is free
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BUSY) == SET);
+
+    // Start phase
+    I2C_GeneratStartCondition(pI2C_Handle->pI2Cx);
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_SB) == CLEAR);
+
+    // Address phase
+    if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_7BIT)
+    {
+        I2C_ExecuteAddressPhaseWrite(pI2C_Handle->pI2Cx, SlaveAddress);
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_ADDR) == CLEAR)
+        {
+            if (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_AF) == SET)
+            {
+                I2C_ClearAFFlag(pI2C_Handle->pI2Cx);
+                I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+                return I2C_FUNC_STATUS_ERROR;
+            }
+        }
+
+        // Clear ADDR flag
+        I2C_ClearADDRFlag(pI2C_Handle->pI2Cx);
+    }
+    else if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_10BIT)
+    {
+        // Coming soon
+    }
+
+    // Send data until DataLength = 0
+    while (DataLength > 0)
+    {
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_TXE) == CLEAR);
+
+        pI2C_Handle->pI2Cx->DR = *pTxBuffer;
+        pTxBuffer++;
+        DataLength--;
+    }
+
+    // Stop phase
+    // Wait for TXE = 1 and BTF = 1
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_TXE) == CLEAR);
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BTF) == CLEAR);
+
+    // Generate the Stop Condition
+    I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+
+    return I2C_FUNC_STATUS_OK;
+}

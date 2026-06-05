@@ -140,10 +140,12 @@
  * @I2C_FLAG_ENCODING
  * 
  * [31:16] : Register Offset
- * [15:0]  : Bit Position
+ * [15:0]  : Flag Position
  */
-#define I2C_FLAG_SR1           (1U << 16U)
-#define I2C_FLAG_SR2           (2U << 16U)
+#define I2C_FLAG_SR1            (1U << 16U)
+#define I2C_FLAG_SR2            (2U << 16U)
+#define I2C_SR_MASK             (0xFFFF0000U)
+#define I2C_FLAGPOS_MASK        (0x0000FFFFU)
 
 
 /**
@@ -423,7 +425,7 @@ I2C_FunctionStatus_t I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI
  * - RM0090 Reference Manual,   Section 27.6.6 I2C Status register 1 (I2C_SR1)
  *                              Section 27.6.7 I2C Status register 2 (I2C_SR2)
  */
-uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName);
+uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint32_t FlagName);
 
 
 /**
@@ -446,6 +448,35 @@ uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint8_t FlagName);
  *                     before receiving the last byte.
  */
 I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
+
+
+/**
+ * @brief  Transmit data from Master to Slave in polling mode.
+ * 
+ * @param  pI2C_Handle   Pointer to I2C handle structure.
+ * @param  pTxBuffer     Pointer to transmit data buffer.
+ * @param  DataLength    Number of bytes to transmit.
+ * @param  SlaveAddress  Target slave address.
+ * 
+ * @return I2C_FUNC_STATUS_OK                : Data transmitted successfully.
+ *         I2C_FUNC_STATUS_ERROR             : Slave failed to acknowledge the address phase (AF flag set).
+ *         I2C_FUNC_STATUS_INVALID_PARAMETER : One or more input parameters are invalid.
+ * 
+ * @note   This function performs a complete I2C Master transmission sequence:
+ *         - Wait until the I2C bus becomes free.
+ *         - Generate a START condition.
+ *         - Send slave address with write operation.
+ *         - Wait for address acknowledgment.
+ *         - Clear the ADDR flag.
+ *         - Transmit all data bytes.
+ *         - Wait for TXE and BTF flags.
+ *         - Generate a STOP condition.
+ * 
+ * @note Only 7-bit addressing mode is currently supported.
+ * 
+ * @warning This is a blocking API.
+ */
+I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress);
 
 
 #endif /* INC_I2C_DRIVER_H_ */
