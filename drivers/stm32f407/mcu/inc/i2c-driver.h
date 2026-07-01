@@ -27,6 +27,8 @@
 #define I2C_CCR_RESET_VALUE                 (0x00U)
 #define I2C_TRISE_RESET_VALUE               (0x02U)
 
+#define I2C_TRISE_MASK                      (0x3FU)
+
 
 /* ================================================== BIT POSITION ================================================== */
 
@@ -189,6 +191,16 @@ typedef enum
     I2C_SCL_SPEED_STANDARD_MODE = 100000U,
     I2C_SCL_SPEED_FAST_MODE_200K = 200000U,
     I2C_SCL_SPEED_FAST_MODE_400K = 400000U
+} I2C_SCLSpeed_t;
+
+
+/**
+ * @I2C_MAX_RISE_TIME
+ */
+typedef enum
+{
+    I2C_MAX_RISE_TIME_STANDARD_NS = 1000U,
+    I2C_MAX_RISE_TIME_FAST_NS = 300U
 } I2C_SCLSpeed_t;
 
 

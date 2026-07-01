@@ -155,7 +155,19 @@ I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle)
         pI2Cx->CR1 &= ~(1U << I2C_CR1_NOSTRETCH_Pos);
     else
         return I2C_FUNC_STATUS_INVALID_PARAMETER;
+
+    // TRISE Configuration
+    uint32_t pclk1_mhz = RCC_GetPCLK1Freq() / 1000000U;
+    uint32_t trise_value;
+    if (SCLSpeed == I2C_SCL_SPEED_STANDARD_MODE)
+        trise_value = (pclk1_mhz * I2C_MAX_RISE_TIME_STANDARD_NS / 1000U) + 1U; // 1000ns
+    else if (SCLSpeed == I2C_SCL_SPEED_FAST_MODE_200K || SCLSpeed == I2C_SCL_SPEED_FAST_MODE_400K)
+        trise_value = (pclk1_mhz * I2C_MAX_RISE_TIME_FAST_NS / 1000U) + 1U; // 300ns
+    else
+        return I2C_FUNC_STATUS_INVALID_PARAMETER;
     
+    pI2Cx->TRISE = (uint8_t)(trise_value & I2C_TRISE_MASK);
+
     return I2C_FUNC_STATUS_OK;
 }
 
