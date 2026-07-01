@@ -201,7 +201,7 @@ typedef enum
 {
     I2C_MAX_RISE_TIME_STANDARD_NS = 1000U,
     I2C_MAX_RISE_TIME_FAST_NS = 300U
-} I2C_SCLSpeed_t;
+} I2C_Max_RiseTime_t;
 
 
 /**
