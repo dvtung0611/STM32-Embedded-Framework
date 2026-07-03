@@ -14,8 +14,8 @@
 static inline void I2C_GeneratStartCondition(I2C_RegDef_t *pI2Cx);
 static inline void I2C_GenerateStopCondition(I2C_RegDef_t *pI2Cx);
 
-static inline void I2C_ExecuteAddressPhaseWrite(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress);
-static inline void I2C_ExecuteAddressPhaseRead(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress);
+static I2C_FunctionStatus_t I2C_ExecuteAddressPhaseWrite(I2C_Handle_t *pI2C_Handle, uint16_t SlaveAddress);
+static I2C_FunctionStatus_t I2C_ExecuteAddressPhaseRead(I2C_Handle_t *pI2C_Handle, uint16_t SlaveAddress);
 
 static inline void I2C_ClearADDRFlag(I2C_RegDef_t *pI2Cx);
 static inline void I2C_ClearAFFlag(I2C_RegDef_t *pI2Cx);
@@ -66,9 +66,9 @@ I2C_FunctionStatus_t I2C_Init(I2C_Handle_t *pI2C_Handle)
 
     // Configure ACK
     if (ACKControl == I2C_ACK_CONTROL_ENABLE)
-        pI2Cx->CR1 |= (1U << I2C_CR1_ACK_Pos);
+        I2C_ACKConfig(pI2Cx, ENABLE);
     else if (ACKControl == I2C_ACK_CONTROL_DISABLE)
-        pI2Cx->CR1 &= ~(1U << I2C_CR1_ACK_Pos);
+        I2C_ACKConfig(pI2Cx, DISABLE);
     else
         return I2C_FUNC_STATUS_INVALID_PARAMETER;
 
@@ -242,6 +242,23 @@ I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
 }
 
 
+I2C_FunctionStatus_t I2C_POSConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI)
+{
+    if (EN_or_DI == ENABLE)
+    {
+        pI2Cx->CR1 |= (1U << I2C_CR1_POS_Pos);
+        return I2C_FUNC_STATUS_OK;
+    }
+    else if (EN_or_DI == DISABLE)
+    {
+        pI2Cx->CR1 &= ~(1U << I2C_CR1_POS_Pos);
+        return I2C_FUNC_STATUS_OK;
+    }
+
+    return I2C_FUNC_STATUS_ERROR;
+}
+
+
 static inline void I2C_GeneratStartCondition(I2C_RegDef_t *pI2Cx)
 {
     pI2Cx->CR1 |= (1U << I2C_CR1_START_Pos);
@@ -254,17 +271,61 @@ static inline void I2C_GenerateStopCondition(I2C_RegDef_t *pI2Cx)
 }
 
 
-static inline void I2C_ExecuteAddressPhaseWrite(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress)
+static I2C_FunctionStatus_t I2C_ExecuteAddressPhaseWrite(I2C_Handle_t *pI2C_Handle, uint16_t SlaveAddress)
 {
-    SlaveAddress = (SlaveAddress << 1U);
-    pI2Cx->DR = SlaveAddress;
+    if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_7BIT)
+    {
+        SlaveAddress = (SlaveAddress << 1U);
+        pI2C_Handle->pI2Cx->DR = SlaveAddress;
+    }
+    else if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_10BIT)
+    {
+        // Coming soon
+    }
+
+    // Clear ADDR flag
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_ADDR) == CLEAR)
+    {
+        if (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_AF) == SET)
+        {
+            I2C_ClearAFFlag(pI2C_Handle->pI2Cx);
+            I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+            return I2C_FUNC_STATUS_ERROR;
+        }
+    }
+
+    I2C_ClearADDRFlag(pI2C_Handle->pI2Cx);
+    
+    return I2C_FUNC_STATUS_OK;
 }
 
 
-static inline void I2C_ExecuteAddressPhaseRead(I2C_RegDef_t *pI2Cx, uint16_t SlaveAddress)
+static I2C_FunctionStatus_t I2C_ExecuteAddressPhaseRead(I2C_Handle_t *pI2C_Handle, uint16_t SlaveAddress)
 {
-    SlaveAddress = (SlaveAddress << 1U) | (1U);
-    pI2Cx->DR = SlaveAddress;
+    if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_7BIT)
+    {
+        SlaveAddress = (SlaveAddress << 1U) | (1U);
+        pI2C_Handle->pI2Cx->DR = SlaveAddress;
+    }
+    else if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_10BIT)
+    {
+        // Coming soon
+    }
+
+    // Clear ADDR flag
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_ADDR) == CLEAR)
+    {
+        if (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_AF) == SET)
+        {
+            I2C_ClearAFFlag(pI2C_Handle->pI2Cx);
+            I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+            return I2C_FUNC_STATUS_ERROR;
+        }
+    }
+
+    I2C_ClearADDRFlag(pI2C_Handle->pI2Cx);
+    
+    return I2C_FUNC_STATUS_OK;
 }
 
 
@@ -282,39 +343,18 @@ static inline void I2C_ClearAFFlag(I2C_RegDef_t *pI2Cx)
 }
 
 
-I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress)
+I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress, uint8_t Sr)
 {
     if (pI2C_Handle == NULL || pTxBuffer == NULL || DataLength == 0)
         return I2C_FUNC_STATUS_INVALID_PARAMETER;
-    
-    // Wait until I2C peripheral is free
-    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BUSY) == SET);
 
     // Start phase
     I2C_GeneratStartCondition(pI2C_Handle->pI2Cx);
     while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_SB) == CLEAR);
 
     // Address phase
-    if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_7BIT)
-    {
-        I2C_ExecuteAddressPhaseWrite(pI2C_Handle->pI2Cx, SlaveAddress);
-        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_ADDR) == CLEAR)
-        {
-            if (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_AF) == SET)
-            {
-                I2C_ClearAFFlag(pI2C_Handle->pI2Cx);
-                I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
-                return I2C_FUNC_STATUS_ERROR;
-            }
-        }
-
-        // Clear ADDR flag
-        I2C_ClearADDRFlag(pI2C_Handle->pI2Cx);
-    }
-    else if (pI2C_Handle->I2C_Config.I2C_AddressMode == I2C_ADDRESS_MODE_10BIT)
-    {
-        // Coming soon
-    }
+    if (I2C_ExecuteAddressPhaseWrite(pI2C_Handle, SlaveAddress) != I2C_FUNC_STATUS_OK)
+        return I2C_FUNC_STATUS_ERROR;
 
     // Send data until DataLength = 0
     while (DataLength > 0)
@@ -326,13 +366,119 @@ I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxB
         DataLength--;
     }
 
-    // Stop phase
-    // Wait for TXE = 1 and BTF = 1
+    // Wait for TxE = 1 and BTF = 1
     while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_TXE) == CLEAR);
     while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BTF) == CLEAR);
+    
+    // Stop phase
+    if (Sr == I2C_REPEATED_START_DISABLE)
+        I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
 
-    // Generate the Stop Condition
-    I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+    return I2C_FUNC_STATUS_OK;
+}
 
+
+I2C_FunctionStatus_t I2C_MasterReceiveData(I2C_Handle_t *pI2C_Handle, uint8_t *pRxBuffer, uint32_t DataLength, uint16_t SlaveAddress, uint8_t Sr)
+{
+    if (pI2C_Handle == NULL || pRxBuffer == NULL || DataLength == 0)
+        return I2C_FUNC_STATUS_INVALID_PARAMETER;
+
+    // Start phase
+    I2C_GeneratStartCondition(pI2C_Handle->pI2Cx);
+    while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_SB) == CLEAR);
+
+    if (DataLength == 1)
+    {
+        // Disable ACK
+        I2C_ACKConfig(pI2C_Handle->pI2Cx, DISABLE);
+
+        // Address phase
+        if (I2C_ExecuteAddressPhaseRead(pI2C_Handle, SlaveAddress) != I2C_FUNC_STATUS_OK)
+            return I2C_FUNC_STATUS_ERROR;
+
+        // Stop phase
+        if (Sr == I2C_REPEATED_START_DISABLE)
+            I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+
+        // Wait for RxNE = 1
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_RXNE) == CLEAR);
+
+        // Read data 1
+        *(pRxBuffer) = (uint8_t)(pI2C_Handle->pI2Cx->DR);
+        pRxBuffer++;
+        DataLength--;
+    }
+    else if (DataLength == 2)
+    {
+        I2C_ACKConfig(pI2C_Handle->pI2Cx, DISABLE);
+        I2C_POSConfig(pI2C_Handle->pI2Cx, ENABLE);
+
+        // Address phase
+        if (I2C_ExecuteAddressPhaseRead(pI2C_Handle, SlaveAddress) != I2C_FUNC_STATUS_OK)
+            return I2C_FUNC_STATUS_ERROR;
+
+        // Wait for BTF = 1
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BTF) == CLEAR);
+
+        // Stop phase
+        if (Sr == I2C_REPEATED_START_DISABLE)
+            I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+
+        // Read data N - 1 and N
+        while (DataLength > 0)
+        {
+            *(pRxBuffer) = (uint8_t)(pI2C_Handle->pI2Cx->DR);
+            pRxBuffer++;
+            DataLength--;
+        }
+
+        I2C_POSConfig(pI2C_Handle->pI2Cx, DISABLE);
+    }
+    else
+    {
+        // Address phase
+        if (I2C_ExecuteAddressPhaseRead(pI2C_Handle, SlaveAddress) != I2C_FUNC_STATUS_OK)
+            return I2C_FUNC_STATUS_ERROR;
+        
+        while (DataLength > 3)
+        {
+            // Wait for RxNE = 1
+            while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_RXNE) == CLEAR);
+
+            *(pRxBuffer) = (uint8_t)(pI2C_Handle->pI2Cx->DR);
+            pRxBuffer++;
+            DataLength--;
+        }
+
+        // Wait for BTF = 1
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BTF) == CLEAR);
+
+        // Disable ACK
+        I2C_ACKConfig(pI2C_Handle->pI2Cx, DISABLE);
+
+        // Read data N - 2
+        *(pRxBuffer) = (uint8_t)(pI2C_Handle->pI2Cx->DR);
+        pRxBuffer++;
+        DataLength--;
+        
+        // Wait for BTF = 1
+        while (I2C_GetFlagStatus(pI2C_Handle->pI2Cx, I2C_FLAG_BTF) == CLEAR);
+
+        // Stop phase
+        if (Sr == I2C_REPEATED_START_DISABLE)
+            I2C_GenerateStopCondition(pI2C_Handle->pI2Cx);
+
+        // Read data N - 1 and N
+        while (DataLength > 0)
+        {
+            *(pRxBuffer) = (uint8_t)(pI2C_Handle->pI2Cx->DR);
+            pRxBuffer++;
+            DataLength--;
+        }
+    }
+
+    if (pI2C_Handle->I2C_Config.I2C_ACKControl == I2C_ACK_CONTROL_ENABLE)
+        I2C_ACKConfig(pI2C_Handle->pI2Cx, ENABLE);
+    
     return I2C_FUNC_STATUS_OK;
 }

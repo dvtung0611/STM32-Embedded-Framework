@@ -265,6 +265,16 @@ typedef enum
 
 
 /**
+ * @I2C_REPEATED_START
+ */
+typedef enum
+{
+    I2C_REPEATED_START_DISABLE = 0U,
+    I2C_REPEATED_START_ENABLE
+} I2C_RepeatedStart_t;
+
+
+/**
  * @I2C_FUNCTION_STATUS
  */
 typedef enum
@@ -463,32 +473,70 @@ I2C_FunctionStatus_t I2C_ACKConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
 
 
 /**
- * @brief  Transmit data from Master to Slave in polling mode.
+ * @brief  Configure the POS (Acknowledge Position) bit
+ * @param  pI2Cx: Pointer to the I2C peripheral
+ * @param  EN_or_DI:
+ *         - ENABLE  : Enable POS
+ *         - DISABLE : Disable POS
  * 
- * @param  pI2C_Handle   Pointer to I2C handle structure.
- * @param  pTxBuffer     Pointer to transmit data buffer.
- * @param  DataLength    Number of bytes to transmit.
- * @param  SlaveAddress  Target slave address.
- * 
- * @return I2C_FUNC_STATUS_OK                : Data transmitted successfully.
- *         I2C_FUNC_STATUS_ERROR             : Slave failed to acknowledge the address phase (AF flag set).
- *         I2C_FUNC_STATUS_INVALID_PARAMETER : One or more input parameters are invalid.
- * 
- * @note   This function performs a complete I2C Master transmission sequence:
- *         - Wait until the I2C bus becomes free.
- *         - Generate a START condition.
- *         - Send slave address with write operation.
- *         - Wait for address acknowledgment.
- *         - Clear the ADDR flag.
- *         - Transmit all data bytes.
- *         - Wait for TXE and BTF flags.
- *         - Generate a STOP condition.
- * 
- * @note Only 7-bit addressing mode is currently supported.
- * 
- * @warning This is a blocking API.
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK
+ *         - I2C_FUNC_STATUS_ERROR
+ *
+ * @note
+ * The POS bit is used only for 2-byte reception in Master Receiver mode.
+ * It determines whether the ACK/NACK bit applies to the current byte or
+ * the next byte received.
  */
-I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress);
+I2C_FunctionStatus_t I2C_POSConfig(I2C_RegDef_t *pI2Cx, uint8_t EN_or_DI);
+
+
+/**
+ * @brief  Send data to an I2C slave device in Master mode (Polling)
+ * @param  pI2C_Handle: Pointer to the I2C handle structure.
+ * @param  pTxBuffer: Pointer to the transmit buffer.
+ * @param  DataLength: Number of bytes to transmit.
+ * @param  SlaveAddress: 7-bit slave address.
+ * @param  Sr: Repeated START control.
+ *         - I2C_REPEATED_START_ENABLE  : Keep the bus busy (no STOP generated)
+ *         - I2C_REPEATED_START_DISABLE : Generate STOP after transmission
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK
+ *         - I2C_FUNC_STATUS_ERROR
+ *         - I2C_FUNC_STATUS_INVALID_PARAMETER
+ * 
+ * @note
+ * This function transmits data in polling mode and follows the
+ * transmission sequence recommended in the STM32 RM0090 Reference Manual
+ */
+I2C_FunctionStatus_t I2C_MasterSendData(I2C_Handle_t *pI2C_Handle, uint8_t *pTxBuffer, uint32_t DataLength, uint16_t SlaveAddress, uint8_t Sr);
+
+
+/**
+ * @brief  Receive data from an I2C slave device in Master mode (Polling)
+ * @param  pI2C_Handle: Pointer to the I2C handle structure.
+ * @param  pRxBuffer: Pointer to the receive buffer.
+ * @param  DataLength: Number of bytes to receive.
+ * @param  SlaveAddress: 7-bit slave address.
+ * @param  Sr: Repeated START control.
+ *         - I2C_REPEATED_START_ENABLE  : Keep the bus busy (no STOP generated)
+ *         - I2C_REPEATED_START_DISABLE : Generate STOP after reception
+ * 
+ * @return I2C_FunctionStatus_t
+ *         - I2C_FUNC_STATUS_OK
+ *         - I2C_FUNC_STATUS_ERROR
+ *         - I2C_FUNC_STATUS_INVALID_PARAMETER
+ * 
+ * @note
+ * This function supports three reception procedures:
+ * - 1-byte reception
+ * - 2-byte reception (using POS bit)
+ * - Multi-byte reception (N > 2 bytes)
+ * 
+ * The implementation follows the reception sequence recommended in the STM32 RM0090 Reference Manual
+ */
+I2C_FunctionStatus_t I2C_MasterReceiveData(I2C_Handle_t *pI2C_Handle, uint8_t *pRxBuffer, uint32_t DataLength, uint16_t SlaveAddress, uint8_t Sr);
 
 
 #endif /* INC_I2C_DRIVER_H_ */
